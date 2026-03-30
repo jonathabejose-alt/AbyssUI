@@ -5,7 +5,7 @@ local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footag
 local Window = WindUI:CreateWindow({
     Title = "AbyssUI (Azure Latch)",
     Icon = "moon",
-    Author = "Celeron + Daffy + Tze",
+    Author = "Tze",
     Folder = "AbyssUIAzureLatch",
     Size = UDim2.fromOffset(600,480),
     Transparent = true,
@@ -97,7 +97,7 @@ local BNR = ReplicatedStorage:WaitForChild("ByteNetReliable")
 --  HOME TAB
 -- ══════════════════════════════════════════════════════════════════════════
 HomeTab:Section({Title="Welcome"})
-HomeTab:Paragraph({Title="Script Made By Celeron + Daffy + Tze!",
+HomeTab:Paragraph({Title="Script Made By Tze!",
     Desc="Join the Discord server in Info for updates / suggestions."})
 
 -- ══════════════════════════════════════════════════════════════════════════
@@ -3048,7 +3048,7 @@ end})
 
 WindUI:Notify({
     Title = "AbyssUI",
-    Content = "celeron ui loaded",
+    Content = "loaded",
     Duration = 10, -- 5 seconds
     Icon = "moon",
 })
