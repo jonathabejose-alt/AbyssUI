@@ -9,13 +9,6 @@ local Window = WindUI:CreateWindow({
     Transparent = true,
     Theme = "Dark",
     DisableWindApi = false,
-	User = {
-        Enabled = true,
-        Anonymous = false,
-        Callback = function()
-            print("clicked")
-        end,
-    },
 })
 
 Window:EditOpenButton({
