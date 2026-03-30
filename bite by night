@@ -899,6 +899,26 @@ VisTab:Toggle({
     end
 })
 
+-- FPS Booster
+VisTab:Section({ Title = "Performance" })
+ 
+local fpsBoosterEnabled = false
+ 
+VisTab:Toggle({
+    Title    = "FPS Booster",
+    Desc     = "Optimiza el juego para mejorar los FPS.",
+    Default  = false,
+    Callback = function(state)
+        fpsBoosterEnabled = state
+        if state then
+            loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ahhsempai/bitebynighttuffsmth/refs/heads/main/fps.lua"))()
+            notify("FPS Booster", "Enabled. Optimizando...", 3)
+        else
+            notify("FPS Booster", "Reinicia el juego para revertir los cambios.", 4)
+        end
+    end
+})
+
 -- ─── TELEPORT TAB ─────────────────────────────────────────────────────────
 TpsTab:Section({ Title = "Teleport Features" })
 
