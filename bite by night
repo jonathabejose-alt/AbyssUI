@@ -13,7 +13,7 @@ local Window = WindUI:CreateWindow({
 
 Window:EditOpenButton({
     Title = "AbyssUI ",
-    Icon = "monitor",
+    Icon = "moon",
     CornerRadius = UDim.new(0, 16),
     StrokeThickness = 2,
     Color = ColorSequence.new(
@@ -256,7 +256,7 @@ local noclipConn    = nil
 
 MainTab:Toggle({
     Title    = "Noclip",
-    Desc     = "Atraviesa paredes y objetos.",
+    Desc     = "It passes through walls and objects.",
     Default  = false,
     Callback = function(state)
         noclipEnabled = state
@@ -291,7 +291,7 @@ local speedHackValue   = 16
 
 MainTab:Slider({
     Title = "Speed Hack Value",
-    Desc  = "Ajusta la velocidad (16 = normal, max 500)",
+    Desc  = "Adjust the speed (16 = normal, max 500)",
     Step  = 1,
     Value = { Min = 16, Max = 500, Default = 16 },
     Callback = function(value)
@@ -308,7 +308,7 @@ MainTab:Slider({
 
 MainTab:Toggle({
     Title    = "Speed Hack",
-    Desc     = "Activa la velocidad personalizada.",
+    Desc     = "Activate custom speed.",
     Default  = false,
     Callback = function(state)
         speedHackEnabled = state
@@ -363,7 +363,7 @@ local renderConnection2= nil
 
 MainTab:Toggle({
     Title    = "Lock On",
-    Desc     = "Bloquea la cámara al jugador más cercano con M2.",
+    Desc     = "Block the camera on the nearest player with M2.",
     Default  = false,
     Callback = function(state)
         lockOnEnabled = state
@@ -411,7 +411,7 @@ local genConn = nil
 
 SurvivorTab:Toggle({
     Title    = "Auto Generator",
-    Desc     = "Hace los generadores automáticamente.",
+    Desc     = "It makes the generators automatically.",
     Default  = false,
     Callback = function(state)
         AutoGen = state
@@ -435,7 +435,7 @@ local autoEscapeConn= nil
 
 SurvivorTab:Toggle({
     Title    = "Auto Escape",
-    Desc     = "Escapa del mapa automáticamente.",
+    Desc     = "Escape the map automatically.",
     Default  = false,
     Callback = function(state)
         autoEscape = state
@@ -480,7 +480,7 @@ local dotConn    = nil
 
 SurvivorTab:Toggle({
     Title    = "Auto Barricade",
-    Desc     = "Fuerza el punto de barricada al centro.",
+    Desc     = "It forces the barricade to point towards the center.",
     Default  = false,
     Callback = function(state)
         dotEnabled = state
@@ -536,7 +536,7 @@ local killerAddedConn2, killerRemovedConn2 = nil, nil
 
 SurvivorTab:Toggle({
     Title    = "View Killer",
-    Desc     = "Mueve la cámara al Killer.",
+    Desc     = "Move the camera to the Killer.",
     Default  = false,
     Callback = function(state)
         viewKiller = state
@@ -628,7 +628,7 @@ SurvivorTab:Toggle({
 -- Health Threshold Slider
 SurvivorTab:Slider({
     Title = "Health Threshold",
-    Desc  = "Salud mínima antes de teletransportarse (Anti Death).",
+    Desc  = "Minimum health before teleporting (Anti Death).",
     Step  = 1,
     Value = { Min = 25, Max = 80, Default = 30 },
     Callback = function(value)
@@ -646,7 +646,7 @@ local killMode  = "Closest"
 
 KillerTab:Toggle({
     Title    = "Teleport Kill",
-    Desc     = "Se teleporta constantemente detrás del jugador seleccionado.",
+    Desc     = "It constantly teleports behind the selected player.",
     Default  = false,
     Callback = function(state)
         tpKill = state
@@ -906,7 +906,7 @@ local fpsBoosterEnabled = false
  
 VisTab:Toggle({
     Title    = "FPS Booster",
-    Desc     = "Optimiza el juego para mejorar los FPS.",
+    Desc     = "Optimize the game to improve fps.",
     Default  = false,
     Callback = function(state)
         fpsBoosterEnabled = state
@@ -936,7 +936,7 @@ end
 
 TpsTab:Button({
     Title    = "Generator TP",
-    Desc     = "Se teleporta a cada generador uno por uno.",
+    Desc     = "He teleports to each generator one by one.",
     Callback = function()
         local models = getOrderedGenerators()
         if #models == 0 then return end
@@ -970,7 +970,7 @@ end
 
 TpsTab:Button({
     Title    = "Battery TP",
-    Desc     = "Se teleporta a cada batería una por una.",
+    Desc     = "It teleports to each battery one by one.",
     Callback = function()
         local batteries = getBatteries()
         if #batteries == 0 then return end
@@ -1046,7 +1046,7 @@ local removeFogConn    = nil
 
 MiscTab:Toggle({
     Title    = "Remove Fog",
-    Desc     = "Elimina la niebla del mapa.",
+    Desc     = "Remove the fog from the map.",
     Default  = false,
     Callback = function(state)
         local Lighting = game:GetService("Lighting")
