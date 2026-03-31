@@ -648,7 +648,7 @@ KillerTab:Dropdown({
     Title    = "Target Mode",
     Desc     = "Switch between Closest or Specific player.",
     Options  = { "Closest", "Specific" },
-    Default  = "Closest",
+    Default  = {"Closest"},
     Callback = function(value)
         killMode = value
     end
