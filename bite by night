@@ -639,65 +639,86 @@ SurvivorTab:Slider({
 -- ─── KILLER TAB ───────────────────────────────────────────────────────────
 KillerTab:Section({ Title = "Killer Features" })
 
-local tpKill    = false
-local tpKillConn= nil
-local targetName= ""
-local killMode  = "Closest"
+local tpKill     = false
+local tpKillConn = nil
+local targetName = ""
+local killMode   = "Closest"
+
+KillerTab:Dropdown({
+    Title    = "Target Mode",
+    Desc     = "Switch between Closest or Specific player.",
+    Options  = { "Closest", "Specific" },
+    Default  = "Closest",
+    Callback = function(value)
+        killMode = value
+    end
+})
+
+KillerTab:Input({
+    Title       = "Target Username",
+    Desc        = "Only used when Target Mode is Specific.",
+    Placeholder = "Player name...",
+    Callback    = function(value)
+        targetName = value
+    end
+})
 
 KillerTab:Toggle({
     Title    = "Teleport Kill",
-    Desc     = "It constantly teleports behind the selected player.",
+    Desc     = "Constantly teleports behind the selected player.",
     Default  = false,
     Callback = function(state)
         tpKill = state
         notify("Teleport Kill", state and "Enabled." or "Disabled.")
+
         if state then
             tpKillConn = RunService.Heartbeat:Connect(function()
                 local char = player.Character
                 if not char then return end
                 local root = char:FindFirstChild("HumanoidRootPart")
                 if not root then return end
-                local targetChar
+
+                local aliveFolder = workspace.PLAYERS.ALIVE
+                if not aliveFolder then return end
+
+                local targetChar = nil
+
                 if killMode == "Closest" then
                     local closest, dist = nil, math.huge
-                    for _, v in ipairs(workspace.PLAYERS.ALIVE:GetChildren()) do
-                        local hrp = v:FindFirstChild("HumanoidRootPart")
-                        if hrp then
-                            local d = (root.Position - hrp.Position).Magnitude
-                            if d < dist then dist = d closest = v end
+                    for _, v in ipairs(aliveFolder:GetChildren()) do
+                        if v:IsA("Model") and v ~= char then
+                            local hrp = v:FindFirstChild("HumanoidRootPart")
+                            if hrp then
+                                local d = (root.Position - hrp.Position).Magnitude
+                                if d < dist then
+                                    dist = d
+                                    closest = v
+                                end
+                            end
                         end
                     end
                     targetChar = closest
+
                 elseif killMode == "Specific" then
-                    targetChar = workspace.PLAYERS.ALIVE:FindFirstChild(targetName)
+                    if targetName ~= "" then
+                        targetChar = aliveFolder:FindFirstChild(targetName)
+                    end
                 end
+
                 if targetChar then
                     local hrp = targetChar:FindFirstChild("HumanoidRootPart")
-                    if hrp then root.CFrame = hrp.CFrame * CFrame.new(0, 0, 3) end
+                    if hrp then
+                        root.CFrame = hrp.CFrame * CFrame.new(0, 0, 3)
+                    end
                 end
             end)
+
         else
-            if tpKillConn then tpKillConn:Disconnect() tpKillConn = nil end
+            if tpKillConn then
+                tpKillConn:Disconnect()
+                tpKillConn = nil
+            end
         end
-    end
-})
-
-KillerTab:Input({
-    Title       = "Target Username",
-    Desc        = "Escribe el nombre del jugador a targear.",
-    Placeholder = "Nombre del jugador...",
-    Callback    = function(value)
-        targetName = value
-    end
-})
-
-KillerTab:Dropdown({
-    Title    = "Target Mode",
-    Desc     = "Cambia entre Closest o Specific.",
-    Options  = { "Closest", "Specific" },
-    Default  = "Closest",
-    Callback = function(value)
-        killMode = value
     end
 })
 
