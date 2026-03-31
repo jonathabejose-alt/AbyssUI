@@ -644,13 +644,30 @@ local tpKillConn = nil
 local targetName = ""
 local killMode   = "Closest"
 
-KillerTab:Dropdown({
-    Title    = "Target Mode",
-    Desc     = "Switch between Closest or Specific player.",
-    Options  = { "Closest", "Specific" },
-    Default  = {"Closest"},
-    Callback = function(value)
-        killMode = value
+KillerTab:Section({ Title = "Target Settings" })
+
+local modeParagraph = KillerTab:Paragraph({
+    Title = "Current Mode",
+    Desc  = "Mode: Closest"
+})
+
+KillerTab:Button({
+    Title       = "Set Mode: Closest",
+    Description = "Click to target the closest player.",
+    Callback    = function()
+        killMode = "Closest"
+        modeParagraph:SetDesc("Mode: Closest")
+        notify("Target Mode", "Set to Closest.", 2)
+    end
+})
+
+KillerTab:Button({
+    Title       = "Set Mode: Specific",
+    Description = "Click to target a specific player by username.",
+    Callback    = function()
+        killMode = "Specific"
+        modeParagraph:SetDesc("Mode: Specific")
+        notify("Target Mode", "Set to Specific.", 2)
     end
 })
 
