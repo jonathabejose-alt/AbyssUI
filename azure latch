@@ -1,4 +1,3 @@
-
 -- Azure Latch (WindUI Full Port) by Tze
 local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/refs/heads/main/dist/main.lua",true))()
 
@@ -12,46 +11,25 @@ local Window = WindUI:CreateWindow({
     Theme = "Dark",
 })
 
--- ── Show/Hide with Right L ──────────────────────────────────────────────
 Window:EditOpenButton({
     Title = "AbyssUI",
     Icon = "monitor",
     CornerRadius = UDim.new(0,16),
     StrokeThickness = 2,
-    Color = ColorSequence.new( -- gradient
-        Color3.fromHex("FF0F7B"), 
-        Color3.fromHex("F89B29")
-    ),
+    Color = ColorSequence.new(Color3.fromHex("FF0F7B"), Color3.fromHex("F89B29")),
     OnlyMobile = false,
     Enabled = true,
     Draggable = true,
 })
 
 Window:IsResizable(true)
-
 Window:SetToggleKey(Enum.KeyCode.L)
 
-Window:Tag({
-    Title = "v0.1.3",
-    Icon = "github",
-    Color = Color3.fromHex("#F89B29"),
-    Radius = 4, -- from 0 to 13
-})
+Window:Tag({Title="v0.1.3",Icon="github",Color=Color3.fromHex("#F89B29"),Radius=4})
+Window:Tag({Title="normal users",Icon="test-tube",Color=Color3.fromHex("#30ff6a"),Radius=6})
 
-Window:Tag({
-    Title = "normal users",
-    Icon = "test-tube",
-    Color = Color3.fromHex("#30ff6a"),
-    Radius = 6, -- from 0 to 13
-})
+local Tab = Window:Tab({Title="AbyssUI",Icon="github",Locked=true})
 
-local Tab = Window:Tab({
-    Title = "AbyssUI",
-    Icon = "github", -- optional
-    Locked = true,
-})
-
--- ── Tabs ──────────────────────────────────────────────────────────────────
 local HomeTab     = Window:Tab({ Title="Home",      Icon="house" })
 local BlatantTab  = Window:Tab({ Title="Blatant",   Icon="zap" })
 local SilentTab   = Window:Tab({ Title="Silent",    Icon="eye-off" })
@@ -61,7 +39,6 @@ local ExploitsTab = Window:Tab({ Title="Exploits",  Icon="shield-alert" })
 local OthersTab   = Window:Tab({ Title="Others",    Icon="star" })
 local InfoTab     = Window:Tab({ Title="Info",      Icon="info" })
 
--- ── Services ─────────────────────────────────────────────────────────────
 local Players            = game:GetService("Players")
 local RunService         = game:GetService("RunService")
 local ReplicatedStorage  = game:GetService("ReplicatedStorage")
@@ -69,7 +46,6 @@ local StarterGui         = game:GetService("StarterGui")
 local UserInputService   = game:GetService("UserInputService")
 local player             = Players.LocalPlayer
 
--- ── Buffers / Role ────────────────────────────────────────────────────────
 local buffers = {}
 loadstring(game:HttpGet("https://pastebin.com/raw/8XJh7dzh"))()
 repeat task.wait() until game.Lighting:FindFirstChild("BUFFERSTRINGS")
@@ -84,7 +60,6 @@ local role = game:GetService("ReplicatedStorage")
 role = role and tonumber(role)
 local pick = string.char(role)
 
--- ── Notify helper ─────────────────────────────────────────────────────────
 local suppressNotifs = false
 local function notify(title,text,dur)
     if suppressNotifs then return end
@@ -97,8 +72,7 @@ local BNR = ReplicatedStorage:WaitForChild("ByteNetReliable")
 --  HOME TAB
 -- ══════════════════════════════════════════════════════════════════════════
 HomeTab:Section({Title="Welcome"})
-HomeTab:Paragraph({Title="Script Made By Tze!",
-    Desc="Join the Discord server in Info for updates / suggestions."})
+HomeTab:Paragraph({Title="Script Made By Tze!",Desc="Join the Discord server in Info for updates / suggestions."})
 
 -- ══════════════════════════════════════════════════════════════════════════
 --  INFO TAB
@@ -129,7 +103,7 @@ for _,v in ipairs({
 end
 
 -- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Notification suppression
+--  SILENT TAB
 -- ══════════════════════════════════════════════════════════════════════════
 SilentTab:Section({Title="Notification Suppression"})
 SilentTab:Paragraph({Title="Info",Desc="Suppresses notifications — useful when streaming."})
@@ -137,9 +111,6 @@ SilentTab:Toggle({Title="Suppress Notifications",Default=false,Callback=function
     suppressNotifs=v; notify("Notifications",v and "Suppressed." or "Removed suppression.",1)
 end})
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Ball Magnet
--- ══════════════════════════════════════════════════════════════════════════
 SilentTab:Section({Title="Ball Magnet Features"})
 SilentTab:Paragraph({Title="Info",Desc="Grab the ball from further away."})
 
@@ -177,7 +148,6 @@ SilentTab:Toggle({Title="Ball Magnet (Hold M2)",Description="Activates only whil
     end
 end})
 
--- Ball Magnet Hitbox
 local bmHitState={active=false,hitbox=nil,loop=nil}
 SilentTab:Toggle({Title="Ball Magnet Hitbox",Description="Shows the magnet hitbox on the ball.",Default=false,Callback=function(v)
     bmHitState.active=v; notify("Ball Magnet Hitbox",v and "Enabled." or "Disabled.")
@@ -205,12 +175,7 @@ local bmRadius={radius=1,conn=nil,lastFire=0,INTERVAL=0.1,hrp=nil}
 local function setupBMChar(char) bmRadius.hrp=char:WaitForChild("HumanoidRootPart",10) end
 if player.Character then setupBMChar(player.Character) end
 player.CharacterAdded:Connect(setupBMChar)
-SilentTab:Slider({
-    Title = "Ball Magnet Radius",
-    Step = 0.5,
-    Value = {Min=1, Max=25, Default=1},
-    Callback = function(v) bmRadius.radius=v end
-})
+SilentTab:Slider({Title="Ball Magnet Radius",Step=0.5,Value={Min=1,Max=25,Default=1},Callback=function(v) bmRadius.radius=v end})
 
 RunService.Heartbeat:Connect(function()
     local r=bmRadius.radius or 1; if r<2 then return end
@@ -223,7 +188,6 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--- Ball Magnet Radius Hitbox
 local bmRViz={enabled=false,hitbox=nil,loop=nil}
 SilentTab:Toggle({Title="Ball Magnet Radius Hitbox",Description="Shows the radius hitbox on the ball.",Default=false,Callback=function(v)
     bmRViz.enabled=v; notify("Radius Hitbox",v and "Enabled." or "Disabled.")
@@ -246,9 +210,6 @@ SilentTab:Toggle({Title="Ball Magnet Radius Hitbox",Description="Shows the radiu
     end)
 end})
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Auto Dribble / Counter
--- ══════════════════════════════════════════════════════════════════════════
 SilentTab:Section({Title="Auto Dribble / Counter"})
 SilentTab:Paragraph({Title="Keybinds",Desc="Z=Auto-Dribble | X=Move1 | C=Move2 | V=Move3 | N=Move4 | M=Move5"})
 SilentTab:Button({Title="Show Keybinds",Description="Shows the keybind info.",Callback=function()
@@ -257,7 +218,7 @@ SilentTab:Button({Title="Show Keybinds",Description="Shows the keybind info.",Ca
 end})
 
 local askState={
-    suppressNotifs=false, keybindsEnabled=false, keybindSetup=false,
+    suppressNotifs=false,keybindsEnabled=false,keybindSetup=false,
     autoSkills={toggleDetection="dribble",toggleCounter1="skill1",toggleCounter2="skill2",
                 toggleCounter3="skill3",toggleCounter4="skill4",toggleCounter5="skill5"},
     toggleDetection=false,toggleCounter1=false,toggleCounter2=false,
@@ -323,21 +284,13 @@ if not askState.keybindSetup then
     end)
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Auto Activate
--- ══════════════════════════════════════════════════════════════════════════
 SilentTab:Section({Title="Auto Activate"})
 SilentTab:Paragraph({Title="Info",Desc="Activates move when ball is within range. Hold M2 to trigger."})
 local aaState={distance=10,toggleState=false,moveNumber=1,db=true}
 SilentTab:Input({Title="Auto Activate Move Number",Description="Enter 1–5.",Default="1",Callback=function(v)
     local n=tonumber(v); if n and n>=1 and n<=5 then aaState.moveNumber=n end
 end})
-SilentTab:Slider({
-    Title = "Auto Activate Distance",
-    Step = 0.5,
-    Value = {Min=3, Max=70, Default=10},
-    Callback = function(v) aaState.distance=v end
-})
+SilentTab:Slider({Title="Auto Activate Distance",Step=0.5,Value={Min=3,Max=70,Default=10},Callback=function(v) aaState.distance=v end})
 SilentTab:Toggle({Title="Auto Activate Toggle",Description="Hold M2 to activate.",Default=false,Callback=function(v) aaState.toggleState=v end})
 UserInputService.InputBegan:Connect(function(inp,bg) if bg then return end; if inp.UserInputType==Enum.UserInputType.MouseButton2 then aaState.db=false end end)
 UserInputService.InputEnded:Connect(function(inp,bg) if bg then return end; if inp.UserInputType==Enum.UserInputType.MouseButton2 then aaState.db=true end end)
@@ -350,9 +303,6 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Auto Line Up
--- ══════════════════════════════════════════════════════════════════════════
 SilentTab:Section({Title="Auto Line Up Features"})
 SilentTab:Paragraph({Title="Info",Desc="Stand on a pad, hold M2 to lock camera to the target."})
 
@@ -419,7 +369,6 @@ local function buildLineUps(entries,colorList,aBase,bBase,split)
     end
 end
 
--- Sae Line Ups
 local saeEnabled=false
 SilentTab:Toggle({Title="Sae Line Ups",Description="Drive Shot line ups.",Default=false,Callback=function(v)
     saeEnabled=v; notify("Sae Line Ups",v and "Enabled." or "Disabled.",3)
@@ -429,20 +378,19 @@ SilentTab:Toggle({Title="Sae Line Ups",Description="Drive Shot line ups.",Defaul
         local aPos=map:FindFirstChild("Agoal").Position; local bPos=map:FindFirstChild("Bgoal").Position
         local cols={Color3.fromRGB(255,0,0),Color3.fromRGB(0,255,0),Color3.fromRGB(255,255,0),Color3.fromRGB(0,0,255)}
         local entries={
-            {pad=Vector3.new(80,-10,-162),  target=Vector3.new(20,44,-26)},
-            {pad=Vector3.new(172,-10,-44),  target=Vector3.new(110,13,-15)},
-            {pad=Vector3.new(0,-10,-211),   target=Vector3.new(32,85,-14)},
-            {pad=Vector3.new(-78,-10,-133), target=Vector3.new(82,41,-18)},
-            {pad=Vector3.new(-130,-9,166),  target=Vector3.new(-50,52,16)},
-            {pad=Vector3.new(-190,-9,66),   target=Vector3.new(-90,30,16)},
-            {pad=Vector3.new(72,-9,164),    target=Vector3.new(-57,56,16)},
-            {pad=Vector3.new(-1,-9,222),    target=Vector3.new(-6,76,55)},
+            {pad=Vector3.new(80,-10,-162),target=Vector3.new(20,44,-26)},
+            {pad=Vector3.new(172,-10,-44),target=Vector3.new(110,13,-15)},
+            {pad=Vector3.new(0,-10,-211),target=Vector3.new(32,85,-14)},
+            {pad=Vector3.new(-78,-10,-133),target=Vector3.new(82,41,-18)},
+            {pad=Vector3.new(-130,-9,166),target=Vector3.new(-50,52,16)},
+            {pad=Vector3.new(-190,-9,66),target=Vector3.new(-90,30,16)},
+            {pad=Vector3.new(72,-9,164),target=Vector3.new(-57,56,16)},
+            {pad=Vector3.new(-1,-9,222),target=Vector3.new(-6,76,55)},
         }
         buildLineUps(entries,cols,aPos,bPos,4)
     end
 end})
 
--- Kaiser Line Ups
 SilentTab:Toggle({Title="Kaiser Line Ups",Description="Impact Magnus line ups.",Default=false,Callback=function(v)
     notify("Kaiser Line Ups",v and "Enabled." or "Disabled.",3); clearLineUps()
     if v then
@@ -450,13 +398,13 @@ SilentTab:Toggle({Title="Kaiser Line Ups",Description="Impact Magnus line ups.",
         local aPos=map:FindFirstChild("Agoal").Position; local bPos=map:FindFirstChild("Bgoal").Position
         local cols={Color3.fromRGB(255,0,0),Color3.fromRGB(0,255,0),Color3.fromRGB(255,255,0),Color3.fromRGB(0,0,255),Color3.fromRGB(255,0,255),Color3.fromRGB(255,182,193),Color3.fromRGB(255,0,0),Color3.fromRGB(0,255,0),Color3.fromRGB(255,255,0),Color3.fromRGB(0,0,255),Color3.fromRGB(255,0,255),Color3.fromRGB(255,182,193)}
         local entries={
-            {pad=Vector3.new(-3,-9,263),   target=Vector3.new(8,112,16)},
-            {pad=Vector3.new(120,-9,221),  target=Vector3.new(49,75,15)},
-            {pad=Vector3.new(230,-9,68),   target=Vector3.new(116,39,21)},
-            {pad=Vector3.new(207,-9,15),   target=Vector3.new(91,29,-11)},
-            {pad=Vector3.new(39,-9,117),   target=Vector3.new(24,10,13)},
-            {pad=Vector3.new(-134,-9,148), target=Vector3.new(87,57,19)},
-            {pad=Vector3.new(-1,-10,-250), target=Vector3.new(-12,115,-13)},
+            {pad=Vector3.new(-3,-9,263),target=Vector3.new(8,112,16)},
+            {pad=Vector3.new(120,-9,221),target=Vector3.new(49,75,15)},
+            {pad=Vector3.new(230,-9,68),target=Vector3.new(116,39,21)},
+            {pad=Vector3.new(207,-9,15),target=Vector3.new(91,29,-11)},
+            {pad=Vector3.new(39,-9,117),target=Vector3.new(24,10,13)},
+            {pad=Vector3.new(-134,-9,148),target=Vector3.new(87,57,19)},
+            {pad=Vector3.new(-1,-10,-250),target=Vector3.new(-12,115,-13)},
             {pad=Vector3.new(-231,-10,-60),target=Vector3.new(-142,24,-22)},
             {pad=Vector3.new(-120,-10,-215),target=Vector3.new(-53,65,-18)},
             {pad=Vector3.new(-212,-10,-15),target=Vector3.new(-89,33,12)},
@@ -467,7 +415,6 @@ SilentTab:Toggle({Title="Kaiser Line Ups",Description="Impact Magnus line ups.",
     end
 end})
 
--- Yukimiya Line Ups
 SilentTab:Toggle({Title="Yukimiya Line Ups",Description="Gyro Shot line ups.",Default=false,Callback=function(v)
     notify("Yukimiya Line Ups",v and "Enabled." or "Disabled.",3); clearLineUps()
     if v then
@@ -475,20 +422,19 @@ SilentTab:Toggle({Title="Yukimiya Line Ups",Description="Gyro Shot line ups.",De
         local aPos=map:FindFirstChild("Agoal").Position; local bPos=map:FindFirstChild("Bgoal").Position
         local cols={Color3.fromRGB(255,0,0),Color3.fromRGB(255,255,0),Color3.fromRGB(0,0,255),Color3.fromRGB(0,255,0),Color3.fromRGB(255,0,0),Color3.fromRGB(0,255,0),Color3.fromRGB(255,255,0),Color3.fromRGB(0,0,255)}
         local entries={
-            {pad=Vector3.new(-1,-9,222),   target=Vector3.new(-57,58,13)},
-            {pad=Vector3.new(-82,-9,182),  target=Vector3.new(-51,74,14)},
-            {pad=Vector3.new(130,-9,136),  target=Vector3.new(-114,95,13)},
-            {pad=Vector3.new(63,-9,192),   target=Vector3.new(-104,128,13)},
-            {pad=Vector3.new(6,-10,-206),  target=Vector3.new(65,124,-12)},
+            {pad=Vector3.new(-1,-9,222),target=Vector3.new(-57,58,13)},
+            {pad=Vector3.new(-82,-9,182),target=Vector3.new(-51,74,14)},
+            {pad=Vector3.new(130,-9,136),target=Vector3.new(-114,95,13)},
+            {pad=Vector3.new(63,-9,192),target=Vector3.new(-104,128,13)},
+            {pad=Vector3.new(6,-10,-206),target=Vector3.new(65,124,-12)},
             {pad=Vector3.new(-59,-10,-201),target=Vector3.new(123,148,-12)},
-            {pad=Vector3.new(68,-10,-198), target=Vector3.new(61,105,-12)},
+            {pad=Vector3.new(68,-10,-198),target=Vector3.new(61,105,-12)},
             {pad=Vector3.new(-134,-10,-113),target=Vector3.new(4,55,-53)},
         }
         buildLineUps(entries,cols,bPos,aPos,4)
     end
 end})
 
--- Rin Line Ups
 SilentTab:Toggle({Title="Rin Line Ups",Description="Curve Shot line ups.",Default=false,Callback=function(v)
     notify("Rin Line Ups",v and "Enabled." or "Disabled.",3); clearLineUps()
     if v then
@@ -496,20 +442,19 @@ SilentTab:Toggle({Title="Rin Line Ups",Description="Curve Shot line ups.",Defaul
         local aPos=map:FindFirstChild("Agoal").Position; local bPos=map:FindFirstChild("Bgoal").Position
         local cols={Color3.fromRGB(255,0,0),Color3.fromRGB(0,255,0),Color3.fromRGB(255,255,0),Color3.fromRGB(0,0,255),Color3.fromRGB(255,0,0),Color3.fromRGB(0,255,0),Color3.fromRGB(255,255,0),Color3.fromRGB(0,0,255)}
         local entries={
-            {pad=Vector3.new(73,-9,200),   target=Vector3.new(5,67,54)},
-            {pad=Vector3.new(-2,-9,215),   target=Vector3.new(0,88,54)},
-            {pad=Vector3.new(-84,-9,160),  target=Vector3.new(-29,13,26)},
-            {pad=Vector3.new(-169,-9,105), target=Vector3.new(-29,24,26)},
-            {pad=Vector3.new(-1,-10,-213), target=Vector3.new(-1,77,-53)},
+            {pad=Vector3.new(73,-9,200),target=Vector3.new(5,67,54)},
+            {pad=Vector3.new(-2,-9,215),target=Vector3.new(0,88,54)},
+            {pad=Vector3.new(-84,-9,160),target=Vector3.new(-29,13,26)},
+            {pad=Vector3.new(-169,-9,105),target=Vector3.new(-29,24,26)},
+            {pad=Vector3.new(-1,-10,-213),target=Vector3.new(-1,77,-53)},
             {pad=Vector3.new(-70,-10,-196),target=Vector3.new(9,71,-53)},
-            {pad=Vector3.new(81,-10,-114), target=Vector3.new(30,11,-20)},
-            {pad=Vector3.new(163,-10,-91), target=Vector3.new(30,26,-20)},
+            {pad=Vector3.new(81,-10,-114),target=Vector3.new(30,11,-20)},
+            {pad=Vector3.new(163,-10,-91),target=Vector3.new(30,26,-20)},
         }
         buildLineUps(entries,cols,bPos,aPos,4)
     end
 end})
 
--- Rin Flow Line Ups
 SilentTab:Toggle({Title="Rin Flow Line Ups",Description="Kill Shot line ups.",Default=false,Callback=function(v)
     notify("Rin Flow Line Ups",v and "Enabled." or "Disabled.",3); clearLineUps()
     if v then
@@ -517,18 +462,15 @@ SilentTab:Toggle({Title="Rin Flow Line Ups",Description="Kill Shot line ups.",De
         local aPos=map:FindFirstChild("Agoal").Position; local bPos=map:FindFirstChild("Bgoal").Position
         local cols={Color3.fromRGB(147,112,219),Color3.fromRGB(255,0,0),Color3.fromRGB(147,112,219),Color3.fromRGB(255,0,0)}
         local entries={
-            {pad=Vector3.new(158,-9,321),   target=Vector3.new(-12,125,54)},
-            {pad=Vector3.new(-187,-9,290),  target=Vector3.new(-29,83,20)},
+            {pad=Vector3.new(158,-9,321),target=Vector3.new(-12,125,54)},
+            {pad=Vector3.new(-187,-9,290),target=Vector3.new(-29,83,20)},
             {pad=Vector3.new(-117,-10,-320),target=Vector3.new(14,96,-53)},
-            {pad=Vector3.new(198,-10,-265), target=Vector3.new(30,90,-13)},
+            {pad=Vector3.new(198,-10,-265),target=Vector3.new(30,90,-13)},
         }
         buildLineUps(entries,cols,bPos,aPos,2)
     end
 end})
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Auto Position
--- ══════════════════════════════════════════════════════════════════════════
 SilentTab:Section({Title="Auto Position Features"})
 local apState={CF=false,GK=false,CFConn=nil,GKConn=nil}
 local function fireCFPackets()
@@ -558,35 +500,29 @@ SilentTab:Toggle({Title="Auto Pick GK",Description="Automatically picks goalkeep
     else if apState.GKConn then apState.GKConn:Disconnect(); apState.GKConn=nil end end
 end})
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Auto Goalkeeper
--- ══════════════════════════════════════════════════════════════════════════
 SilentTab:Section({Title="Auto Goalkeeper"})
 SilentTab:Paragraph({Title="Info",Desc="Celeron's: V to toggle. Daffy's: F4 to disable."})
 
--- Celeron's Auto GK Enhanced
 SilentTab:Button({Title="Celeron's Auto GK Enhanced",Description="Click V to toggle, reset to disable.",Callback=function()
     task.spawn(function()
         local lp=Players.LocalPlayer
         local char=lp.Character or lp.CharacterAdded:Wait()
         local hum=char:WaitForChild("Humanoid")
         local hrp=char:WaitForChild("HumanoidRootPart")
-
         local gui=Instance.new("ScreenGui"); gui.ResetOnSpawn=false; gui.Parent=lp.PlayerGui
         local dot=Instance.new("Frame"); dot.Size=UDim2.new(0.012,0,0.025,0)
         dot.Position=UDim2.new(0.988,0,0.975,0); dot.BorderSizePixel=0; dot.Parent=gui
-
         local gk={
-            enabled=true, pause=false, look=nil,
-            ballHolder=ReplicatedStorage.workspace.ballHolder, lastHolder=nil,
+            enabled=true,pause=false,look=nil,
+            ballHolder=ReplicatedStorage.workspace.ballHolder,lastHolder=nil,
             remote=ReplicatedStorage:WaitForChild("ByteNetReliable"),
             map=workspace:WaitForChild("map"),
             GRAVITY=Vector3.new(0,-workspace.Gravity,0),
-            velSmooth=Vector3.zero, lastVel=Vector3.zero,
+            velSmooth=Vector3.zero,lastVel=Vector3.zero,
             tackleArgs={buffer.fromstring(buffers.base),{{"tackle"}}},
             emptyBuffer=buffer.fromstring(buffers["grabball"]),
-            magnetBurstActive=false, tackle_radius=50,
-            terrain=workspace.Terrain, cachedBall=nil,
+            magnetBurstActive=false,tackle_radius=50,
+            terrain=workspace.Terrain,cachedBall=nil,
             renderConn=nil,inputConn=nil,holderConn=nil,
             ballAdded=nil,ballRemoved=nil,diedConn=nil,charAddedConn=nil
         }
@@ -596,7 +532,6 @@ SilentTab:Button({Title="Celeron's Auto GK Enhanced",Description="Click V to tog
         gk.look.Responsiveness=1200; gk.look.MaxTorque=math.huge
         gk.look.Enabled=false; gk.look.Parent=hrp
         gk.lastHolder=gk.ballHolder.Value
-
         local function updateDot() dot.BackgroundColor3=gk.enabled and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0) end
         local function cleanup()
             gk.enabled=false
@@ -606,14 +541,12 @@ SilentTab:Button({Title="Celeron's Auto GK Enhanced",Description="Click V to tog
             if gk.look then gk.look:Destroy() end
             if gui then gui:Destroy() end
         end
-
         gk.holderConn=gk.ballHolder.Changed:Connect(function(cur)
             if gk.lastHolder==char and cur==nil then gk.pause=true; task.delay(2.6,function() gk.pause=false end) end
             gk.lastHolder=cur
         end)
         gk.ballAdded=gk.terrain.ChildAdded:Connect(function(c) if c.Name=="Ball" then gk.cachedBall=c end end)
         gk.ballRemoved=gk.terrain.ChildRemoved:Connect(function(c) if c==gk.cachedBall then gk.cachedBall=nil end end)
-
         local function predictImpact(pos,vel,accel,goal)
             if not goal then return nil end
             local n=goal.CFrame.LookVector; local rel=pos-goal.CFrame.Position
@@ -623,7 +556,6 @@ SilentTab:Button({Title="Celeron's Auto GK Enhanced",Description="Click V to tog
             local sd=math.sqrt(disc); local t1=(-b-sd)/(2*a); local t2=(-b+sd)/(2*a)
             return (t1>0 and t1) or (t2>0 and t2)
         end
-
         gk.renderConn=RunService.RenderStepped:Connect(function(dt)
             if not gk.enabled then return end
             local ball=gk.cachedBall
@@ -661,12 +593,11 @@ SilentTab:Button({Title="Celeron's Auto GK Enhanced",Description="Click V to tog
     end)
 end})
 
--- Daffy's Auto GK
 SilentTab:Button({Title="Daffy's Auto GK",Description="Reset or click F4 to disable.",Callback=function()
     local gkS={
-        plr=Players.LocalPlayer, char=nil, cam=workspace.CurrentCamera, hum=nil, hrp=nil,
-        guii=nil, cambu=nil, gerg=nil, dot=nil, kind="", align=nil,
-        onn=true, pause=false, ballHolder=nil, lastHolder=nil, remote=nil, con=nil, kill=nil
+        plr=Players.LocalPlayer,char=nil,cam=workspace.CurrentCamera,hum=nil,hrp=nil,
+        guii=nil,cambu=nil,gerg=nil,dot=nil,kind="",align=nil,
+        onn=true,pause=false,ballHolder=nil,lastHolder=nil,remote=nil,con=nil,kill=nil
     }
     gkS.char=gkS.plr.Character or gkS.plr.CharacterAdded:Wait()
     gkS.hum=gkS.char:WaitForChild("Humanoid"); gkS.hrp=gkS.char:WaitForChild("HumanoidRootPart")
@@ -727,9 +658,10 @@ SilentTab:Button({Title="Daffy's Auto GK",Description="Reset or click F4 to disa
     cleanup(); gkS.kill:Disconnect(); gkS.con:Disconnect()
 end})
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Air Dribble
--- ══════════════════════════════════════════════════════════════════════════
+SilentTab:Button({Title="Shachoko GK Catch",Description="Req. GK Position. Makes it almost impossible to be scored on.",Callback=function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/Hr1HnK38"))()
+end})
+
 SilentTab:Section({Title="Air Dribble"})
 local airDribState={enabled=false}; local airBindKey=Enum.KeyCode.LeftAlt
 SilentTab:Toggle({Title="Air Dribble",Description="Kicks the ball forward and up.",Default=false,
@@ -749,12 +681,8 @@ UserInputService.InputBegan:Connect(function(inp,gp)
     ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring(buffers["base"]),{{"kick",28,false,vector.create(dir.X*0.75,0.65,dir.Z*0.75)}})
 end)
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Other Features
--- ══════════════════════════════════════════════════════════════════════════
 SilentTab:Section({Title="Other Silent Features"})
 
--- Auto QTE
 local qteState={enabled=false}
 local function isShadeOfGreen(c) return c.G>c.R and c.G>c.B end
 local function numToKey(t)
@@ -779,7 +707,6 @@ end)
 SilentTab:Toggle({Title="Auto QuickTimeEvent",Description="Automatically does QTEs.",Default=false,
     Callback=function(v) qteState.enabled=v; notify("AutoQTE",v and "Enabled." or "Disabled.") end})
 
--- Auto Formless (Bind Y)
 local formlessState={enabled=false,inputConnection=nil}
 SilentTab:Toggle({Title="Auto Formless (Bind: Y)",Description="Shidou only formless macro.",Default=false,Callback=function(v)
     formlessState.enabled=v; notify("Auto Formless",v and "Enabled." or "Disabled.",2)
@@ -808,7 +735,6 @@ SilentTab:Toggle({Title="Auto Formless (Bind: Y)",Description="Shidou only forml
     end
 end})
 
--- No Cutscene
 local cutsceneState={nocutscene=false}
 SilentTab:Toggle({Title="No Cutscene",Description="Disables cutscenes.",Default=false,Callback=function(v)
     cutsceneState.nocutscene=v; notify("No Cutscene",v and "Enabled." or "Disabled.",1)
@@ -825,7 +751,6 @@ SilentTab:Toggle({Title="No Cutscene",Description="Disables cutscenes.",Default=
     end
 end})
 
--- IFrame Indicator
 local iframeState={enabled=false,activeDots={},offset=Vector3.new(0,3,0),updateInterval=0.2}
 SilentTab:Toggle({Title="IFrame Indicator",Description="Green=Off, Red=On.",Default=false,Callback=function(v)
     iframeState.enabled=v; notify("IFrame Indicator",v and "Enabled." or "Disabled.",3)
@@ -865,9 +790,6 @@ SilentTab:Button({Title="Fix Duplicate Ball",Description="Removes duplicate ball
     end
 end})
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB  ─ Mobile Features
--- ══════════════════════════════════════════════════════════════════════════
 SilentTab:Section({Title="Mobile Silent Features"})
 SilentTab:Paragraph({Title="Info",Desc="Silent features ported to mobile."})
 
@@ -952,7 +874,7 @@ SilentTab:Button({Title="Air Dribble (Mobile Button)",Description="Click again t
 end})
 
 -- ══════════════════════════════════════════════════════════════════════════
---  BLATANT TAB  ─ Metavision
+--  BLATANT TAB
 -- ══════════════════════════════════════════════════════════════════════════
 BlatantTab:Section({Title="Metavision Features"})
 BlatantTab:Button({Title="Metavision V1",Description="Emulates Isagi's Metavision.",
@@ -960,9 +882,6 @@ BlatantTab:Button({Title="Metavision V1",Description="Emulates Isagi's Metavisio
 BlatantTab:Button({Title="Metavision V2",Description="Use below 1:30 on clock, click puzzle piece to activate.",
     Callback=function() loadstring(game:HttpGet("https://pastebin.com/raw/HfpQBAsF"))() end})
 
--- ══════════════════════════════════════════════════════════════════════════
---  BLATANT TAB  ─ Ball Features
--- ══════════════════════════════════════════════════════════════════════════
 BlatantTab:Section({Title="Ball Features"})
 
 local autoGoalState={enabled=false,conn=nil}
@@ -1070,7 +989,6 @@ BlatantTab:Button({Title="Bring Ball",Description="Steals ball then teleports ba
     end)
 end})
 
--- ── No Cooldown ───────────────────────────────────────────────────────────
 BlatantTab:Section({Title="No Cooldown Features (PC Only)"})
 local dashState={ForwardRushEnabled=false,SideDashEnabled=false,rushing=false,sideDashing=false,dashBindsSetup=false,lastForwardRush=0,lastSideDash=0,character=nil,humanoid=nil,rootPart=nil}
 local FWD_ANIM="rbxassetid://79394729551302"; local SR_ANIM="rbxassetid://114016332539655"; local SL_ANIM="rbxassetid://100207093237932"
@@ -1121,7 +1039,6 @@ if not dashState.dashBindsSetup then dashState.dashBindsSetup=true
     end)
 end
 
--- ── Break Ball ────────────────────────────────────────────────────────────
 BlatantTab:Section({Title="Break Ball Features"})
 BlatantTab:Button({Title="Break Ball (Player Method, Req. Ball)",Description="Goes extremely high up.",Callback=function()
     local base=Vector3.new(-190,14864566,492)
@@ -1142,7 +1059,6 @@ BlatantTab:Button({Title="Permanent Break Ball (Req. Ball)",Description="Places 
     workspace.FallenPartsDestroyHeight=-50000; player.Character:SetPrimaryPartCFrame(CFrame.new(1,-49999,1))
 end})
 
--- ── Auto Goal Sequences ───────────────────────────────────────────────────
 BlatantTab:Section({Title="Auto Goal Features"})
 BlatantTab:Button({Title="Isagi U-20 Goal",Description="Teleports to designated area and uses skill3.",Callback=function()
     local char=player.Character; if not char or not char:FindFirstChild("HumanoidRootPart") then return end
@@ -1181,7 +1097,6 @@ BlatantTab:Button({Title="Nagi Dream Goal",Description="Nagi's control move auto
     task.wait(0.2); ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring(buffers["base"]),{{"skill2",true}})
 end})
 
--- ── Fun Features ──────────────────────────────────────────────────────────
 BlatantTab:Section({Title="Fun Features"})
 local invisAnimId="rbxassetid://113098409724280"; local safety=Vector3.new(-540,3,1274)
 local invisState={active=false,character=nil,humanoid=nil,animationTrack=nil}
@@ -1248,7 +1163,6 @@ BlatantTab:Button({Title="Invisibility V2 (Clone Method)",Description="Makes you
     player.CharacterRemoving:Connect(function() enabled=false; if teleportconn then teleportconn:Disconnect() end; if speedconn then speedconn:Disconnect() end; if clone then clone:Destroy() end end)
 end})
 
--- Infinite Range Passing
 local passingState={InfiniteRangePassing=false,busy=false}
 local mouse=player:GetMouse(); local Camera=workspace.CurrentCamera
 local keyToSkill={[Enum.KeyCode.One]="skill1",[Enum.KeyCode.Two]="skill2",[Enum.KeyCode.Three]="skill3",[Enum.KeyCode.Four]="skill4"}
@@ -1300,7 +1214,6 @@ BlatantTab:Button({Title="Goalkeeper Anywhere (Rejoin to disable)",Description="
     hookfunction(env.checkGK,function(...) return true end)
 end})
 
--- ── Other Blatant Features ────────────────────────────────────────────────
 BlatantTab:Section({Title="Other Blatant Features"})
 local blatantState={enabled=false,loopConn=nil}
 local function setCollide(state)
@@ -1341,7 +1254,6 @@ BlatantTab:Toggle({Title="Spam Brick Sound (5v5 + GK Only)",Description="Self ex
     end
 end})
 
--- ── Trap Helper ───────────────────────────────────────────────────────────
 BlatantTab:Section({Title="Trap Helper"})
 BlatantTab:Paragraph({Title="Info",Desc="Automatically moves toward ball during trap moves."})
 local trapAnims={"rbxassetid://73387016994281","rbxassetid://101043441232233","rbxassetid://96593185131882","rbxassetid://116422938520670","rbxassetid://90734196141468","rbxassetid://85349589701503","rbxassetid://120351399679118"}
@@ -1406,18 +1318,8 @@ UserInputService.InputBegan:Connect(function(inp,gp)
     end)
 end)
 BlatantTab:Toggle({Title="Trap Helper",Description="Automatically moves toward ball during trap moves.",Default=false,Callback=function(v) trapState.enabled=v; notify("Trap Helper",v and "Enabled." or "Disabled.") end})
-BlatantTab:Slider({
-    Title = "Trap Helper Max Distance",
-    Step = 1,
-    Value = {Min=50, Max=200, Default=50},
-    Callback = function(v) trapMaxDist=v end
-})
-BlatantTab:Slider({
-    Title = "Trap Helper Speed",
-    Step = 1,
-    Value = {Min=50, Max=1000, Default=50},
-    Callback = function(v) trapSpeed=v end
-})
+BlatantTab:Slider({Title="Trap Helper Max Distance",Step=1,Value={Min=50,Max=200,Default=50},Callback=function(v) trapMaxDist=v end})
+BlatantTab:Slider({Title="Trap Helper Speed",Step=1,Value={Min=50,Max=1000,Default=50},Callback=function(v) trapSpeed=v end})
 
 -- ── Distance Move Buffs ───────────────────────────────────────────────────
 BlatantTab:Section({Title="Distance Move Buffs"})
@@ -1444,8 +1346,21 @@ local DashConfigs={
     MachCutIn={animIds={["rbxassetid://133945265328817"]=true,["rbxassetid://88448030655006"]=true},sliderVar="machDist",duration=0.15,cooldown=0.15,wait=0.625},
     GoldenZone={animId="rbxassetid://132426354821688",sliderVar="goldenDist",duration=2.0,cooldown=0.15,requiresBall=true,wait=0.15},
     Devour={animId="rbxassetid://117921992582675",sliderVar="devourMaxDist",speed=150,cooldown=0.15,isUnlimited=true,wait=0.2},
+    -- Trap Distance Buffs
+    TrapAnim1={animId="rbxassetid://73387016994281",sliderVar="trapDist",speedVar="trapSpeed",isTrap=true,duration=0.8,cooldown=0.15,wait=0.05},
+    TrapAnim2={animId="rbxassetid://101043441232233",sliderVar="trapDist",speedVar="trapSpeed",isTrap=true,duration=0.8,cooldown=0.15,wait=0.05},
+    TrapAnim3={animId="rbxassetid://96593185131882",sliderVar="trapDist",speedVar="trapSpeed",isTrap=true,duration=0.8,cooldown=0.15,wait=0.05},
+    TrapAnim4={animId="rbxassetid://116422938520670",sliderVar="trapDist",speedVar="trapSpeed",isTrap=true,duration=0.8,cooldown=0.15,wait=0.05},
+    TrapAnim5={animId="rbxassetid://90734196141468",sliderVar="trapDist",speedVar="trapSpeed",isTrap=true,duration=0.8,cooldown=0.15,wait=0.05},
+    TrapAnim6={animId="rbxassetid://85349589701503",sliderVar="trapDist",speedVar="trapSpeed",isTrap=true,duration=0.8,cooldown=0.15,wait=0.05},
+    TrapAnim7={animId="rbxassetid://120351399679118",sliderVar="trapDist",speedVar="trapSpeed",isTrap=true,duration=0.8,cooldown=0.15,wait=0.05},
 }
-local Distances={}; for _,cfg in pairs(DashConfigs) do Distances[cfg.sliderVar]=0 end
+
+local Distances={}
+for _,cfg in pairs(DashConfigs) do Distances[cfg.sliderVar]=0 end
+Distances.trapSpeed=100
+Distances.trapVertical=0
+
 local ActiveDashes={}; local cachedHRP=nil; local dRenderConn=nil
 local ZERO=Vector3.new(); local DEFAULT_DIR=Vector3.new(0,0,1)
 local function updateDashes(dt)
@@ -1455,8 +1370,15 @@ local function updateDashes(dt)
         local step=dash.cfg.isUnlimited and (dash.speed*dt) or math.min(dash.speed*dt,dash.remaining)
         local look=hrp.CFrame.LookVector; local dir=Vector3.new(look.X,0,look.Z)
         if dir.Magnitude<0.01 then dir=DEFAULT_DIR else dir=dir.Unit end
+
+        local newY=hrp.Position.Y
+        if dash.cfg.isTrap then
+            local vertScale=Distances.trapVertical/100
+            newY=newY+(vertScale*step)
+        end
+
         local newPos=hrp.Position+dir*step
-        hrp.CFrame=CFrame.new(newPos.X,hrp.Position.Y,newPos.Z)*CFrame.new(ZERO,dir)
+        hrp.CFrame=CFrame.new(newPos.X,newY,newPos.Z)*CFrame.new(ZERO,dir)
         dash.remaining=dash.remaining-step
         if dash.remaining<=0 then table.remove(ActiveDashes,i) end
     end
@@ -1471,7 +1393,11 @@ local function startDash(hrp,cfg,track)
         if cfg.isUnlimited then
             dash.remaining=math.huge; dash.speed=cfg.speed
             if track then local sc; sc=track.Stopped:Connect(function() dash.remaining=0; if sc then sc:Disconnect() end end) end
-        else dash.speed=dist/cfg.duration end
+        elseif cfg.speedVar then
+            dash.speed=Distances[cfg.speedVar]
+        else
+            dash.speed=dist/cfg.duration
+        end
         table.insert(ActiveDashes,dash); startUpdateIfNeeded()
     end)
 end
@@ -1494,140 +1420,45 @@ end
 if player.Character then setupDashChar(player.Character) end; player.CharacterAdded:Connect(setupDashChar)
 
 BlatantTab:Paragraph({Title="Universal",Desc="Movement buffs that apply to all characters."})
-BlatantTab:Slider({
-    Title = "Tackle Distance",
-    Step = 1,
-    Value = {Min=0, Max=75, Default=0},
-    Callback = function(v) Distances.tackleDist=v end
-})
-BlatantTab:Slider({
-    Title = "Rush Distance",
-    Step = 1,
-    Value = {Min=0, Max=75, Default=0},
-    Callback = function(v) Distances.rushDist=v end
-})
-BlatantTab:Slider({
-    Title = "GK Front Dive Distance",
-    Step = 1,
-    Value = {Min=0, Max=75, Default=0},
-    Callback = function(v) Distances.gkDist=v end
-})
+BlatantTab:Slider({Title="Tackle Distance",Step=1,Value={Min=0,Max=75,Default=0},Callback=function(v) Distances.tackleDist=v end})
+BlatantTab:Slider({Title="Rush Distance",Step=1,Value={Min=0,Max=75,Default=0},Callback=function(v) Distances.rushDist=v end})
+BlatantTab:Slider({Title="GK Front Dive Distance",Step=1,Value={Min=0,Max=75,Default=0},Callback=function(v) Distances.gkDist=v end})
 BlatantTab:Paragraph({Title="Isagi",Desc=""})
-BlatantTab:Slider({
-    Title = "Naruhaya Footwork Distance",
-    Step = 1,
-    Value = {Min=0, Max=200, Default=0},
-    Callback = function(v) Distances.naruhayaDist=v end
-})
+BlatantTab:Slider({Title="Naruhaya Footwork Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.naruhayaDist=v end})
 BlatantTab:Paragraph({Title="NEL Isagi",Desc=""})
-BlatantTab:Slider({
-    Title = "Raumdeuter Distance",
-    Step = 1,
-    Value = {Min=0, Max=200, Default=0},
-    Callback = function(v) Distances.raumDist=v end
-})
+BlatantTab:Slider({Title="Raumdeuter Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.raumDist=v end})
 BlatantTab:Paragraph({Title="Shidou",Desc=""})
-BlatantTab:Slider({
-    Title = "Draconic Rush Distance",
-    Step = 1,
-    Value = {Min=0, Max=200, Default=0},
-    Callback = function(v) Distances.dracDist=v end
-})
+BlatantTab:Slider({Title="Draconic Rush Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.dracDist=v end})
 BlatantTab:Paragraph({Title="Bachira",Desc=""})
-BlatantTab:Slider({
-    Title = "Step Overs Distance",
-    Step = 1,
-    Value = {Min=0, Max=200, Default=0},
-    Callback = function(v) Distances.stepDist=v end
-})
+BlatantTab:Slider({Title="Step Overs Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.stepDist=v end})
 BlatantTab:Paragraph({Title="Kaiser",Desc=""})
-BlatantTab:Slider({
-    Title = "Off The Ball Distance",
-    Step = 1,
-    Value = {Min=0, Max=200, Default=0},
-    Callback = function(v) Distances.kaiserDist=v end
-})
+BlatantTab:Slider({Title="Off The Ball Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.kaiserDist=v end})
 BlatantTab:Paragraph({Title="Rin",Desc=""})
-BlatantTab:Slider({
-    Title = "Occlusion Break Distance",
-    Step = 1,
-    Value = {Min=0, Max=200, Default=0},
-    Callback = function(v) Distances.occlusionDist=v end
-})
+BlatantTab:Slider({Title="Occlusion Break Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.occlusionDist=v end})
 BlatantTab:Paragraph({Title="Gagamaru",Desc=""})
-BlatantTab:Slider({
-    Title = "Diving Header Distance",
-    Step = 1,
-    Value = {Min=0, Max=125, Default=0},
-    Callback = function(v) Distances.divingDist=v end
-})
+BlatantTab:Slider({Title="Diving Header Distance",Step=1,Value={Min=0,Max=125,Default=0},Callback=function(v) Distances.divingDist=v end})
 BlatantTab:Paragraph({Title="Aiku",Desc=""})
-BlatantTab:Slider({
-    Title = "Reflex Tackle Distance",
-    Step = 1,
-    Value = {Min=0, Max=125, Default=0},
-    Callback = function(v) Distances.reflexDist=v end
-})
+BlatantTab:Slider({Title="Reflex Tackle Distance",Step=1,Value={Min=0,Max=125,Default=0},Callback=function(v) Distances.reflexDist=v end})
 BlatantTab:Paragraph({Title="Yukimiya",Desc=""})
-BlatantTab:Slider({
-    Title = "Speed Dribble Distance",
-    Step = 1,
-    Value = {Min=0, Max=200, Default=0},
-    Callback = function(v) Distances.speedDist=v end
-})
-BlatantTab:Slider({
-    Title = "Cut In Distance",
-    Step = 1,
-    Value = {Min=0, Max=200, Default=0},
-    Callback = function(v) Distances.cutDist=v end
-})
+BlatantTab:Slider({Title="Speed Dribble Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.speedDist=v end})
+BlatantTab:Slider({Title="Cut In Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.cutDist=v end})
 BlatantTab:Paragraph({Title="Kunigami",Desc=""})
-BlatantTab:Slider({
-    Title = "Hero's Instinct Distance",
-    Step = 1,
-    Value = {Min=0, Max=300, Default=0},
-    Callback = function(v) Distances.instinctDist=v end
-})
+BlatantTab:Slider({Title="Hero's Instinct Distance",Step=1,Value={Min=0,Max=300,Default=0},Callback=function(v) Distances.instinctDist=v end})
 BlatantTab:Paragraph({Title="Kurona",Desc=""})
-BlatantTab:Slider({
-    Title = "Close Quarter Dribble Distance",
-    Step = 1,
-    Value = {Min=0, Max=250, Default=0},
-    Callback = function(v) Distances.quarterDist=v end
-})
+BlatantTab:Slider({Title="Close Quarter Dribble Distance",Step=1,Value={Min=0,Max=250,Default=0},Callback=function(v) Distances.quarterDist=v end})
 BlatantTab:Paragraph({Title="Don Lorenzo",Desc=""})
-BlatantTab:Slider({
-    Title = "Zombie Dribble Distance",
-    Step = 1,
-    Value = {Min=0, Max=250, Default=0},
-    Callback = function(v) Distances.zombDist=v end
-})
+BlatantTab:Slider({Title="Zombie Dribble Distance",Step=1,Value={Min=0,Max=250,Default=0},Callback=function(v) Distances.zombDist=v end})
 BlatantTab:Paragraph({Title="Barou",Desc=""})
-BlatantTab:Slider({
-    Title = "King's Path Distance",
-    Step = 1,
-    Value = {Min=0, Max=750, Default=0},
-    Callback = function(v) Distances.kingsDist=v end
-})
-BlatantTab:Slider({
-    Title = "DEVOUR. Distance",
-    Step = 1,
-    Value = {Min=0, Max=500, Default=0},
-    Callback = function(v) Distances.devourMaxDist=v end
-})
+BlatantTab:Slider({Title="King's Path Distance",Step=1,Value={Min=0,Max=750,Default=0},Callback=function(v) Distances.kingsDist=v end})
+BlatantTab:Slider({Title="DEVOUR. Distance",Step=1,Value={Min=0,Max=500,Default=0},Callback=function(v) Distances.devourMaxDist=v end})
 BlatantTab:Paragraph({Title="Chigiri",Desc=""})
-BlatantTab:Slider({
-    Title = "Mach Cut-In Distance",
-    Step = 1,
-    Value = {Min=0, Max=200, Default=0},
-    Callback = function(v) Distances.machDist=v end
-})
-BlatantTab:Slider({
-    Title = "Golden Zone Distance (Req. Ball)",
-    Step = 1,
-    Value = {Min=0, Max=400, Default=0},
-    Callback = function(v) Distances.goldenDist=v end
-})
+BlatantTab:Slider({Title="Mach Cut-In Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.machDist=v end})
+BlatantTab:Slider({Title="Golden Zone Distance (Req. Ball)",Step=1,Value={Min=0,Max=400,Default=0},Callback=function(v) Distances.goldenDist=v end})
+BlatantTab:Paragraph({Title="Trap",Desc="Increases distance and speed during trap animations."})
+BlatantTab:Slider({Title="Trap Distance",Step=1,Value={Min=0,Max=500,Default=500},Callback=function(v) Distances.trapDist=v end})
+BlatantTab:Slider({Title="Trap Speed",Step=1,Value={Min=0,Max=1000,Default=100},Callback=function(v) Distances.trapSpeed=v end})
+BlatantTab:Slider({Title="Trap Vertical",Step=1,Value={Min=-100,Max=100,Default=0},Callback=function(v) Distances.trapVertical=v end})
+
 
 -- ══════════════════════════════════════════════════════════════════════════
 --  EXPLOITS TAB
@@ -1736,11 +1567,8 @@ for _,m in ipairs({
     {"Lore Sae Moveset (Req. Sae)","Rejoin to disable.","https://pastebin.com/raw/kMQ0v88u"},
 }) do MovesetsTab:Button({Title=m[1],Description=m[2],Callback=function() loadstring(game:HttpGet(m[3],true))() end}) end
 
-
--- ── Custom Movesets ───────────────────────────────────────────────────────
 MovesetsTab:Section({Title="Tze Movesets"})
 
--- DIO
 local _dioSrc = [[
 local plr = game.Players.LocalPlayer
 local cam = game.Workspace.CurrentCamera
@@ -1749,7 +1577,6 @@ local dio = game:GetService("ReplicatedStorage").Resources.dio
 
 local stopped = false
 
--- buffer string
 local buffers = {}
 loadstring(game:HttpGet("https://pastebin.com/raw/8XJh7dzh"))()
 repeat
@@ -1759,7 +1586,6 @@ for _, val in ipairs(game.Lighting:FindFirstChild("BUFFERSTRINGS"):GetChildren()
 	buffers[val.Name] = val.Value
 end
 game.Lighting:FindFirstChild("BUFFERSTRINGS"):Destroy()
---
 
 local objectnames = {}
 for _, obj in ipairs(dio:GetChildren()) do
@@ -1793,16 +1619,13 @@ end
 local function IsAnimationPlaying(character, animId)
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	if not humanoid then return false end
-
 	local animator = humanoid:FindFirstChildOfClass("Animator")
 	if not animator then return false end
-
 	for _, track in pairs(animator:GetPlayingAnimationTracks()) do
 		if track.Animation and track.Animation.AnimationId:find(tostring(animId)) then
 			return true, track
 		end
 	end
-
 	return false
 end
 
@@ -1818,7 +1641,6 @@ local function IsMoveOnCD(name)
 	local hotbar = plr.PlayerGui.Hotbar
 	if hotbar and hotbar.Backpack.Hotbar:FindFirstChild(name) then
 		local button = hotbar.Backpack.Hotbar:FindFirstChild(name)
-
 		if button.Cooldown.Visible == true then
 			return true
 		else
@@ -1832,7 +1654,6 @@ local function DoCDVisual(len, name)
 	local hotbar = plr.PlayerGui.Hotbar
 	if hotbar and hotbar.Backpack.Hotbar:FindFirstChild(name) then
 		local button = hotbar.Backpack.Hotbar:FindFirstChild(name)
-
 		button.Cooldown.Visible = true
 		button.Cooldown.Size = UDim2.new(1, 0, -1, 0)
 		game.TweenService:Create(button.Cooldown, TweenInfo.new(len, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 0, 0)}):Play()
@@ -1843,25 +1664,19 @@ local function DoCDVisual(len, name)
 end
 
 local function BodyVelocity(part, speed, duration, startAtZero, easingInfo, delayTween, delayStart, useCustomTween)
-
 	for _, v in pairs(part:GetChildren()) do
 		if v:IsA("BodyVelocity") then
 			v:Destroy()
 		end
 	end
-
 	local directionProperty = delayTween or "LookVector"
-
 	local bv = Instance.new("BodyVelocity")
 	bv.MaxForce = Vector3.new(350000, 0, 350000)
 	bv.Parent = part
-
 	task.delay(duration, bv.Destroy, bv)
-
 	local valueHolder = Instance.new("NumberValue")
 	valueHolder.Value = startAtZero and 0 or speed
 	valueHolder.Parent = bv
-
 	if not useCustomTween then
 		local tweenInfo = easingInfo or TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
 		local goal = { Value = startAtZero and 0 or speed }
@@ -1874,23 +1689,18 @@ local function BodyVelocity(part, speed, duration, startAtZero, easingInfo, dela
 			game.TweenService:Create(valueHolder, tweenInfo, goal):Play()
 		end)
 	end
-
 	if not delayStart then
 		bv.Velocity = part.CFrame[directionProperty] * speed
-
 		local connection
 		connection = game["Run Service"].RenderStepped:Connect(function()
 			if not bv:IsDescendantOf(game) then
 				connection:Disconnect()
 				return
 			end
-
 			bv.Velocity = part.CFrame[directionProperty] * valueHolder.Value
-
 			local direction = part.CFrame[directionProperty]
 		end)
 	end
-
 	return bv, valueHolder
 end
 
@@ -1905,11 +1715,8 @@ local function CleanEffects(length, exception)
 	local cons = {}
 	local con2 = {}
 	local camCon
-
 	local cam = game.Workspace.CurrentCamera
-
 	exception = exception or {}
-
 	local function IsException(obj)
 		if not exception then return false end
 		for _, name in pairs(exception) do
@@ -1919,61 +1726,33 @@ local function CleanEffects(length, exception)
 		end
 		return false
 	end
-
-	cons[1] = game.Players.LocalPlayer.Character.ChildAdded:Connect(function(obj: Instance)
-		if obj:IsA("Model") and not IsException(obj) then
-			obj:Destroy()
-		end
+	cons[1] = game.Players.LocalPlayer.Character.ChildAdded:Connect(function(obj)
+		if obj:IsA("Model") and not IsException(obj) then obj:Destroy() end
 	end)
-
-	cons[2] = game.Workspace.Effects.ChildAdded:Connect(function(obj: Instance)
-		if obj:IsA("Model") and not IsException(obj) then
-			obj:Destroy()
-		end
+	cons[2] = game.Workspace.Effects.ChildAdded:Connect(function(obj)
+		if obj:IsA("Model") and not IsException(obj) then obj:Destroy() end
 	end)
-
-	cons[3] = game.Lighting.ChildAdded:Connect(function(obj: Instance)
-		if not IsException(obj) then
-			obj:Destroy()
-		end
+	cons[3] = game.Lighting.ChildAdded:Connect(function(obj)
+		if not IsException(obj) then obj:Destroy() end
 	end)
-
-	cons[4] = game.Players.LocalPlayer.PlayerGui.ChildAdded:Connect(function(obj: Instance)
-		if not IsException(obj) then
-			obj:Destroy()
-		end
+	cons[4] = game.Players.LocalPlayer.PlayerGui.ChildAdded:Connect(function(obj)
+		if not IsException(obj) then obj:Destroy() end
 	end)
-
-	camCon = game.Players.LocalPlayer.Character.HumanoidRootPart.ChildAdded:Connect(function(obj: Instance)
-		if obj:FindFirstChild("AnimationController") and not IsException(obj) then
-			obj:Destroy()
-		end
+	camCon = game.Players.LocalPlayer.Character.HumanoidRootPart.ChildAdded:Connect(function(obj)
+		if obj:FindFirstChild("AnimationController") and not IsException(obj) then obj:Destroy() end
 	end)
-
 	local places = {}
 	table.insert(places, game.Workspace)
 	table.insert(places, game.ReplicatedStorage)
 	table.insert(places, game.SoundService)
-
 	for i, v in pairs(places) do
-		con2[i] = v.ChildAdded:Connect(function(obj: Instance)
-			if obj:IsA("Sound") and not IsException(obj) then
-				obj:Destroy()
-			end
+		con2[i] = v.ChildAdded:Connect(function(obj)
+			if obj:IsA("Sound") and not IsException(obj) then obj:Destroy() end
 		end)
 	end
-
 	task.delay(length or 1, function()
-		for i, v in pairs(cons) do
-			v:Disconnect()
-			cons[i] = nil
-		end
-
-		for i, v in pairs(con2) do
-			v:Disconnect()
-			con2[i] = nil
-		end
-
+		for i, v in pairs(cons) do v:Disconnect(); cons[i] = nil end
+		for i, v in pairs(con2) do v:Disconnect(); con2[i] = nil end
 		camCon:Disconnect()
 	end)
 end
@@ -1989,22 +1768,17 @@ local function guy()
 	guy1["Left Leg"].Color = Color3.fromRGB(102, 255, 75)
 	guy1.Head.Color = Color3.fromRGB(255, 240, 25)
 	game.Debris:AddItem(guy1, 6)
-
 	return guy1
 end
 
 local function EmitAttachment(attachment)
 	if not attachment then return end
-
 	for _, descendant in ipairs(attachment:GetDescendants()) do
 		if descendant:IsA("ParticleEmitter") then
 			local delayTime = descendant:GetAttribute("EmitDelay") or 0
 			local count = descendant:GetAttribute("EmitCount") or 1
-
 			if delayTime > 0 then
-				task.delay(delayTime, function()
-					descendant:Emit(count)
-				end)
+				task.delay(delayTime, function() descendant:Emit(count) end)
 			else
 				descendant:Emit(count)
 			end
@@ -2013,40 +1787,29 @@ local function EmitAttachment(attachment)
 end
 
 local function particleAction(part)
-	local dashClone:Model = part:Clone()
+	local dashClone = part:Clone()
 	dashClone:PivotTo(plr.Character.HumanoidRootPart.CFrame)
 	dashClone.PrimaryPart.Anchored = true
-
 	dashClone.Parent = workspace
-
 	task.delay(0.03, function()
 		for _, v in ipairs(dashClone:GetDescendants()) do
-			if v:IsA("Attachment") then
-				EmitAttachment(v)
-			end
+			if v:IsA("Attachment") then EmitAttachment(v) end
 		end
 	end)
-
 	game.Debris:AddItem(dashClone, 6)
 end
-
----
 
 local function Skill1(char)
 	if IsMoveOnCD("skill1") then CancelMove() end
 	if Stunned() or IsMoveOnCD("skill1") or not HasBall() then return end
 	CancelMove()
-
 	DoCDVisual(20, "skill1")
-
 	local lockCon = game:GetService("RunService").RenderStepped:Connect(function()
 		char.Humanoid.WalkSpeed = 0
 	end)
-
 	local userAnim = char.Humanoid.Animator:LoadAnimation(dio.GreatestHigh.Animations.Player)
 	userAnim:Play()
-
-	local stand:Model = SummonStand()
+	local stand = SummonStand()
 	stand:PivotTo(char.HumanoidRootPart.CFrame * CFrame.new(0, 0, -9))
 	local weld = Instance.new("WeldConstraint")
 	weld.Part0 = stand.PrimaryPart
@@ -2054,45 +1817,28 @@ local function Skill1(char)
 	weld.Parent = stand.PrimaryPart
 	local standAnim = game:GetService("ReplicatedStorage").Resources.akane.skill3
 	stand.Humanoid:LoadAnimation(standAnim):Play()
-
 	game:GetService("ReplicatedStorage").workspace.ballHolder.Value = stand
-
 	local voice = dio.GreatestHigh.SFX:Clone()
 	voice.Parent = char.HumanoidRootPart
 	voice:Play()
 	game.Debris:AddItem(voice, 5)
-
 	task.delay(0.15, function()
-		local args = {
-			buffer.fromstring(buffers["base"]),
-			{
-				{ "skill2" }
-			}
-		}
-
+		local args = {buffer.fromstring(buffers["base"]),{{"skill2"}}}
 		game.ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(unpack(args))
-
-		repeat
-			task.wait()
-		until IsAnimationPlaying(char, game:GetService("ReplicatedStorage").Resources.kunigami.lefty_shot.AnimationId)
-
+		repeat task.wait() until IsAnimationPlaying(char, game:GetService("ReplicatedStorage").Resources.kunigami.lefty_shot.AnimationId)
 		local hotbar = plr.PlayerGui.Hotbar
 		if hotbar and hotbar.Backpack.Hotbar:FindFirstChild("skill2") then
 			local button = hotbar.Backpack.Hotbar:FindFirstChild("skill2")
-
 			button.Cooldown.Size = UDim2.new(1, 0, 0, 0)
 			button.Cooldown.Visible = false
 		end
-
 		for _, track in pairs(char.Humanoid:GetPlayingAnimationTracks()) do
 			if track.Animation and track.Animation.AnimationId:find(game:GetService("ReplicatedStorage").Resources.kunigami.lefty_shot.AnimationId) then
 				track:Stop(0)
 			end
 		end
 	end)
-
 	task.wait(1.7)
-
 	lockCon:Disconnect()
 	char.Humanoid.WalkSpeed = 40
 	stand:Destroy()
@@ -2102,31 +1848,21 @@ local function Skill2(char)
 	if IsMoveOnCD("skill2") then CancelMove() end
 	if Stunned() or IsMoveOnCD("skill2") then return end
 	CancelMove()
-
 	DoCDVisual(1.5, "skill2")
-
 	local root = char.HumanoidRootPart
-
 	local animInst = HasBall() and dio.TP["Animation/On"] or dio.TP["Animation/Off"]
 	local anim = char.Humanoid.Animator:LoadAnimation(animInst)
 	anim:Play()
-
 	local lockCon = game:GetService("RunService").RenderStepped:Connect(function()
 		char.Humanoid.WalkSpeed = 0
 	end)
-
 	task.wait(0.2)
-
-	--
 	local forward = (root.CFrame - root.Position).LookVector
 	local distance = 125
-
 	local rayParams = RaycastParams.new()
 	rayParams.FilterDescendantsInstances = {char, game.Workspace.characters}
 	rayParams.FilterType = Enum.RaycastFilterType.Blacklist
-
 	local result = workspace:Raycast(root.Position, forward * distance, rayParams)
-
 	if result then
 		local hitPos = result.Position
 		local safeOffset = forward * 2
@@ -2134,64 +1870,41 @@ local function Skill2(char)
 	else
 		root.CFrame = root.CFrame + forward * distance
 	end
-	--
-
 	cam.FieldOfView = 100
 	game:GetService("TweenService"):Create(cam, TweenInfo.new(0.3), {FieldOfView = 70}):Play()
-
 	local sfx = dio.TP.SFX:Clone()
 	sfx.Parent = root
 	sfx:Play()
 	game.Debris:AddItem(sfx, 4)
-
 	local vfx = dio.TP.VFX:Clone()
 	vfx.Parent = game.Workspace
 	vfx:PivotTo(root.CFrame)
-
 	local screenVFX = dio.TP.ColorCorrection:Clone()
 	screenVFX.Name = "tpsdfjnsef"
 	screenVFX.Parent = game.Lighting
 	game.TweenService:Create(screenVFX, TweenInfo.new(0.12), {Brightness = 0}):Play()
 	game.TweenService:Create(screenVFX, TweenInfo.new(0.12), {Saturation = 0}):Play()
 	game.Debris:AddItem(screenVFX, 2)
-
 	local parts = vfx:GetChildren()
-
 	parts[1].Start.Transparency = 0.8
 	parts[2].Start.Transparency = 0.4
-
 	game.TweenService:Create(parts[1].Start, TweenInfo.new(0.2), {Size = Vector3.new(8.887, 22.473, 22.473), Transparency = 1, Position = parts[1].Start.Position + Vector3.new(0, -3, 0)}):Play()
 	game.TweenService:Create(parts[2].Start, TweenInfo.new(0.2), {Size = Vector3.new(5.85, 16.179, 14.8), Transparency = 1, Position = parts[2].Start.Position + Vector3.new(0, -3, 0)}):Play()
-
-	task.delay(0.5, function()
-		vfx:Destroy()
-	end)
-
-	task.delay(0.3, function()
-		lockCon:Disconnect()
-		char.Humanoid.WalkSpeed = 40
-	end)
+	task.delay(0.5, function() vfx:Destroy() end)
+	task.delay(0.3, function() lockCon:Disconnect(); char.Humanoid.WalkSpeed = 40 end)
 end
 
 local function ult(char)
 	if Stunned() then return end
-
 	local nms = objectnames
 	table.insert(nms, "UltimateTheme")
 	table.insert(nms, "HaltedTime")
 	table.insert(nms, "whiteCOlor")
 	table.insert(nms, "tpsdfjnsef")
-
 	CleanEffects(18, nms)
-
 	task.wait(0.01)
-
 	if IsAnimationPlaying(char, "rbxassetid://116147593639460") then
-		game.StarterGui:SetCore("SendNotification", {
-			Title = "Moveset",
-			Text = "Bankai breaks it, gotta deal with no timestop till we fix it :(",
-			Duration = 4,
-		})
+		game.StarterGui:SetCore("SendNotification", {Title="Moveset",Text="Bankai breaks it, gotta deal with no timestop till we fix it :(",Duration=4})
 		task.wait(1.3)
 		if #game.Players:GetPlayers() <= 1 then
 			game.Players.LocalPlayer:Kick("\nRejoining...")
@@ -2202,55 +1915,38 @@ local function ult(char)
 		end
 		return
 	end
-
-	local humanoid:Humanoid = char:FindFirstChildWhichIsA("Humanoid")
+	local humanoid = char:FindFirstChildWhichIsA("Humanoid")
 	if not humanoid then return end
-
-	local root:Part = char:FindFirstChild("HumanoidRootPart")
+	local root = char:FindFirstChild("HumanoidRootPart")
 	if not root then return end
-
 	root.Anchored = true
-
 	local ogPos = root.CFrame
-
 	dio.Timestop.SFX:Play()
-
 	humanoid.AutoRotate = false
-
 	local camRig = dio.Timestop.Cam:Clone()
 	camRig.RootPart.Anchored = true
 	for _, v in pairs(camRig:GetDescendants()) do
-		if v:IsA("BasePart") then
-			v.CanCollide = false
-		end
+		if v:IsA("BasePart") then v.CanCollide = false end
 	end
 	camRig:PivotTo(ogPos * CFrame.new(0, -3, 0))
 	camRig.Parent = game.Workspace
-
 	local guy1 = guy()
 	guy1.Humanoid.Animator:LoadAnimation(dio.Timestop.Animations.Victim1):Play()
 	guy1.Head.face.Texture = "rbxassetid://12117740"
-
 	local guy2 = guy()
 	guy2.Humanoid.Animator:LoadAnimation(dio.Timestop.Animations.Victim2):Play()
 	guy2.Head.face.Texture = "rbxassetid://3131549382"
-
 	local guy3 = guy()
 	guy3.Humanoid.Animator:LoadAnimation(dio.Timestop.Animations.Victim3):Play()
 	guy3.Head.face.Texture = "rbxassetid://71308402"
-
 	cam.CameraType = Enum.CameraType.Scriptable
 	local camCon = game:GetService("RunService").RenderStepped:Connect(function()
 		cam.CFrame = camRig:WaitForChild("CamPart").CFrame
 	end)
-
 	local camAnim = camRig.AnimationController.Animator:LoadAnimation(dio.Timestop.Animations.Cam)
 	camAnim:Play()
-
 	local anim = humanoid.Animator:LoadAnimation(dio.Timestop.Animations.User)
 	anim:Play()
-
-	--cutscene visuals
 	for _, v in pairs(dio.Timestop.Aura:GetChildren()) do
 		for _, k in pairs(v:GetChildren()) do
 			if k:IsA("ParticleEmitter") then
@@ -2260,100 +1956,61 @@ local function ult(char)
 			end
 		end
 	end
-
-	--fov
 	task.spawn(function()
 		if dio.Timestop:FindFirstChild("FOV") then
 			local timeCounter = 0
 			local connections = {}
-
-			table.insert(connections,
-				game["Run Service"].PreRender:Connect(function(dt)
-					timeCounter += dt * 60
-					local key = math.ceil(timeCounter)
-					local found = dio.Timestop:FindFirstChild("FOV"):FindFirstChild(tostring(key))
-					if found then
-						cam.FieldOfView = found.Value
-					end
-				end)
-			)
+			table.insert(connections, game["Run Service"].PreRender:Connect(function(dt)
+				timeCounter += dt * 60
+				local key = math.ceil(timeCounter)
+				local found = dio.Timestop:FindFirstChild("FOV"):FindFirstChild(tostring(key))
+				if found then cam.FieldOfView = found.Value end
+			end))
 		end
 	end)
-	--
-
-
 	task.spawn(function()
 		local vfx = dio.Timestop.VFX:Clone()
 		vfx:PivotTo(ogPos)
 		vfx.Parent = game.Workspace
 		game.Debris:AddItem(vfx, 6)
-
 		task.wait(0.04)
-
 		for _, v in pairs(vfx.Folder.smoke.Attachment:GetChildren()) do
 			v:Emit(v:GetAttribute("EmitCount") or 1)
 		end
-
 		task.wait(4.1)
-
 		local highlight = Instance.new("Highlight")
 		highlight.FillColor = Color3.fromRGB(55, 145, 255)
 		highlight.FillTransparency = -4
 		highlight.OutlineTransparency = 1
 		highlight.Parent = vfx.up2sum
-
 		vfx.up2sum.Size = Vector3.new(0.1, 0.1, 0.1)
 		game.TweenService:Create(vfx.up2sum, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = Vector3.new(28.1, 28.1, 28.1)}):Play()
-
 		task.delay(1, function()
-			game.TweenService:Create(vfx.up2sum, TweenInfo.new(0.56, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Size = Vector3.new(0.001, 00.001, 0.001)}):Play()
+			game.TweenService:Create(vfx.up2sum, TweenInfo.new(0.56, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Size = Vector3.new(0.001, 0.001, 0.001)}):Play()
 		end)
-
 		game.TweenService:Create(highlight, TweenInfo.new(1.56), {FillColor = Color3.fromRGB(255, 137, 58), FillTransparency = 1}):Play()
 	end)
-	--
-
 	task.wait(6)
-
 	humanoid.AutoRotate = true
-
 	local haltedTimeLightning = dio.Timestop.HaltedTime:Clone()
 	haltedTimeLightning.Parent = game.Lighting
-
 	cam.CameraType = Enum.CameraType.Custom
 	camCon:Disconnect()
-
 	cam.FieldOfView = 70
 	camRig:Destroy()
-
 	anim:Stop(0)
-	for _,track in humanoid.Animator:GetPlayingAnimationTracks() do
-		track:Stop(0)
-
-	end
+	for _,track in humanoid.Animator:GetPlayingAnimationTracks() do track:Stop(0) end
 	root.CFrame = ogPos
-
 	cam.FieldOfView = 110
 	game:GetService("TweenService"):Create(cam, TweenInfo.new(0.3), {FieldOfView = 70}):Play()
-
-	if root.Anchored then
-		root.Anchored = false
-	end
-
+	if root.Anchored then root.Anchored = false end
 	local savedCF = nil
-
 	local walkCon = game["Run Service"].RenderStepped:Connect(function()
 		humanoid.WalkSpeed = 40
 		savedCF = CFrame.new(char.Torso.Position) * CFrame.Angles(0, math.rad(char.Torso.Orientation.Y), 0)
 	end)
-
-	--17.46
-	task.delay(9.86, function()
-		dio.Timestop.ResumeSFX:Play()
-	end)
-
+	task.delay(9.86, function() dio.Timestop.ResumeSFX:Play() end)
 	task.wait(11.3)
-
 	local white = Instance.new("ScreenGui")
 	white.Name = "whiteCOlor"
 	white.IgnoreGuiInset = true
@@ -2363,63 +2020,36 @@ local function ult(char)
 	frmm.Size = UDim2.new(1, 0, 1, 0)
 	frmm.BackgroundTransparency = 1
 	frmm.Parent = white
-
 	game.TweenService:Create(frmm, TweenInfo.new(0.06), {BackgroundTransparency = 0}):Play()
-
 	walkCon:Disconnect()
-
 	task.wait(0.45)
-
 	game.TweenService:Create(frmm, TweenInfo.new(0.06), {BackgroundTransparency = 1}):Play()
-	task.delay(0.1, function()
-		white:Destroy()
-	end)
-
+	task.delay(0.1, function() white:Destroy() end)
 	root.CFrame = savedCF
-
 	haltedTimeLightning:Destroy()
 end
 
----
-
 local function SetUp(char)
 	if stopped then return end
-
-	repeat
-		task.wait()
-	until plr.Team ~= game.Teams.lobby
+	repeat task.wait() until plr.Team ~= game.Teams.lobby
 	task.wait(0.1)
-
 	local root = char.HumanoidRootPart
 	local hotbar = plr.PlayerGui.Hotbar
-
-	--mobile
-	hotbar.Backpack.Hotbar.skill1.Base.MouseButton1Down:Connect(function()
-		Skill1(plr.Character)
-	end)
-
-	hotbar.Backpack.Hotbar.skill2.Base.MouseButton1Down:Connect(function()
-		Skill2(plr.Character)
-	end)
-	--
-
+	hotbar.Backpack.Hotbar.skill1.Base.MouseButton1Down:Connect(function() Skill1(plr.Character) end)
+	hotbar.Backpack.Hotbar.skill2.Base.MouseButton1Down:Connect(function() Skill2(plr.Character) end)
 	plr.Character:GetAttributeChangedSignal("FlowActive"):Connect(function()
 		if plr.Character:GetAttribute("FlowActive") == true then
 			if stopped == true then return end
 			ult(char)
 		end
 	end)
-
 	hotbar.Backpack.Hotbar.skill1.Base.Reuse.Text = ""
 	hotbar.Backpack.Hotbar.skill2.Base.Reuse.Text = ""
-
 	hotbar.Backpack.Hotbar.skill3.Visible = false
 	hotbar.Backpack.Hotbar.skill4.Visible = false
 	hotbar.Backpack.Hotbar.skill5.Visible = false
-
 	hotbar.Backpack.Hotbar.skill1.Base.ToolName.Text = "Greatest High"
 	hotbar.Backpack.Hotbar.skill2.Base.ToolName.Text = "Time Skip"
-
 	hotbar.MagicHealth.Awakening.Text = "ZA WARUDO"
 	hotbar.MagicHealth.TextLabel.Text = "Halt Time."
 	hotbar.MagicHealth.Health.Frame.UIGradient.Color = ColorSequence.new{
@@ -2429,16 +2059,11 @@ local function SetUp(char)
 end
 
 SetUp(plr.Character)
-
-plr.CharacterAdded:Connect(function(char)
-	task.wait(1)
-	SetUp(char)
-end)
+plr.CharacterAdded:Connect(function(char) task.wait(1); SetUp(char) end)
 
 game.UserInputService.InputBegan:Connect(function(input, bg)
 	if bg or stopped == true then return end
 	if stopped then return end
-
 	if input.KeyCode == Enum.KeyCode.One then
 		Skill1(plr.Character)
 	elseif input.KeyCode == Enum.KeyCode.Two then
@@ -2449,52 +2074,35 @@ game.UserInputService.InputBegan:Connect(function(input, bg)
 	end
 end)
 
-game.StarterGui:SetCore("SendNotification", {
-	Title = "Moveset",
-	Text = "dio moveset has been loaded",
-	Duration = 5,
-	Button1 = "Ok",
-})
+game.StarterGui:SetCore("SendNotification", {Title="Moveset",Text="dio moveset has been loaded",Duration=5,Button1="Ok"})
 ]]
-MovesetsTab:Button({Title="DIO Moveset (Req. Kunigami)", Description="Greatest High, Time Skip, Za Warudo timestop ult (flow). F4 to disable.",
+MovesetsTab:Button({Title="DIO Moveset (Req. Kunigami)",Description="Greatest High, Time Skip, Za Warudo timestop ult (flow). F4 to disable.",
     Callback=function() loadstring(_dioSrc)() end})
 
--- Sonic.EXE
 local _exeSrc = [=[
 local plr = game.Players.LocalPlayer
 local cam = game.Workspace.CurrentCamera
 local SoundService = game:GetService("SoundService")
 local remote = game.ReplicatedStorage:WaitForChild("ByteNetReliable")
 local exeFolder = game.ReplicatedStorage.Resources.exe
-
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local UserInputService = game:GetService("UserInputService")
 local Debris = game:GetService("Debris")
-
 local cam = game.Workspace.CurrentCamera
-
 local stopped = false
 local buffers = {}
-
 local meshEmitter = loadstring(game:HttpGet("https://pastebin.com/raw/4yGGSUNy"))()
-
---
 loadstring(game:HttpGet("https://pastebin.com/raw/8XJh7dzh"))()
-repeat
-	task.wait()
-until game.Lighting:FindFirstChild("BUFFERSTRINGS")
+repeat task.wait() until game.Lighting:FindFirstChild("BUFFERSTRINGS")
 for _, val in ipairs(game.Lighting:FindFirstChild("BUFFERSTRINGS"):GetChildren()) do
 	buffers[val.Name] = val.Value
 end
 game.Lighting:FindFirstChild("BUFFERSTRINGS"):Destroy()
---
-
 game:GetService("ReplicatedStorage").Resources.isagi.theme.SoundId = "rbxassetid://9281508259"
 game:GetService("ReplicatedStorage").Resources.isagi["isagi themeover"].SoundId = "rbxassetid://9281508259"
 game:GetService("ReplicatedStorage").Resources.Legacy.isagi.isagiawaken.SoundId = "rbxassetid://138187928673054"
-
 local function CancelMove()
 	local charg = plr.Character
 	if charg.state.stun.Value == false then
@@ -2503,41 +2111,26 @@ local function CancelMove()
 		charg.state.stun.Value = false
 	end
 end
-
 local function IsAnimationPlaying(character, animId)
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	if not humanoid then return false end
 	local animator = humanoid:FindFirstChildOfClass("Animator")
 	if not animator then return false end
 	for _, track in pairs(animator:GetPlayingAnimationTracks()) do
-		if track.Animation and track.Animation.AnimationId:find(tostring(animId)) then
-			return true, track
-		end
+		if track.Animation and track.Animation.AnimationId:find(tostring(animId)) then return true, track end
 	end
 	return false
 end
-
-local function HasBall()
-	return plr.Character:FindFirstChild("Ball")
-end
-
-local function Stunned()
-	return plr.Character.state.stun.Value
-end
-
+local function HasBall() return plr.Character:FindFirstChild("Ball") end
+local function Stunned() return plr.Character.state.stun.Value end
 local function IsMoveOnCD(name)
 	local hotbar = plr.PlayerGui.Hotbar
 	if hotbar and hotbar.Backpack.Hotbar:FindFirstChild(name) then
 		local button = hotbar.Backpack.Hotbar:FindFirstChild(name)
-		if button.Cooldown.Visible == true then
-			return true
-		else
-			return false
-		end
+		if button.Cooldown.Visible == true then return true else return false end
 	end
 	return false
 end
-
 local function DoCDVisual(len, name)
 	local hotbar = plr.PlayerGui.Hotbar
 	if hotbar and hotbar.Backpack.Hotbar:FindFirstChild(name) then
@@ -2545,29 +2138,19 @@ local function DoCDVisual(len, name)
 		button.Cooldown.Visible = true
 		button.Cooldown.Size = UDim2.new(1, 0, -1, 0)
 		game.TweenService:Create(button.Cooldown, TweenInfo.new(len, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 0, 0)}):Play()
-		task.delay(len, function()
-			button.Cooldown.Visible = false
-		end)
+		task.delay(len, function() button.Cooldown.Visible = false end)
 	end
 end
-
 local function EmitAttachment(attachment)
 	if not attachment then return end
 	for _, descendant in ipairs(attachment:GetDescendants()) do
 		if descendant:IsA("ParticleEmitter") then
 			local delayTime = descendant:GetAttribute("EmitDelay") or 0
 			local count = descendant:GetAttribute("EmitCount") or 1
-			if delayTime > 0 then
-				task.delay(delayTime, function()
-					descendant:Emit(count)
-				end)
-			else
-				descendant:Emit(count)
-			end
+			if delayTime > 0 then task.delay(delayTime, function() descendant:Emit(count) end) else descendant:Emit(count) end
 		end
 	end
 end
-
 local function PlayExistingSFX(sfx, location)
 	if not sfx or not location then return end
 	local sound = sfx:Clone()
@@ -2575,7 +2158,6 @@ local function PlayExistingSFX(sfx, location)
 	sound:Play()
 	game.Debris:AddItem(sound, sound.TimeLength + 3)
 end
-
 local function particleAction(part)
 	local root = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
 	if not root then return end
@@ -2585,187 +2167,107 @@ local function particleAction(part)
 				local delayTime = v:GetAttribute("EmitDelay") or 0
 				local count = v:GetAttribute("EmitCount")
 				if count then
-					if delayTime > 0 then
-						task.delay(delayTime, function()
-							if v then v:Emit(count) end
-						end)
-					else
-						v:Emit(count)
-					end
+					if delayTime > 0 then task.delay(delayTime, function() if v then v:Emit(count) end end) else v:Emit(count) end
 				end
 				game.Debris:AddItem(v, 6)
 			end)
 		end
 	end
 end
-
 local function Skill1(char)
 	if IsMoveOnCD("skill1") then CancelMove() return end
 	if not HasBall() then return CancelMove() end
-
 	local root = char.HumanoidRootPart
 	local player = plr
 	local character = player.Character or player.CharacterAdded:Wait()
 	local humanoid = character:WaitForChild("Humanoid")
-
 	local animation = Instance.new("Animation")
 	animation.AnimationId = "rbxassetid://90781949061659"
-
 	local animator = humanoid:FindFirstChildOfClass("Animator")
-	if not animator then
-		animator = Instance.new("Animator")
-		animator.Parent = humanoid
-	end
-	
+	if not animator then animator = Instance.new("Animator"); animator.Parent = humanoid end
 	local function applyColor(obj, index)
 		if (obj:IsA("ParticleEmitter") or obj:IsA("Beam") or obj:IsA("Trail")) then
 			local clr
-			if index % 2 == 0 then
-				clr = Color3.fromRGB(0, 0, 0)
-			else
-				clr = Color3.fromRGB(171, 0, 0) -- red
-			end
-
+			if index % 2 == 0 then clr = Color3.fromRGB(0, 0, 0) else clr = Color3.fromRGB(171, 0, 0) end
 			obj.Color = ColorSequence.new(clr)
 		end
 	end
-	
-	for i, v in ipairs(game.Workspace.Effects:GetChildren()) do
-		applyColor(v, i)
-	end
-	
-	local f = game.Workspace.Effects.DescendantAdded:Connect(function(v)
-		applyColor(v, 1)
-	end)
-	
-	task.delay(1.1, function()
-		f:Disconnect()
-	end)
-
+	for i, v in ipairs(game.Workspace.Effects:GetChildren()) do applyColor(v, i) end
+	local f = game.Workspace.Effects.DescendantAdded:Connect(function(v) applyColor(v, 1) end)
+	task.delay(1.1, function() f:Disconnect() end)
 	local track = animator:LoadAnimation(animation)
 	track.Priority = Enum.AnimationPriority.Action4
-
 	track:Play()
 end
-
 local RunService = game:GetService("RunService")
-
-local function Skill2(char:Model)
-	if IsMoveOnCD("skill2") then
-		CancelMove()
-		return
-	end
-
-	if HasBall() then
-		CancelMove()
-		return
-	end
-
-	if Stunned() then
-		return
-	end
-
+local function Skill2(char)
+	if IsMoveOnCD("skill2") then CancelMove() return end
+	if HasBall() then CancelMove() return end
+	if Stunned() then return end
 	local root = char:WaitForChild("HumanoidRootPart")
 	local humanoid = char:WaitForChild("Humanoid")
 	local targetPart = workspace.Terrain:FindFirstChild("Ball")
 	if not targetPart then return end
-
 	local savedRotation = root.CFrame - root.Position
-
 	local heightDiff = targetPart.Position.Y - root.Position.Y
-	if heightDiff < 15 then
-		CancelMove()
-		return
-	end
-
+	if heightDiff < 15 then CancelMove() return end
 	CancelMove()
-
 	local startTime = tick()
 	local timeout = 1
-
 	local connection
 	connection = RunService.RenderStepped:Connect(function()
-		if not root or not targetPart then
-			connection:Disconnect()
-			return
-		end
-
-		if tick() - startTime >= timeout then
-			connection:Disconnect()
-			return
-		end
-
+		if not root or not targetPart then connection:Disconnect() return end
+		if tick() - startTime >= timeout then connection:Disconnect() return end
 		if HasBall() then
 			connection:Disconnect()
 			DoCDVisual(1.25, "skill2")
 			local anim = Instance.new("Animation")
 			anim.AnimationId = "rbxassetid://71606482166598"
-
 			local track = humanoid:LoadAnimation(anim)
-
 			local sound = Instance.new("Sound")
 			sound.SoundId = "rbxassetid://106669508979055"
 			sound.Volume = 1
 			sound.Parent = SoundService
 			sound:Play()
 			game.Debris:AddItem(sound, 5)
-			
 			PlayExistingSFX(exeFolder.Tped, SoundService)
-			
 			for _, v in pairs(exeFolder.Exe:GetChildren()) do
 				local new = v:Clone()
-				
 				local weld = new:FindFirstChildWhichIsA("Weld")
 				weld.Part0 = char:FindFirstChild(v.Name)
 				weld.Part1 = new
-				
 				new.Parent = char:FindFirstChild(v.Name)
-				
 				if new.Name == "Head" then
 					for _, k in pairs(new:GetChildren()) do
-						if k:IsA("Attachment") then
-							k:FindFirstChild("ParticleEmitter").Enabled = true
-						end
+						if k:IsA("Attachment") then k:FindFirstChild("ParticleEmitter").Enabled = true end
 					end
 				end
-				
 				game.Debris:AddItem(new, 0.4)
 			end
-			
 			local highlight = Instance.new("Highlight")
 			highlight.FillTransparency = 0.6
 			highlight.OutlineTransparency = 0.3
 			highlight.Parent = char
 			game.Debris:AddItem(highlight, 0.4)
-			
 			TweenService:Create(highlight, TweenInfo.new(0.3), {FillTransparency = 1}):Play()
 			TweenService:Create(highlight, TweenInfo.new(0.3), {OutlineTransparency = 1}):Play()
-
 			root.Anchored = true
 			root.AssemblyLinearVelocity = Vector3.zero
 			humanoid.AutoRotate = false
-
 			local camRig = game.ReplicatedStorage.Resources.blenderCam:Clone()
 			camRig.Parent = game.Workspace
 			camRig:PivotTo(root.CFrame * CFrame.new(0, -3, 0))
 			camRig.PrimaryPart.Anchored = true
-			
 			cam.FieldOfView = 50
 			TweenService:Create(cam, TweenInfo.new(0.3), {FieldOfView = 40}):Play()
-
 			local camAnim = camRig.AnimationController.Animator:LoadAnimation(game.ReplicatedStorage.Resources.exe.Tpcam)
 			camAnim:Play()
-
 			cam.CameraType = Enum.CameraType.Scriptable
-			local camCon = game:GetService("RunService").RenderStepped:Connect(function()
-				cam.CFrame = camRig.CamPart.CFrame
-			end)
-
+			local camCon = game:GetService("RunService").RenderStepped:Connect(function() cam.CFrame = camRig.CamPart.CFrame end)
 			local hold
 			hold = RunService.RenderStepped:Connect(function()
 				if not track.IsPlaying then
 					hold:Disconnect()
-
 					cam.FieldOfView = 70
 					camCon:Disconnect()
 					camRig:Destroy()
@@ -2776,137 +2278,77 @@ local function Skill2(char:Model)
 					humanoid.AutoRotate = true
 					return
 				end
-
 				root.AssemblyLinearVelocity = Vector3.zero
 			end)
-
 			track:Play()
 			return
 		end
-
 		if (targetPart.Position - root.Position).Magnitude > 10 then
 			local pos = targetPart.Position
 			local correctedPos = Vector3.new(pos.X, pos.Y - 4, pos.Z)
-
 			local newCF = CFrame.new(correctedPos) * savedRotation
-
 			root.CFrame = newCF
 			RunService.RenderStepped:Wait()
 			root.CFrame = newCF
-
-			task.spawn(function()
-				remote:FireServer(buffer.fromstring(buffers["grabball"]))
-			end)
+			task.spawn(function() remote:FireServer(buffer.fromstring(buffers["grabball"])) end)
 		end
 	end)
 end
-
 local function Skill3(char)
 	CancelMove()
 	if stopped or IsMoveOnCD("skill3") or Stunned() then return end
-
 	local root = char.HumanoidRootPart
 	local player = plr
 	local character = player.Character or player.CharacterAdded:Wait()
 	local humanoid = character:WaitForChild("Humanoid")
-
 	local animation = Instance.new("Animation")
 	animation.AnimationId = "rbxassetid://116455589260954"
-
 	local animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", humanoid)
-
 	local track = animator:LoadAnimation(animation)
 	track.Priority = Enum.AnimationPriority.Action4
 	track:Play()
-	
 	PlayExistingSFX(exeFolder.dribble, root)
-	
 	local mesh = exeFolder.DashMeshEmitter:Clone()
 	mesh.Parent = game.Workspace
 	mesh:PivotTo(root.CFrame)
-	
 	game.Debris:AddItem(mesh, 3)
-
 	particleAction(mesh.PRE)
-	
 	for _, v in pairs(mesh:GetDescendants()) do
-		if v:IsA("MeshPart") or v:IsA("Decal") then
-			v:Destroy()
-		end
+		if v:IsA("MeshPart") or v:IsA("Decal") then v:Destroy() end
 	end
-	
 	DoCDVisual(1.25, "skill3")
-	
 	task.wait(0.2)
-	
 	mesh:PivotTo(root.CFrame)
-	
-	-- mesh vfx :(
-	
-	--[[
-	mesh.Haze.Transparency = 0
-	TweenService:Create(mesh.Haze, TweenInfo.new(0.4), {Size = Vector3.new(39.497, 40.48, 39.497), CFrame = mesh.Haze.CFrame * CFrame.new(-70, 0, 0)}):Play()
-	TweenService:Create(mesh.Haze.Decal, TweenInfo.new(0.4), {Transparency = 1}):Play()
-	
-	TweenService:Create(mesh.TornadoShock, TweenInfo.new(0.1), {Size = Vector3.new(6.568, 67.928, 6.176), Transparency = 1}):Play()
-	TweenService:Create(mesh.Reda, TweenInfo.new(0.1), {Size = Vector3.new(57.311, 5.245, 5.434), Transparency = 1}):Play()
-	
-	TweenService:Create(mesh.A, TweenInfo.new(0.1), {Size = Vector3.new(94.492, 8.289, 4.289)}):Play()
-	task.delay(0.1 ,function()
-		TweenService:Create(mesh.A, TweenInfo.new(0.1), {Size = Vector3.new(8.992, 23.289, 20.789)}):Play()
-		TweenService:Create(mesh.A, TweenInfo.new(0.1), {Transparency = 1}):Play()
-	end)
-	]]--
-	
-	--
-	
 	particleAction(mesh.TP)
-
 	if root and root.Parent then
 		local rayOrigin = root.Position
 		local rayDirection = root.CFrame.LookVector * 65
-
 		local raycastParams = RaycastParams.new()
 		raycastParams.FilterDescendantsInstances = {workspace.characters, mesh}
 		raycastParams.FilterType = Enum.RaycastFilterType.Exclude
 		raycastParams.IgnoreWater = true
-
 		local result = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-
 		if result then
 			root.CFrame = CFrame.new(result.Position + result.Normal * 2, rayOrigin)
 		else
 			root.CFrame = root.CFrame + rayDirection
 		end
 	end
-
 end
-
-local function ult(char)
-	if Stunned() then return end
-
-end
-
+local function ult(char) if Stunned() then return end end
 local function SetUp(char)
 	if stopped then return end
 	repeat task.wait() until plr.Team ~= game.Teams.lobby
 	task.wait(0.1)
-
 	local hotbar = plr.PlayerGui.Hotbar
-	hotbar.Backpack.Hotbar.skill1.Base.MouseButton1Down:Connect(function()
-		Skill1(plr.Character)
-	end)
-	hotbar.Backpack.Hotbar.skill2.Base.MouseButton1Down:Connect(function()
-		Skill2(plr.Character)
-	end)
-
+	hotbar.Backpack.Hotbar.skill1.Base.MouseButton1Down:Connect(function() Skill1(plr.Character) end)
+	hotbar.Backpack.Hotbar.skill2.Base.MouseButton1Down:Connect(function() Skill2(plr.Character) end)
 	plr.Character:GetAttributeChangedSignal("FlowActive"):Connect(function()
 		if plr.Character:GetAttribute("FlowActive") == true then
 			if stopped then return end
 			ult(char)
 		end
 	end)
-
 	hotbar.Backpack.Hotbar.skill1.Base.Reuse.Text = "Ball"
 	hotbar.Backpack.Hotbar.skill2.Base.Reuse.Text = "Trap"
 	hotbar.Backpack.Hotbar.skill3.Base.Reuse.Text = "Movement"
@@ -2916,7 +2358,6 @@ local function SetUp(char)
 	hotbar.Backpack.Hotbar.skill2.Base.Reuse.Visible = true
 	hotbar.Backpack.Hotbar.skill4.Visible = false
 	hotbar.Backpack.Hotbar.skill5.Visible = false
-
 	hotbar.MagicHealth.Awakening.Text = "SONIC.EXE"
 	hotbar.MagicHealth.TextLabel.Visible = true
 	hotbar.MagicHealth.TextLabel.Text = "Many Souls To Play With."
@@ -2925,70 +2366,40 @@ local function SetUp(char)
 		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 120, 120))
 	}
 end
-
 SetUp(plr.Character)
-
 plr.CharacterAdded:Connect(function(char)
 	if stopped then return end
 	task.wait(1)
 	SetUp(char)
 end)
-
 local Workspace = game:GetService("Workspace")
-
 local shot = "rbxassetid://125906215069324"
-local isag = {
-	["rbxassetid://114952862979282"] = true
-}
-
+local isag = {["rbxassetid://114952862979282"] = true}
 local soundReplacementActive = true
-
 local function replaceSound(sound)
 	if not sound:IsA("Sound") then return end
 	if not soundReplacementActive then return end
-	if isag[sound.SoundId] then
-		sound:Stop()
-		sound.SoundId = shot
-		sound:Play()
-	end
+	if isag[sound.SoundId] then sound:Stop(); sound.SoundId = shot; sound:Play() end
 end
-
-for _, sound in ipairs(Workspace:GetDescendants()) do
-	replaceSound(sound)
-end
-
+for _, sound in ipairs(Workspace:GetDescendants()) do replaceSound(sound) end
 local connection
 connection = Workspace.DescendantAdded:Connect(replaceSound)
-
 game.UserInputService.InputBegan:Connect(function(input, bg)
 	if bg or stopped then return end
-
-	if input.KeyCode == Enum.KeyCode.One then
-		Skill1(plr.Character)
-	elseif input.KeyCode == Enum.KeyCode.Two then
-		Skill2(plr.Character)
-	elseif input.KeyCode == Enum.KeyCode.Three then
-		Skill3(plr.Character)
-	elseif input.KeyCode == Enum.KeyCode.G then
-		ult(plr.Character)
+	if input.KeyCode == Enum.KeyCode.One then Skill1(plr.Character)
+	elseif input.KeyCode == Enum.KeyCode.Two then Skill2(plr.Character)
+	elseif input.KeyCode == Enum.KeyCode.Three then Skill3(plr.Character)
+	elseif input.KeyCode == Enum.KeyCode.G then ult(plr.Character)
 	elseif input.KeyCode == Enum.KeyCode.F4 then
 		stopped = true
 		soundReplacementActive = false
-		if connection then
-			connection:Disconnect()
-		end
+		if connection then connection:Disconnect() end
 		print("stopped")
 	end
 end)
-
-game.StarterGui:SetCore("SendNotification", {
-	Title = "Moveset",
-	Text = "exe moveset has been loaded",
-	Duration = 5,
-	Button1 = "Ok",
-})
+game.StarterGui:SetCore("SendNotification", {Title="Moveset",Text="exe moveset has been loaded",Duration=5,Button1="Ok"})
 ]=]
-MovesetsTab:Button({Title="Sonic.EXE Moveset (Req. Isagi)", Description="Strike Shot (ball), Exterminate (trap), Shortcut (dash). F4 to disable.",
+MovesetsTab:Button({Title="Sonic.EXE Moveset (Req. Isagi)",Description="Strike Shot (ball), Exterminate (trap), Shortcut (dash). F4 to disable.",
     Callback=function() loadstring(_exeSrc)() end})
 
 -- ══════════════════════════════════════════════════════════════════════════
@@ -3049,12 +2460,9 @@ end})
 WindUI:Notify({
     Title = "AbyssUI",
     Content = "loaded",
-    Duration = 10, -- 5 seconds
+    Duration = 10,
     Icon = "moon",
 })
 
--- ══════════════════════════════════════════════════════════════════════════
---  FINAL LOADSTRINGS
--- ══════════════════════════════════════════════════════════════════════════
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/oldthingyep",true))()
 loadstring(game:HttpGet("https://pastebin.com/raw/rQMS2B9R",true))()
