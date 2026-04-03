@@ -1455,8 +1455,8 @@ BlatantTab:Paragraph({Title="Chigiri",Desc=""})
 BlatantTab:Slider({Title="Mach Cut-In Distance",Step=1,Value={Min=0,Max=200,Default=0},Callback=function(v) Distances.machDist=v end})
 BlatantTab:Slider({Title="Golden Zone Distance (Req. Ball)",Step=1,Value={Min=0,Max=400,Default=0},Callback=function(v) Distances.goldenDist=v end})
 BlatantTab:Paragraph({Title="Trap",Desc="Increases distance and speed during trap animations."})
-BlatantTab:Slider({Title="Trap Distance",Step=1,Value={Min=0,Max=500,Default=500},Callback=function(v) Distances.trapDist=v end})
-BlatantTab:Slider({Title="Trap Speed",Step=1,Value={Min=0,Max=1000,Default=100},Callback=function(v) Distances.trapSpeed=v end})
+BlatantTab:Slider({Title="Trap Distance",Step=1,Value={Min=0,Max=500,Default=0},Callback=function(v) Distances.trapDist=v end})
+BlatantTab:Slider({Title="Trap Speed",Step=1,Value={Min=0,Max=1000,Default=0},Callback=function(v) Distances.trapSpeed=v end})
 BlatantTab:Slider({Title="Trap Vertical",Step=1,Value={Min=-100,Max=100,Default=0},Callback=function(v) Distances.trapVertical=v end})
 
 
