@@ -48,7 +48,7 @@ local Window = WindUI:CreateWindow({
 
     Watermark = {
         Enabled = true,
-        Text = "AbyssUI V3 — Azure Latch",
+        Text = "AbyssUI v3 — Azure Latch",
         Position = "bottom-right",
         Opacity = 0.45,
         Size = 13,
@@ -63,7 +63,7 @@ end, {
 })
 
 Window:Tag({
-    Title = "V3 ",
+    Title = "v3",
     Color = Color3.fromRGB(248, 155, 41),
     Icon = "github",
 })
@@ -168,7 +168,7 @@ local homeStats = HomeTab:Stats({
     Desc  = "Live stats for your session.",
     Items = {
         { Key = "Script",   Value = "Azure Latch" },
-        { Key = "Version",  Value = "V3" },
+        { Key = "Version",  Value = "v3" },
         { Key = "Author",   Value = "Tze" },
         { Key = "Toggle",   Value = "L key" },
     },
@@ -494,53 +494,61 @@ RunService.Stepped:Connect(function()
     end
 end)
 
-autoSection:ToggleKeybind({
-    Title   = "Toggle Keybinds",
-    Desc    = "Enables dribble/counter via keybinds.",
-    Type    = "Toggle",
-    Value   = false,
-    Keybind = "Z",
-    Icon    = "keyboard",
+autoSection:Toggle({
+    Title = "Toggle Keybinds",
+    Desc  = "Habilita las teclas Z/X/C/V/N/M para dribble/counter.",
+    Type  = "Toggle",
+    Value = false,
+    Icon  = "keyboard",
     Callback = function(v) askState.keybindsEnabled = v; notifySkill("Keybinds", v and "Enabled." or "Disabled.", 3) end,
 })
 
+-- Toggles simples — NO usan ToggleKeybind para evitar que la tecla dispare sola
+local dribbleUIToggles = {}
+
 local dribbleToggles = {
-    { title = "Auto Dribble",           key = "toggleDetection", keybind = "Z" },
-    { title = "Auto Counter (Move 1)",  key = "toggleCounter1",  keybind = "X" },
-    { title = "Auto Counter (Move 2)",  key = "toggleCounter2",  keybind = "C" },
-    { title = "Auto Counter (Move 3)",  key = "toggleCounter3",  keybind = "V" },
-    { title = "Auto Counter (Move 4)",  key = "toggleCounter4",  keybind = "N" },
-    { title = "Auto Counter (Move 5)",  key = "toggleCounter5",  keybind = "M" },
+    { title = "Auto Dribble (Z)",        key = "toggleDetection", kc = Enum.KeyCode.Z },
+    { title = "Auto Counter Move 1 (X)", key = "toggleCounter1",  kc = Enum.KeyCode.X },
+    { title = "Auto Counter Move 2 (C)", key = "toggleCounter2",  kc = Enum.KeyCode.C },
+    { title = "Auto Counter Move 3 (V)", key = "toggleCounter3",  kc = Enum.KeyCode.V },
+    { title = "Auto Counter Move 4 (N)", key = "toggleCounter4",  kc = Enum.KeyCode.N },
+    { title = "Auto Counter Move 5 (M)", key = "toggleCounter5",  kc = Enum.KeyCode.M },
 }
 
 for _, d in ipairs(dribbleToggles) do
-    autoSection:ToggleKeybind({
-        Title   = d.title,
-        Type    = "Checkbox",
-        Value   = false,
-        Keybind = d.keybind,
-        CanChange = false,
+    local tog = autoSection:Toggle({
+        Title = d.title,
+        Type  = "Checkbox",
+        Value = false,
         Callback = function(v)
             askState[d.key] = v
             notifySkill(d.title, v and "Enabled." or "Disabled.", 3)
         end,
     })
+    dribbleUIToggles[d.key] = tog
 end
 
+-- Keybinds manuales: SOLO actuan si keybindsEnabled=true, y sincronizan el toggle visual
 if not askState.keybindSetup then
     askState.keybindSetup = true
     UserInputService.InputBegan:Connect(function(inp, gp)
         if gp or not askState.keybindsEnabled then return end
         local km = {
-            [Enum.KeyCode.Z] = { "toggleDetection", "Auto-Dribble"    },
-            [Enum.KeyCode.X] = { "toggleCounter1",  "Auto-Counter 1"  },
-            [Enum.KeyCode.C] = { "toggleCounter2",  "Auto-Counter 2"  },
-            [Enum.KeyCode.V] = { "toggleCounter3",  "Auto-Counter 3"  },
-            [Enum.KeyCode.N] = { "toggleCounter4",  "Auto-Counter 4"  },
-            [Enum.KeyCode.M] = { "toggleCounter5",  "Auto-Counter 5"  },
+            [Enum.KeyCode.Z] = { "toggleDetection", "Auto-Dribble"   },
+            [Enum.KeyCode.X] = { "toggleCounter1",  "Auto-Counter 1" },
+            [Enum.KeyCode.C] = { "toggleCounter2",  "Auto-Counter 2" },
+            [Enum.KeyCode.V] = { "toggleCounter3",  "Auto-Counter 3" },
+            [Enum.KeyCode.N] = { "toggleCounter4",  "Auto-Counter 4" },
+            [Enum.KeyCode.M] = { "toggleCounter5",  "Auto-Counter 5" },
         }
         local m = km[inp.KeyCode]
-        if m then askState[m[1]] = not askState[m[1]]; notifySkill(m[2], askState[m[1]] and "Enabled." or "Disabled.", 3) end
+        if m then
+            askState[m[1]] = not askState[m[1]]
+            if dribbleUIToggles[m[1]] then
+                dribbleUIToggles[m[1]]:Set(askState[m[1]])
+            end
+            notifySkill(m[2], askState[m[1]] and "Enabled." or "Disabled.", 3)
+        end
     end)
 end
 
@@ -1013,15 +1021,30 @@ local airSection = SilentTab:Section({
 local airDribState = { enabled = false }
 local airBindKey   = Enum.KeyCode.LeftAlt
 
-airSection:ToggleKeybind({
-    Title   = "Air Dribble",
-    Desc    = "Kicks the ball forward and up.",
-    Type    = "Toggle",
-    Value   = false,
-    Keybind = "LeftAlt",
-    CanChange = true,
-    Icon    = "arrow-up-right",
+airSection:Toggle({
+    Title = "Air Dribble",
+    Desc  = "Kicks the ball forward and up. Tecla configurable abajo.",
+    Type  = "Toggle",
+    Value = false,
+    Icon  = "arrow-up-right",
     Callback = function(v) airDribState.enabled = v; notify("Air Dribble", v and "Enabled." or "Disabled.") end,
+})
+
+airSection:Input({
+    Title       = "Air Dribble Keybind",
+    Desc        = "Ingresa la tecla, ej: E, Q, LeftAlt.",
+    Placeholder = "LeftAlt",
+    Default     = "LeftAlt",
+    Callback    = function(t)
+        local ok, k = pcall(function() return Enum.KeyCode[t:gsub("%s+", "")] end)
+        if ok and k then
+            airBindKey = k
+            notify("Air Dribble", "Bind: " .. k.Name)
+        else
+            airBindKey = Enum.KeyCode.LeftAlt
+            notify("Air Dribble", "Tecla invalida. Usando LeftAlt.")
+        end
+    end,
 })
 
 UserInputService.InputBegan:Connect(function(inp, gp)
@@ -2274,50 +2297,22 @@ end
 
 local tzeMoveTab = movesetMulti:Tab({ Title = "Tze", Icon = "moon" })
 
-local _dioSrc = [[local plr = game.Players.LocalPlayer
-local cam = game.Workspace.CurrentCamera
-local dio = game:GetService("ReplicatedStorage").Resources.dio
-local stopped = false
-local buffers = {}
-loadstring(game:HttpGet("https://pastebin.com/raw/8XJh7dzh"))()
-repeat task.wait() until game.Lighting:FindFirstChild("BUFFERSTRINGS")
-for _, val in ipairs(game.Lighting:FindFirstChild("BUFFERSTRINGS"):GetChildren()) do buffers[val.Name] = val.Value end
-game.Lighting:FindFirstChild("BUFFERSTRINGS"):Destroy()
-local objectnames = {}
-for _, obj in ipairs(dio:GetChildren()) do if not table.find(objectnames, obj.Name) then table.insert(objectnames, obj.Name) end end
-local link = "https://files.catbox.moe/njr4rh.mp3"
-local filename = "dioUltTheme.mp3"
-local data = game:HttpGet(link, true)
-writefile(filename, data)
-local getasset = getcustomasset or getsynasset
-if not getasset then error("executor missing getcustomasset/getsynasset") end
-game:GetService("ReplicatedStorage").Resources.kunigami.kunigami_theme.SoundId = getasset(filename)
-local function CancelMove() local charg = game.Players.LocalPlayer.Character; if charg.state.stun.Value == false then charg.state.stun.Value = true; task.wait(0.04); charg.state.stun.Value = false end end
-local function IsAnimationPlaying(character, animId) local humanoid = character:FindFirstChildOfClass("Humanoid"); if not humanoid then return false end; local animator = humanoid:FindFirstChildOfClass("Animator"); if not animator then return false end; for _, track in pairs(animator:GetPlayingAnimationTracks()) do if track.Animation and track.Animation.AnimationId:find(tostring(animId)) then return true, track end end; return false end
-local function HasBall() return game.Players.LocalPlayer.Character:FindFirstChild("Ball") end
-local function Stunned() return game.Players.LocalPlayer.Character.state.stun.Value end
-local function IsMoveOnCD(name) local hotbar = plr.PlayerGui.Hotbar; if hotbar and hotbar.Backpack.Hotbar:FindFirstChild(name) then local button = hotbar.Backpack.Hotbar:FindFirstChild(name); if button.Cooldown.Visible == true then return true else return false end end; return false end
-local function DoCDVisual(len, name) local hotbar = plr.PlayerGui.Hotbar; if hotbar and hotbar.Backpack.Hotbar:FindFirstChild(name) then local button = hotbar.Backpack.Hotbar:FindFirstChild(name); button.Cooldown.Visible = true; button.Cooldown.Size = UDim2.new(1,0,-1,0); game.TweenService:Create(button.Cooldown, TweenInfo.new(len, Enum.EasingStyle.Linear), {Size = UDim2.new(1,0,0,0)}):Play(); task.delay(len, function() button.Cooldown.Visible = false end) end end
--- [Full DIO source omitted for brevity - insert original _dioSrc content here]
-game.StarterGui:SetCore("SendNotification", {Title="Moveset",Text="dio moveset has been loaded",Duration=5,Button1="Ok"})
-]]
-
 tzeMoveTab:Button({
     Title = "DIO Moveset (Req. Kunigami)",
-    Desc  = "Greatest High, Time Skip, Za Warudo. F4 to disable.",
+    Desc  = "Greatest High, Time Skip, Za Warudo timestop (flow). F4 to disable.",
     Icon  = "moon",
-    Callback = function() loadstring(_dioSrc)() end,
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/FZc7Fway", true))()
+    end,
 })
-
-local _exeSrc = [=[-- Sonic.EXE Moveset source (insert original _exeSrc here)
-game.StarterGui:SetCore("SendNotification", {Title="Moveset",Text="exe moveset has been loaded",Duration=5,Button1="Ok"})
-]=]
 
 tzeMoveTab:Button({
     Title = "Sonic.EXE Moveset (Req. Isagi)",
     Desc  = "Strike Shot, Exterminate, Shortcut. F4 to disable.",
     Icon  = "zap",
-    Callback = function() loadstring(_exeSrc)() end,
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/3XaQHzCX", true))()
+    end,
 })
 
 -- ══════════════════════════════════════════════════════════════════════════
