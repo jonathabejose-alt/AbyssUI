@@ -1,1 +1,74 @@
+-- AbyssUI Loader Configuration
+local CoreGui = game:GetService("CoreGui")
+local LoadingGui = Instance.new("ScreenGui")
+LoadingGui.Name = "AbyssLoader"
+LoadingGui.Parent = CoreGui
 
+-- Main Background
+local Background = Instance.new("Frame")
+Background.Size = UDim2.new(1, 0, 1, 0)
+Background.BackgroundColor3 = Color3.fromRGB(10, 10, 10) -- Deep Black
+Background.BorderSizePixel = 0
+Background.Parent = LoadingGui
+
+-- Status Text
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(0, 500, 0, 60)
+StatusLabel.Position = UDim2.new(0.5, -250, 0.5, -30)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.Font = Enum.Font.GothamBold
+StatusLabel.TextScaled = true
+StatusLabel.Text = "Initializing AbyssUI..."
+StatusLabel.Parent = Background
+
+-- Decorative Loading Bar
+local LoadingBar = Instance.new("Frame")
+LoadingBar.Size = UDim2.new(0, 0, 0, 2)
+LoadingBar.Position = UDim2.new(0.5, -100, 0.5, 35)
+LoadingBar.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Azure Blue
+LoadingBar.BorderSizePixel = 0
+LoadingBar.Parent = Background
+
+-- Loading Animation (Text & Bar)
+task.spawn(function()
+    LoadingBar:TweenSize(UDim2.new(0, 200, 0, 2), "Out", "Quad", 2)
+    while LoadingGui.Parent do
+        StatusLabel.Text = "Checking Game ID."
+        task.wait(0.5)
+        StatusLabel.Text = "Checking Game ID.."
+        task.wait(0.5)
+        StatusLabel.Text = "Checking Game ID..."
+        task.wait(0.5)
+    end
+end)
+
+-- Simulation Wait Time
+task.wait(3.5)
+
+-- Game Detection Logic
+local currentPlaceId = game.PlaceId
+
+-- Script URLs
+local AzureLatchScript = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"
+local BiteByNightScript = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/bite%20by%20night"
+
+if currentPlaceId == 94647229517154 then
+    StatusLabel.Text = "Azure Latch Detected!"
+    task.wait(1)
+    LoadingGui:Destroy()
+    loadstring(game:HttpGet(AzureLatchScript))()
+
+elseif currentPlaceId == 70845479499574 then
+    StatusLabel.Text = "Bite by Night Detected!"
+    task.wait(1)
+    LoadingGui:Destroy()
+    loadstring(game:HttpGet(BiteByNightScript))()
+
+else
+    -- Error handling for unsupported games
+    StatusLabel.Text = "Game Not Supported by AbyssUI"
+    StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80) -- Error Red
+    task.wait(3)
+    LoadingGui:Destroy()
+end
