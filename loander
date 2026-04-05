@@ -1,74 +1,94 @@
--- AbyssUI Loader Configuration
+-- AbyssUI Final Loader
 local CoreGui = game:GetService("CoreGui")
+
+if CoreGui:FindFirstChild("AbyssLoader") then
+    CoreGui.AbyssLoader:Destroy()
+end
+
 local LoadingGui = Instance.new("ScreenGui")
 LoadingGui.Name = "AbyssLoader"
 LoadingGui.Parent = CoreGui
+LoadingGui.DisplayOrder = 100
 
--- Main Background
-local Background = Instance.new("Frame")
-Background.Size = UDim2.new(1, 0, 1, 0)
-Background.BackgroundColor3 = Color3.fromRGB(10, 10, 10) -- Deep Black
-Background.BorderSizePixel = 0
-Background.Parent = LoadingGui
+-- Ventana Central
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 300, 0, 100)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -50)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.BorderSizePixel = 0
+MainFrame.ZIndex = 1
+MainFrame.Parent = LoadingGui
 
--- Status Text
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
+local Stroke = Instance.new("UIStroke", MainFrame)
+Stroke.Thickness = 2
+Stroke.Color = Color3.fromRGB(0, 170, 255)
+
+-- Texto de Estado
 local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Size = UDim2.new(0, 500, 0, 60)
-StatusLabel.Position = UDim2.new(0.5, -250, 0.5, -30)
+StatusLabel.Size = UDim2.new(1, 0, 0.5, 0)
+StatusLabel.Position = UDim2.new(0, 0, 0.15, 0)
 StatusLabel.BackgroundTransparency = 1
+StatusLabel.ZIndex = 2
 StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 StatusLabel.Font = Enum.Font.GothamBold
-StatusLabel.TextScaled = true
-StatusLabel.Text = "Initializing AbyssUI..."
-StatusLabel.Parent = Background
+StatusLabel.TextSize = 16
+StatusLabel.Text = "Checking Game ID..."
+StatusLabel.Parent = MainFrame
 
--- Decorative Loading Bar
-local LoadingBar = Instance.new("Frame")
-LoadingBar.Size = UDim2.new(0, 0, 0, 2)
-LoadingBar.Position = UDim2.new(0.5, -100, 0.5, 35)
-LoadingBar.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Azure Blue
-LoadingBar.BorderSizePixel = 0
-LoadingBar.Parent = Background
+-- Barra de carga
+local BarBackground = Instance.new("Frame")
+BarBackground.Size = UDim2.new(0, 220, 0, 4)
+BarBackground.Position = UDim2.new(0.5, -110, 0.75, 0)
+BarBackground.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+BarBackground.BorderSizePixel = 0
+BarBackground.ZIndex = 2
+BarBackground.Parent = MainFrame
 
--- Loading Animation (Text & Bar)
+local ProgressBar = Instance.new("Frame")
+ProgressBar.Size = UDim2.new(0, 0, 1, 0)
+ProgressBar.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+ProgressBar.BorderSizePixel = 0
+ProgressBar.ZIndex = 3
+ProgressBar.Parent = BarBackground
+
+Instance.new("UICorner", BarBackground)
+Instance.new("UICorner", ProgressBar)
+
+-- Lógica de Carga con Pausas para que se vea el texto
 task.spawn(function()
-    LoadingBar:TweenSize(UDim2.new(0, 200, 0, 2), "Out", "Quad", 2)
-    while LoadingGui.Parent do
-        StatusLabel.Text = "Checking Game ID."
-        task.wait(0.5)
-        StatusLabel.Text = "Checking Game ID.."
-        task.wait(0.5)
-        StatusLabel.Text = "Checking Game ID..."
-        task.wait(0.5)
+    -- Paso 1: Buscando
+    ProgressBar:TweenSize(UDim2.new(0.4, 0, 1, 0), "Out", "Quad", 1)
+    StatusLabel.Text = "Checking Game ID..."
+    task.wait(1.5)
+    
+    local idJuego = game.PlaceId
+    local scriptURL = ""
+    local nombreJuego = ""
+
+    -- Paso 2: Identificando
+    if idJuego == 94647229517154 then
+        nombreJuego = "Azure Latch"
+        scriptURL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"
+    elseif idJuego == 70845479499574 then
+        nombreJuego = "Bite by Night"
+        scriptURL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/bite%20by%20night"
+    end
+
+    if scriptURL ~= "" then
+        -- Animación de éxito
+        StatusLabel.Text = nombreJuego .. " Found!"
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 150) -- Verde éxito
+        ProgressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 1)
+        task.wait(1.2)
+        LoadingGui:Destroy()
+        loadstring(game:HttpGet(scriptURL))()
+    else
+        -- Animación de error
+        StatusLabel.Text = "Game Not Supported"
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80) -- Rojo error
+        ProgressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.5)
+        task.wait(2.5)
+        LoadingGui:Destroy()
     end
 end)
-
--- Simulation Wait Time
-task.wait(3.5)
-
--- Game Detection Logic
-local currentPlaceId = game.PlaceId
-
--- Script URLs
-local AzureLatchScript = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"
-local BiteByNightScript = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/bite%20by%20night"
-
-if currentPlaceId == 94647229517154 then
-    StatusLabel.Text = "Azure Latch Detected!"
-    task.wait(1)
-    LoadingGui:Destroy()
-    loadstring(game:HttpGet(AzureLatchScript))()
-
-elseif currentPlaceId == 70845479499574 then
-    StatusLabel.Text = "Bite by Night Detected!"
-    task.wait(1)
-    LoadingGui:Destroy()
-    loadstring(game:HttpGet(BiteByNightScript))()
-
-else
-    -- Error handling for unsupported games
-    StatusLabel.Text = "Game Not Supported by AbyssUI"
-    StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80) -- Error Red
-    task.wait(3)
-    LoadingGui:Destroy()
-end
