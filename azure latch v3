@@ -5,7 +5,7 @@ local Window = WindUI:CreateWindow({
     Title = "AbyssUI (Azure Latch)",
     Author = "Tze",
     Folder = "AbyssUIAzureLatch",
-    Icon = "moon",
+    Icon = "rbxassetid://103402395157353",
     IconThemed = true,
     Theme = "Midnight",
     Size = UDim2.fromOffset(720, 540),
@@ -39,7 +39,7 @@ local Window = WindUI:CreateWindow({
     OpenButton = {
         Enabled = true,
         Title = "AbyssUI",
-        Icon = "monitor",
+        Icon = "rbxassetid://103402395157353",
         Position = UDim2.new(0, 80, 0.5, 0),
         Draggable = true,
         OnlyMobile = false,
@@ -73,6 +73,10 @@ Window:Tag({
     Color = Color3.fromRGB(48, 255, 106),
     Icon = "check",
 })
+
+Window:SetBackgroundImage("rbxassetid://132996641534150")
+
+Window:ToggleTransparency(true)
 
 -- ── Sidebar ───────────────────────────────────────────────────────────────
 Window:SideBarLabel({ Title = "Quick Actions", Icon = "zap" })
@@ -176,7 +180,7 @@ local homeStats = HomeTab:Stats({
 
 HomeTab:Code({
     Title = "Loader",
-    Code  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Tze-Scripts/AbyssUI/main/AzureLatch"))()]],
+    Code  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/loander1"))()"))()]],
     OnCopy = function()
         notify("Loader", "Copied loader to clipboard.", 3)
     end,
