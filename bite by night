@@ -2,15 +2,15 @@
 local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/orialdev/WindUI-Boreal/main/WindUI%20Boreal"))()
 
 local Window = WindUI:CreateWindow({
-    Title = "Abyss UI",
+    Title = "Abyss UI (bite by night)",
     Author = "tze",
     Folder = "AbyssUI_BBN",
-    Icon = "ghost",
+    Icon = "rbxassetid://103402395157353",
     IconThemed = true,
 
     Theme = "Midnight",
     Size = UDim2.fromOffset(720, 540),
-    Transparent = false,
+    Transparent = true,
     Acrylic = false,
     SideBarWidth = 210,
     ScrollBarEnabled = true,
@@ -40,8 +40,8 @@ local Window = WindUI:CreateWindow({
     OpenButton = {
         Enabled = true,
         Title = "Abyss UI",
-        Icon = "monitor",
-        Position = UDim2.new(0, 80, 0.5, 0),
+        Icon = "rbxassetid://103402395157353",
+        Position = UDim2.new(0, 120, 0, 120),
         Draggable = true,
         OnlyMobile = false,
         Scale = 1,
@@ -65,7 +65,7 @@ end, {
 })
 
 Window:Tag({
-    Title = "v2",
+    Title = "v3",
     Color = Color3.fromRGB(248, 155, 41),
     Icon = "badge-check",
 })
@@ -75,6 +75,10 @@ Window:Tag({
     Color = Color3.fromRGB(48, 255, 106),
     Icon = "check",
 })
+
+Window:SetBackgroundImage("rbxassetid://132996641534150")
+
+Window:ToggleTransparency(true)
 
 -- ── Sidebar ───────────────────────────────────────────────────────────────────
 Window:SideBarLabel({ Title = "Quick Actions", Icon = "zap" })
@@ -169,7 +173,7 @@ local homeStats = HomeTab:Stats({
     Desc  = "Live info about this session.",
     Items = {
         { Key = "Script",  Value = "Bite By Night" },
-        { Key = "Version", Value = "v2"            },
+        { Key = "Version", Value = "v3"            },
         { Key = "Author",  Value = "tze"           },
         { Key = "Toggle",  Value = "Right Alt"     },
     },
@@ -177,7 +181,7 @@ local homeStats = HomeTab:Stats({
 
 HomeTab:Code({
     Title = "Loader",
-    Code  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/bite%20by%20night"))()]],
+    Code  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/loander1"))()]],
     OnCopy = function()
         notify("Loader", "Copied loader to clipboard.", "copy", 3)
     end,
@@ -1378,6 +1382,7 @@ tpSection:Button({
 -- ═════════════════════════════════════════════════════════════════════════════
 -- OTHERS TAB
 -- ═════════════════════════════════════════════════════════════════════════════
+
 local miscSection = MiscTab:Section({
     Title     = "Miscellaneous",
     Desc      = "Other tools and utilities.",
@@ -1413,6 +1418,73 @@ miscSection:Button({
     Callback = function()
         setclipboard("https://discord.gg/8stFYxJv4R")
         notify("Discord", "Invite copied.", "check", 3)
+    end,
+})
+
+MiscTab:Divider({})
+
+local VideoElement = miscSection:Video({
+    Video = "5608321996",
+    Height = 220,
+    Looped = true,
+    Playing = false,
+    Volume = 0.5,
+    Visible = true,
+    Radius = 16,
+    Padding = 6,
+})
+
+MiscTab:Button({
+    Title = "Play",
+    Desc = "Video:Play",
+    Icon = "play",
+    Callback = function()
+        VideoElement:Play()
+    end,
+})
+
+MiscTab:Button({
+    Title = "Pause",
+    Desc = "Video:Pause",
+    Icon = "pause",
+    Callback = function()
+        VideoElement:Pause()
+    end,
+})
+
+MiscTab:Toggle({
+    Title = "Looped",
+    Desc = "Video:SetLooped",
+    Value = true,
+    Callback = function(v)
+        VideoElement:SetLooped(v)
+    end,
+})
+
+MiscTab:Slider({
+    Title = "Volume",
+    Desc = "Video:SetVolume",
+    Value = { Min = 0, Max = 10, Default = 0.5 },
+    Callback = function(v)
+        VideoElement:SetVolume(v)
+    end,
+})
+
+MiscTab:Slider({
+    Title = "Height",
+    Desc = "Video:SetHeight",
+    Value = { Min = 24, Max = 360, Default = 220 },
+    Callback = function(v)
+        VideoElement:SetHeight(math.floor(v + 0.5))
+    end,
+})
+
+MiscTab:Toggle({
+    Title = "Visible",
+    Desc = "Video:SetVisible",
+    Value = true,
+    Callback = function(v)
+        VideoElement:SetVisible(v)
     end,
 })
 
