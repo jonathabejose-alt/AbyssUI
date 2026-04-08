@@ -496,56 +496,108 @@ mainSection:Toggle({
     end
 })
 
--- ── Lock On ───────────────────────────────────────────────────────────────────
-local lockOnEnabled    = false
-local lockedTarget     = nil
-local inputConnection  = nil
+-- ── Aimlock (con teamcheck + bind configurable) ───────────────────────────────
+-- ACTUALIZADO: teamcheck implementado, bind configurable, reemplaza al viejo Lock On
+local aimlockEnabled  = false
+local lockedTarget    = nil
+local inputConnection = nil
 local renderConnection = nil
-local camera           = workspace.CurrentCamera
+local camera          = workspace.CurrentCamera
+local aimlockBind     = Enum.UserInputType.MouseButton2
+
+local function getMyTeamFolder()
+    local char = player.Character
+    if not char then return nil end
+    local playersFolder = workspace:FindFirstChild("PLAYERS")
+    local aliveFolder   = playersFolder and playersFolder:FindFirstChild("ALIVE")
+    local killerFolder  = playersFolder and playersFolder:FindFirstChild("KILLER")
+    if aliveFolder  and char.Parent == aliveFolder  then return "ALIVE"  end
+    if killerFolder and char.Parent == killerFolder then return "KILLER" end
+    return nil
+end
 
 mainSection:Toggle({
-    Title = "Lock On",
-    Desc  = "Locks Your Camera Onto The Closest Player On M2 Click.",
+    Title = "Aimlock",
+    Desc  = "Locks Your Camera Onto The Closest Enemy On Bind Press.",
     Icon  = "crosshair",
     Type  = "Toggle",
     Value = false,
     Callback = function(state)
-        lockOnEnabled = state
-        notify("Lock On", state and "Enabled." or "Disabled.", "crosshair")
+        aimlockEnabled = state
+        notify("Aimlock", state and "Enabled." or "Disabled.", "crosshair")
         if state then
             inputConnection = UserInputService.InputBegan:Connect(function(input, gp)
                 if gp then return end
-                if input.UserInputType == Enum.UserInputType.MouseButton2 then
-                    if lockedTarget then
-                        lockedTarget = nil
-                    else
-                        local char = player.Character
-                        local hrp  = char and char:FindFirstChild("HumanoidRootPart")
-                        if not hrp then return end
-                        local closest, shortest = nil, math.huge
-                        for _, other in ipairs(Players:GetPlayers()) do
-                            if other ~= player and other.Character and other.Character:FindFirstChild("HumanoidRootPart") then
-                                local dist = (hrp.Position - other.Character.HumanoidRootPart.Position).Magnitude
-                                if dist < shortest then shortest = dist; closest = other end
-                            end
-                        end
-                        if closest then
-                            lockedTarget = closest.Character:FindFirstChild("HumanoidRootPart")
+                if input.UserInputType ~= aimlockBind and input.KeyCode ~= aimlockBind then return end
+                if lockedTarget then
+                    lockedTarget = nil
+                    return
+                end
+                local myTeam = getMyTeamFolder()
+                if not myTeam then return end
+                local myChar = player.Character
+                if not myChar then return end
+                local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+                if not myRoot then return end
+                -- Apuntar al equipo contrario
+                local targetFolderName = (myTeam == "ALIVE") and "KILLER" or "ALIVE"
+                local playersFolder    = workspace:FindFirstChild("PLAYERS")
+                local targetFolder     = playersFolder and playersFolder:FindFirstChild(targetFolderName)
+                if not targetFolder then return end
+                local closest, shortest = nil, math.huge
+                for _, other in ipairs(Players:GetPlayers()) do
+                    if other ~= player and other.Character
+                       and other.Character.Parent == targetFolder then
+                        local root = other.Character:FindFirstChild("HumanoidRootPart")
+                        if root then
+                            local dist = (myRoot.Position - root.Position).Magnitude
+                            if dist < shortest then shortest = dist; closest = root end
                         end
                     end
                 end
+                if closest then lockedTarget = closest end
             end)
             renderConnection = RunService.RenderStepped:Connect(function()
-                if lockedTarget then
+                if lockedTarget and lockedTarget.Parent then
                     camera.CFrame = CFrame.new(camera.CFrame.Position, lockedTarget.Position)
+                else
+                    lockedTarget = nil
                 end
             end)
         else
             lockedTarget = nil
-            if inputConnection  then inputConnection:Disconnect()  end
-            if renderConnection then renderConnection:Disconnect() end
+            if inputConnection  then inputConnection:Disconnect();  inputConnection  = nil end
+            if renderConnection then renderConnection:Disconnect(); renderConnection = nil end
         end
     end
+})
+
+mainSection:Input({
+    Title       = "Aimlock Bind",
+    Desc        = "Enter Key (e.g. LeftAlt, MouseButton2). Debe estar capitalizado.",
+    Placeholder = "MouseButton2",
+    Callback    = function(text)
+        if typeof(text) ~= "string" then
+            aimlockBind = Enum.UserInputType.MouseButton2
+            notify("Aimlock Bind", "Input inválido. Bind = M2.", "alert-triangle")
+            return
+        end
+        local formatted = text:gsub("%s+", "")
+        local ok1, key = pcall(function() return Enum.KeyCode[formatted] end)
+        if ok1 and key then
+            aimlockBind = key
+            notify("Aimlock Bind", "Bind: " .. key.Name, "check")
+            return
+        end
+        local ok2, itype = pcall(function() return Enum.UserInputType[formatted] end)
+        if ok2 and itype then
+            aimlockBind = itype
+            notify("Aimlock Bind", "Bind: " .. itype.Name, "check")
+        else
+            aimlockBind = Enum.UserInputType.MouseButton2
+            notify("Aimlock Bind", "Input inválido. Bind = M2.", "alert-triangle")
+        end
+    end,
 })
 
 -- ── Full Bright ───────────────────────────────────────────────────────────────
@@ -646,9 +698,12 @@ local survivorSection = SurvivorTab:Section({
     BoxBorder = true,
 })
 
--- ── Auto Generator ────────────────────────────────────────────────────────────
-local AutoGen = false
-local genConn = nil
+-- ── Auto Generator (fix anti-ban: cooldown de 3s) ────────────────────────────
+-- ACTUALIZADO: se porta el fix del cooldown de Celeron para evitar bans
+local AutoGen      = false
+local genConn      = nil
+local firingConn   = nil
+local lastFireTime = 0
 
 survivorSection:Toggle({
     Title = "Auto Generator",
@@ -660,15 +715,29 @@ survivorSection:Toggle({
         AutoGen = v
         if AutoGen then
             notify("Auto Generator", "Enabled.", "zap")
-            genConn = RunService.RenderStepped:Connect(function()
-                local plr = Players.LocalPlayer
-                if plr.PlayerGui:FindFirstChild("Gen") then
-                    plr.PlayerGui.Gen.GeneratorMain.Event:FireServer(true)
+            genConn = RunService.Heartbeat:Connect(function()
+                local plr    = Players.LocalPlayer
+                local genGui = plr.PlayerGui:FindFirstChild("Gen")
+                if genGui and not firingConn then
+                    task.wait(3)
+                    if genGui and genGui.Parent and AutoGen then
+                        firingConn = RunService.Heartbeat:Connect(function()
+                            local currentTime = tick()
+                            if plr.PlayerGui:FindFirstChild("Gen") and (currentTime - lastFireTime >= 3) then
+                                plr.PlayerGui.Gen.GeneratorMain.Event:FireServer(true)
+                                lastFireTime = currentTime
+                            elseif not plr.PlayerGui:FindFirstChild("Gen") then
+                                if firingConn then firingConn:Disconnect(); firingConn = nil end
+                            end
+                        end)
+                    end
                 end
             end)
         else
             notify("Auto Generator", "Disabled.", "zap")
-            if genConn then genConn:Disconnect() end
+            if genConn    then genConn:Disconnect();    genConn    = nil end
+            if firingConn then firingConn:Disconnect(); firingConn = nil end
+            lastFireTime = 0
         end
     end
 })
@@ -925,15 +994,6 @@ local tpConn     = nil
 local targetName = ""
 local mode       = "Closest"
 
-local function getAliveNames()
-    local playersFolder = workspace:FindFirstChild("PLAYERS")
-    local alive = playersFolder and playersFolder:FindFirstChild("ALIVE")
-    if not alive then return {} end
-    local t = {}
-    for _, v in ipairs(alive:GetChildren()) do table.insert(t, v.Name) end
-    return t
-end
-
 killerSection:Toggle({
     Title = "Teleport Kill",
     Desc  = "Constantly Teleports Behind The Selected Player.",
@@ -998,14 +1058,18 @@ killerSection:Dropdown({
 -- ═════════════════════════════════════════════════════════════════════════════
 local espSection = VisualTab:Section({
     Title     = "ESP",
-    Desc      = "Highlight tools for survivors, killers, generators and batteries.",
+    Desc      = "Highlight tools for survivors, killers, generators, batteries y más.",
     Icon      = "eye",
     Opened    = true,
     Box       = true,
     BoxBorder = true,
 })
 
-local esp = { survivors = {}, killers = {}, generators = {} }
+-- ── ESP shared state ──────────────────────────────────────────────────────────
+-- ACTUALIZADO: nuevo método Drawing añadido
+local espMethod = "Highlight"
+
+local esp = { survivors = {}, killers = {}, generators = {}, doors = {} }
 
 local function newHighlight(obj, color)
     if not obj then return end
@@ -1019,15 +1083,81 @@ local function newHighlight(obj, color)
     h.Parent  = obj
     return h
 end
+
+local function createDrawingBox(color)
+    local box = Drawing.new("Square")
+    box.Color       = color
+    box.Thickness   = 2
+    box.Filled      = false
+    box.Transparency = 1
+    return box
+end
+
+local function updateDrawingBox(box, obj)
+    if not box or not obj then return end
+    local root = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
+    if not root then box.Visible = false; return end
+    local cam = workspace.CurrentCamera
+    local vec, onScreen = cam:WorldToViewportPoint(root.Position)
+    if onScreen then
+        local size = (cam:WorldToViewportPoint(root.Position + Vector3.new(0, 3, 0)) - vec).Y * 2.5
+        box.Size     = Vector2.new(size * 1.2, size)
+        box.Position = Vector2.new(vec.X - box.Size.X / 2, vec.Y - box.Size.Y / 2)
+        box.Visible  = true
+    else
+        box.Visible = false
+    end
+end
+
 local function addESP(tbl, obj, color)
-    if obj and not tbl[obj] then tbl[obj] = newHighlight(obj, color) end
+    if not obj or tbl[obj] then return end
+    if espMethod == "Highlight" then
+        tbl[obj] = newHighlight(obj, color)
+    else
+        tbl[obj] = createDrawingBox(color)
+    end
 end
+
 local function removeESP(tbl, obj)
-    if tbl[obj] then tbl[obj]:Destroy(); tbl[obj] = nil end
+    if not tbl[obj] then return end
+    if typeof(tbl[obj]) == "Instance" then tbl[obj]:Destroy()
+    else tbl[obj]:Remove() end
+    tbl[obj] = nil
 end
+
 local function clearESP(tbl)
-    for obj, h in pairs(tbl) do if h then h:Destroy() end; tbl[obj] = nil end
+    for obj, v in pairs(tbl) do
+        if v then
+            if typeof(v) == "Instance" then v:Destroy()
+            else v:Remove() end
+        end
+        tbl[obj] = nil
+    end
 end
+
+-- Actualizar drawing boxes en RenderStepped
+RunService.RenderStepped:Connect(function()
+    if espMethod ~= "Drawing" then return end
+    for _, tbl in pairs({ esp.survivors, esp.killers, esp.generators }) do
+        for obj, box in pairs(tbl) do
+            if box and typeof(box) ~= "Instance" then
+                updateDrawingBox(box, obj)
+            end
+        end
+    end
+end)
+
+-- ── ESP Method Dropdown ───────────────────────────────────────────────────────
+espSection:Dropdown({
+    Title    = "ESP Method",
+    Desc     = "Selecciona el método de ESP: Highlight o Drawing.",
+    Values   = { "Highlight", "Drawing" },
+    Value    = "Highlight",
+    Callback = function(selected)
+        espMethod = selected
+        notify("ESP Method", "Cambiado a: " .. selected, "eye")
+    end,
+})
 
 espSection:Toggle({
     Title = "Survivor ESP",
@@ -1117,8 +1247,8 @@ espSection:Toggle({
 })
 
 -- ── Battery ESP ───────────────────────────────────────────────────────────────
-local batteryHighlights     = {}
-local batteryEspConn        = nil
+local batteryHighlights = {}
+local batteryEspConn    = nil
 
 local function createBatteryHighlight(obj)
     if not obj or batteryHighlights[obj] then return end
@@ -1167,7 +1297,6 @@ espSection:Toggle({
     Type  = "Checkbox",
     Value = false,
     Callback = function(state)
-        if not esp.doors then esp.doors = {} end
         if state then
             notify("Door ESP", "Enabled.", "door-open")
             local ok, doorsFolder = pcall(function()
@@ -1189,6 +1318,54 @@ espSection:Toggle({
             notify("Door ESP", "Disabled.", "door-open")
             if esp.doorAdd then esp.doorAdd:Disconnect(); esp.doorAdd = nil end
             clearESP(esp.doors)
+        end
+    end
+})
+
+-- ── Minion ESP (NUEVO) ────────────────────────────────────────────────────────
+local minionHighlights = {}
+local minionConn       = nil
+
+local function createMinionHighlight(obj)
+    if not obj or minionHighlights[obj] then return end
+    local h = Instance.new("Highlight")
+    h.FillColor           = Color3.fromRGB(255, 165, 0)
+    h.FillTransparency    = 0.4
+    h.OutlineColor        = Color3.fromRGB(255, 140, 0)
+    h.OutlineTransparency = 0
+    h.DepthMode           = Enum.HighlightDepthMode.AlwaysOnTop
+    h.Adornee = obj
+    h.Parent  = obj
+    minionHighlights[obj] = h
+end
+
+espSection:Toggle({
+    Title = "Minion ESP",
+    Desc  = "Highlights All Minions.",
+    Icon  = "ghost",
+    Type  = "Checkbox",
+    Value = false,
+    Callback = function(state)
+        if state then
+            notify("Minion ESP", "Enabled.", "ghost")
+            local ignore = workspace:FindFirstChild("IGNORE")
+            if ignore then
+                for _, obj in ipairs(ignore:GetDescendants()) do
+                    if obj:IsA("Model") and obj.Name == "Minion" then
+                        createMinionHighlight(obj)
+                    end
+                end
+            end
+            minionConn = workspace.DescendantAdded:Connect(function(obj)
+                if obj:IsA("Model") and obj.Name == "Minion" then
+                    createMinionHighlight(obj)
+                end
+            end)
+        else
+            notify("Minion ESP", "Disabled.", "ghost")
+            if minionConn then minionConn:Disconnect(); minionConn = nil end
+            for _, h in pairs(minionHighlights) do if h then h:Destroy() end end
+            minionHighlights = {}
         end
     end
 })
@@ -1382,7 +1559,6 @@ tpSection:Button({
 -- ═════════════════════════════════════════════════════════════════════════════
 -- OTHERS TAB
 -- ═════════════════════════════════════════════════════════════════════════════
-
 local miscSection = MiscTab:Section({
     Title     = "Miscellaneous",
     Desc      = "Other tools and utilities.",
@@ -1424,68 +1600,56 @@ miscSection:Button({
 MiscTab:Divider({})
 
 local VideoElement = miscSection:Video({
-    Video = "5608321996",
-    Height = 220,
-    Looped = true,
+    Video   = "5608321996",
+    Height  = 220,
+    Looped  = true,
     Playing = false,
-    Volume = 0.5,
+    Volume  = 0.5,
     Visible = true,
-    Radius = 16,
+    Radius  = 16,
     Padding = 6,
 })
 
 MiscTab:Button({
     Title = "Play",
-    Desc = "Video:Play",
-    Icon = "play",
-    Callback = function()
-        VideoElement:Play()
-    end,
+    Desc  = "Video:Play",
+    Icon  = "play",
+    Callback = function() VideoElement:Play() end,
 })
 
 MiscTab:Button({
     Title = "Pause",
-    Desc = "Video:Pause",
-    Icon = "pause",
-    Callback = function()
-        VideoElement:Pause()
-    end,
+    Desc  = "Video:Pause",
+    Icon  = "pause",
+    Callback = function() VideoElement:Pause() end,
 })
 
 MiscTab:Toggle({
     Title = "Looped",
-    Desc = "Video:SetLooped",
+    Desc  = "Video:SetLooped",
     Value = true,
-    Callback = function(v)
-        VideoElement:SetLooped(v)
-    end,
+    Callback = function(v) VideoElement:SetLooped(v) end,
 })
 
 MiscTab:Slider({
-    Title = "Volume",
-    Desc = "Video:SetVolume",
-    Value = { Min = 0, Max = 10, Default = 0.5 },
-    Callback = function(v)
-        VideoElement:SetVolume(v)
-    end,
+    Title    = "Volume",
+    Desc     = "Video:SetVolume",
+    Value    = { Min = 0, Max = 10, Default = 0.5 },
+    Callback = function(v) VideoElement:SetVolume(v) end,
 })
 
 MiscTab:Slider({
-    Title = "Height",
-    Desc = "Video:SetHeight",
-    Value = { Min = 24, Max = 360, Default = 220 },
-    Callback = function(v)
-        VideoElement:SetHeight(math.floor(v + 0.5))
-    end,
+    Title    = "Height",
+    Desc     = "Video:SetHeight",
+    Value    = { Min = 24, Max = 360, Default = 220 },
+    Callback = function(v) VideoElement:SetHeight(math.floor(v + 0.5)) end,
 })
 
 MiscTab:Toggle({
     Title = "Visible",
-    Desc = "Video:SetVisible",
+    Desc  = "Video:SetVisible",
     Value = true,
-    Callback = function(v)
-        VideoElement:SetVisible(v)
-    end,
+    Callback = function(v) VideoElement:SetVisible(v) end,
 })
 
 -- ═════════════════════════════════════════════════════════════════════════════
