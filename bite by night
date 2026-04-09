@@ -339,7 +339,7 @@ mainSection:Toggle({
     Callback = function(state)
         noclipEnabled = state
         if state then
-            noclipConn = RunService.Stepped:Connect(function()
+            noclipConn = RunService.Heartbeat:Connect(function()
                 if not noclipEnabled then return end
                 local char = player.Character
                 if not char then return end
@@ -357,141 +357,6 @@ mainSection:Toggle({
                 end
             end
             notify("Noclip", "Disabled.", "layers")
-        end
-    end
-})
-
--- ── Flight ───────────────────────────────────────────────────────────────────
-local flying  = false
-local flyConn = nil
-
-mainSection:Toggle({
-    Title = "Flight",
-    Desc  = "Allows You To Fly. Use WASD to move.",
-    Icon  = "bird",
-    Type  = "Toggle",
-    Value = false,
-    Callback = function(state)
-        flying = state
-        local Camera = workspace.CurrentCamera
-        if flying then
-            local char = player.Character
-            if not char then return end
-            local root = char:FindFirstChild("HumanoidRootPart")
-            local hum  = char:FindFirstChildOfClass("Humanoid")
-            if not root or not hum then return end
-            hum.PlatformStand = true
-            root.Anchored     = true
-            local function noCollide()
-                for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") then part.CanCollide = false end
-                end
-            end
-            noCollide()
-            flyConn = RunService.RenderStepped:Connect(function(dt)
-                if not flying or not root or not root.Parent then return end
-                noCollide()
-                local move  = Vector3.zero
-                local speed = 125
-                if UserInputService:IsKeyDown(Enum.KeyCode.W) then move += Camera.CFrame.LookVector  end
-                if UserInputService:IsKeyDown(Enum.KeyCode.S) then move -= Camera.CFrame.LookVector  end
-                if UserInputService:IsKeyDown(Enum.KeyCode.A) then move -= Camera.CFrame.RightVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.D) then move += Camera.CFrame.RightVector end
-                if move.Magnitude > 0 then
-                    root.CFrame = root.CFrame + (move.Unit * speed * dt)
-                end
-                root.CFrame = CFrame.new(root.Position, root.Position + Camera.CFrame.LookVector)
-            end)
-            notify("Flight", "Enabled.", "bird")
-        else
-            if flyConn then flyConn:Disconnect(); flyConn = nil end
-            local char = player.Character
-            if char then
-                local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum then hum.PlatformStand = false end
-                local root = char:FindFirstChild("HumanoidRootPart")
-                if root then root.Anchored = false end
-                for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") then part.CanCollide = true end
-                end
-            end
-            notify("Flight", "Disabled.", "bird")
-        end
-    end
-})
-
--- ── Speed Hack ────────────────────────────────────────────────────────────────
-local speedHackEnabled = false
-local speedHackConn    = nil
-local speedHackValue   = 16
-
-mainSection:Slider({
-    Title     = "Speed Hack Value",
-    Desc      = "Adjust the speed (16 = normal, max 500).",
-    Step      = 1,
-    Value     = { Min = 16, Max = 500, Default = 16 },
-    IsTextbox = true,
-    IsTooltip = true,
-    Suffix    = " spd",
-    Callback  = function(value)
-        speedHackValue = value
-        if speedHackEnabled then
-            local char = player.Character
-            if char then
-                local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum then hum.WalkSpeed = speedHackValue end
-            end
-        end
-    end
-})
-
-mainSection:Toggle({
-    Title = "Speed Hack",
-    Desc  = "Activate custom speed.",
-    Icon  = "gauge",
-    Type  = "Toggle",
-    Value = false,
-    Callback = function(state)
-        speedHackEnabled = state
-        if state then
-            speedHackConn = RunService.Heartbeat:Connect(function()
-                local char = player.Character
-                if not char then return end
-                local hum  = char:FindFirstChildOfClass("Humanoid")
-                local root = char:FindFirstChild("HumanoidRootPart")
-                if not hum or not root then return end
-                hum.WalkSpeed = speedHackValue
-                char:SetAttribute("WalkSpeed", speedHackValue)
-                local moveDir = hum.MoveDirection
-                if moveDir.Magnitude > 0 then
-                    local bv = root:FindFirstChild("SpeedHackBV")
-                    if not bv then
-                        bv          = Instance.new("BodyVelocity")
-                        bv.Name     = "SpeedHackBV"
-                        bv.MaxForce = Vector3.new(1e5, 0, 1e5)
-                        bv.Parent   = root
-                    end
-                    bv.Velocity = moveDir * speedHackValue
-                else
-                    local bv = root:FindFirstChild("SpeedHackBV")
-                    if bv then bv:Destroy() end
-                end
-            end)
-            notify("Speed Hack", "Enabled. Speed: " .. tostring(speedHackValue), "gauge")
-        else
-            if speedHackConn then speedHackConn:Disconnect(); speedHackConn = nil end
-            local char = player.Character
-            if char then
-                local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum then hum.WalkSpeed = 16 end
-                char:SetAttribute("WalkSpeed", 16)
-                local root = char:FindFirstChild("HumanoidRootPart")
-                if root then
-                    local bv = root:FindFirstChild("SpeedHackBV")
-                    if bv then bv:Destroy() end
-                end
-            end
-            notify("Speed Hack", "Disabled.", "gauge")
         end
     end
 })
@@ -601,7 +466,40 @@ mainSection:Input({
 })
 
 -- ── Full Bright ───────────────────────────────────────────────────────────────
-local oldLighting = {}
+local oldLighting     = {}
+local fullBrightMode  = "Normal"
+local fullBrightConn  = nil
+
+local function applyFullBright()
+    local lighting = game:GetService("Lighting")
+    lighting.Brightness    = 5
+    lighting.ClockTime     = 14
+    lighting.FogEnd        = 100000
+    lighting.GlobalShadows = false
+    lighting.Ambient       = Color3.fromRGB(255, 255, 255)
+end
+
+local function revertFullBright()
+    if next(oldLighting) then
+        local lighting = game:GetService("Lighting")
+        lighting.Brightness    = oldLighting.Brightness
+        lighting.ClockTime     = oldLighting.ClockTime
+        lighting.FogEnd        = oldLighting.FogEnd
+        lighting.GlobalShadows = oldLighting.GlobalShadows
+        lighting.Ambient       = oldLighting.Ambient
+    end
+end
+
+mainSection:Dropdown({
+    Title    = "Full Bright Mode",
+    Desc     = "Normal applies once. Loop keeps reapplying so teleports don't reset it.",
+    Values   = { "Normal", "Loop" },
+    Value    = "Normal",
+    Callback = function(selected)
+        fullBrightMode = selected
+        notify("Full Bright Mode", "Mode set to: " .. selected, "sun")
+    end,
+})
 
 mainSection:Toggle({
     Title = "Full Bright",
@@ -617,22 +515,22 @@ mainSection:Toggle({
             oldLighting.FogEnd        = lighting.FogEnd
             oldLighting.GlobalShadows = lighting.GlobalShadows
             oldLighting.Ambient       = lighting.Ambient
-            lighting.Brightness    = 5
-            lighting.ClockTime     = 14
-            lighting.FogEnd        = 100000
-            lighting.GlobalShadows = false
-            lighting.Ambient       = Color3.fromRGB(255, 255, 255)
-        else
-            if next(oldLighting) then
-                lighting.Brightness    = oldLighting.Brightness
-                lighting.ClockTime     = oldLighting.ClockTime
-                lighting.FogEnd        = oldLighting.FogEnd
-                lighting.GlobalShadows = oldLighting.GlobalShadows
-                lighting.Ambient       = oldLighting.Ambient
+            applyFullBright()
+            if fullBrightMode == "Loop" then
+                if fullBrightConn then fullBrightConn:Disconnect() end
+                fullBrightConn = RunService.Heartbeat:Connect(function()
+                    applyFullBright()
+                end)
             end
+            notify("Full Bright", "Enabled. Mode: " .. fullBrightMode, "sun")
+        else
+            if fullBrightConn then fullBrightConn:Disconnect(); fullBrightConn = nil end
+            revertFullBright()
+            notify("Full Bright", "Disabled.", "sun")
         end
     end
 })
+
 
 -- ── Safety Area ───────────────────────────────────────────────────────────────
 local safePart  = nil
@@ -698,12 +596,25 @@ local survivorSection = SurvivorTab:Section({
     BoxBorder = true,
 })
 
--- ── Auto Generator (fix anti-ban: cooldown de 3s) ────────────────────────────
--- ACTUALIZADO: se porta el fix del cooldown de Celeron para evitar bans
+-- ── Auto Generator (Blatant / Silent) ────────────────────────────────────────
 local AutoGen      = false
 local genConn      = nil
 local firingConn   = nil
 local lastFireTime = 0
+local genMode      = "Blatant"
+
+survivorSection:Dropdown({
+    Title    = "Generator Mode",
+    Desc     = "Blatant = instant. Silent = cooldown de 5s para evitar bans.",
+    Values   = { "Blatant", "Silent" },
+    Value    = "Blatant",
+    Callback = function(selected)
+        genMode = selected
+        if AutoGen then
+            notify("Generator Mode", "Modo: " .. selected, "zap")
+        end
+    end,
+})
 
 survivorSection:Toggle({
     Title = "Auto Generator",
@@ -714,20 +625,28 @@ survivorSection:Toggle({
     Callback = function(v)
         AutoGen = v
         if AutoGen then
-            notify("Auto Generator", "Enabled.", "zap")
+            notify("Auto Generator", "Enabled. Modo: " .. genMode, "zap")
             genConn = RunService.Heartbeat:Connect(function()
                 local plr    = Players.LocalPlayer
                 local genGui = plr.PlayerGui:FindFirstChild("Gen")
                 if genGui and not firingConn then
-                    task.wait(3)
+                    if genMode == "Silent" then task.wait(5) end
                     if genGui and genGui.Parent and AutoGen then
                         firingConn = RunService.Heartbeat:Connect(function()
-                            local currentTime = tick()
-                            if plr.PlayerGui:FindFirstChild("Gen") and (currentTime - lastFireTime >= 3) then
-                                plr.PlayerGui.Gen.GeneratorMain.Event:FireServer(true)
-                                lastFireTime = currentTime
-                            elseif not plr.PlayerGui:FindFirstChild("Gen") then
-                                if firingConn then firingConn:Disconnect(); firingConn = nil end
+                            if genMode == "Blatant" then
+                                if plr.PlayerGui:FindFirstChild("Gen") then
+                                    plr.PlayerGui.Gen.GeneratorMain.Event:FireServer(true)
+                                else
+                                    if firingConn then firingConn:Disconnect(); firingConn = nil end
+                                end
+                            else
+                                local currentTime = tick()
+                                if plr.PlayerGui:FindFirstChild("Gen") and (currentTime - lastFireTime >= 5) then
+                                    plr.PlayerGui.Gen.GeneratorMain.Event:FireServer(true)
+                                    lastFireTime = currentTime
+                                elseif not plr.PlayerGui:FindFirstChild("Gen") then
+                                    if firingConn then firingConn:Disconnect(); firingConn = nil end
+                                end
                             end
                         end)
                     end
@@ -892,7 +811,7 @@ local antiDeath = {
     debounce   = false,
     plate      = nil,
 }
-local adSpeed = 25
+local adSpeed = 10
 
 local function getADRoot()
     local char = player.Character or player.CharacterAdded:Wait()
@@ -1394,6 +1313,116 @@ perfSection:Toggle({
     end
 })
 
+-- ── Fuse Box ESP ──────────────────────────────────────────────────────────────
+local fuseHighlights = {}
+local fuseEspConn    = nil
+
+local function createFuseHighlight(obj)
+    if not obj or fuseHighlights[obj] then return end
+    local h = Instance.new("Highlight")
+    h.FillColor           = Color3.fromRGB(0, 255, 255)
+    h.FillTransparency    = 0.4
+    h.OutlineColor        = Color3.fromRGB(0, 255, 255)
+    h.OutlineTransparency = 0
+    h.DepthMode           = Enum.HighlightDepthMode.AlwaysOnTop
+    h.Adornee = obj
+    h.Parent  = obj
+    fuseHighlights[obj] = h
+end
+
+espSection:Toggle({
+    Title = "Fuse Box ESP",
+    Desc  = "Highlights All Fuse Boxes.",
+    Icon  = "plug",
+    Type  = "Checkbox",
+    Value = false,
+    Callback = function(state)
+        if state then
+            notify("Fuse Box ESP", "Enabled.", "plug")
+            local mapsFolder = workspace:FindFirstChild("MAPS")
+            if mapsFolder then
+                local gameMap = mapsFolder:FindFirstChild("GAME MAP")
+                if gameMap then
+                    local fuseBoxes = gameMap:FindFirstChild("FuseBoxes")
+                    if fuseBoxes then
+                        for _, fuseBox in ipairs(fuseBoxes:GetChildren()) do
+                            local battery = fuseBox:FindFirstChild("Battery")
+                            if battery then createFuseHighlight(battery) end
+                        end
+                    end
+                end
+            end
+            fuseEspConn = workspace.DescendantAdded:Connect(function(v)
+                if v:IsA("BasePart") and v.Name == "Battery"
+                   and v.Parent and v.Parent.Name == "FuseBox" then
+                    task.wait(0.1)
+                    createFuseHighlight(v)
+                end
+            end)
+        else
+            notify("Fuse Box ESP", "Disabled.", "plug")
+            if fuseEspConn then fuseEspConn:Disconnect(); fuseEspConn = nil end
+            for obj, h in pairs(fuseHighlights) do if h then h:Destroy() end end
+            fuseHighlights = {}
+        end
+    end
+})
+
+-- ── Bear Trap ESP ─────────────────────────────────────────────────────────────
+local trapHighlights  = {}
+local trapEspConn     = nil
+
+local function createTrapHighlight(obj)
+    if not obj or trapHighlights[obj] then return end
+    local h = Instance.new("Highlight")
+    h.FillColor           = Color3.fromRGB(255, 100, 0)
+    h.FillTransparency    = 0.4
+    h.OutlineColor        = Color3.fromRGB(255, 150, 0)
+    h.OutlineTransparency = 0
+    h.DepthMode           = Enum.HighlightDepthMode.AlwaysOnTop
+    h.Adornee = obj
+    h.Parent  = obj
+    trapHighlights[obj] = h
+end
+
+espSection:Toggle({
+    Title = "Bear Trap ESP",
+    Desc  = "Highlights All Bear Traps.",
+    Icon  = "triangle-alert",
+    Type  = "Checkbox",
+    Value = false,
+    Callback = function(state)
+        if state then
+            notify("Bear Trap ESP", "Enabled.", "triangle-alert")
+            local ignore = workspace:FindFirstChild("IGNORE")
+            if ignore then
+                for _, obj in ipairs(ignore:GetChildren()) do
+                    if obj:IsA("Model") and obj.Name == "Trap" then
+                        createTrapHighlight(obj)
+                        for _, part in ipairs(obj:GetDescendants()) do
+                            if part:IsA("BasePart") then createTrapHighlight(part) end
+                        end
+                    end
+                end
+            end
+            trapEspConn = workspace.DescendantAdded:Connect(function(v)
+                if v:IsA("Model") and v.Name == "Trap" then
+                    task.wait(0.1)
+                    createTrapHighlight(v)
+                    for _, part in ipairs(v:GetDescendants()) do
+                        if part:IsA("BasePart") then createTrapHighlight(part) end
+                    end
+                end
+            end)
+        else
+            notify("Bear Trap ESP", "Disabled.", "triangle-alert")
+            if trapEspConn then trapEspConn:Disconnect(); trapEspConn = nil end
+            for _, h in pairs(trapHighlights) do if h then h:Destroy() end end
+            trapHighlights = {}
+        end
+    end
+})
+
 -- ── Remove Fog ────────────────────────────────────────────────────────────────
 local removeFogEnabled = false
 local originalFog      = {}
@@ -1447,7 +1476,7 @@ local tpSection = TPTab:Section({
     BoxBorder = true,
 })
 
-local tpSpeed       = 25
+local tpSpeed       = 10
 local lerping       = false
 local currentTarget = nil
 
@@ -1556,6 +1585,55 @@ tpSection:Button({
     end,
 })
 
+-- ── Fuse Box TP ───────────────────────────────────────────────────────────────
+local fuseIndex = 1
+
+tpSection:Button({
+    Title    = "Fuse Box TP",
+    Desc     = "Teleports To The Next Fuse Box. Click Again To Cycle.",
+    Icon     = "plug",
+    Callback = function()
+        local char = player.Character
+        if not char then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        local mapsFolder = workspace:FindFirstChild("MAPS")
+        if not mapsFolder then
+            notify("Error", "Wait for match to start.", "alert-triangle")
+            return
+        end
+        local gameMap = mapsFolder:FindFirstChild("GAME MAP")
+        if not gameMap then
+            notify("Error", "Wait for match to start.", "alert-triangle")
+            return
+        end
+        local fuseBoxes = gameMap:FindFirstChild("FuseBoxes")
+        if not fuseBoxes then
+            notify("Error", "No fuse boxes found.", "alert-triangle")
+            return
+        end
+        local batteries = {}
+        for _, fuseBox in ipairs(fuseBoxes:GetChildren()) do
+            local battery = fuseBox:FindFirstChild("Battery")
+            if battery and battery:IsA("BasePart") then
+                table.insert(batteries, battery)
+            end
+        end
+        if #batteries == 0 then
+            notify("Error", "No fuse boxes found.", "alert-triangle")
+            return
+        end
+        for i, v in ipairs(batteries) do v:SetAttribute("Order", i) end
+        table.sort(batteries, function(a, b)
+            return (a:GetAttribute("Order") or 0) < (b:GetAttribute("Order") or 0)
+        end)
+        local battery = batteries[fuseIndex]
+        if not battery then return end
+        lerpTo(battery.CFrame * CFrame.new(0, 3, 0))
+        fuseIndex += 1
+        if fuseIndex > #batteries then fuseIndex = 1 end
+    end,
+})
 -- ═════════════════════════════════════════════════════════════════════════════
 -- OTHERS TAB
 -- ═════════════════════════════════════════════════════════════════════════════
