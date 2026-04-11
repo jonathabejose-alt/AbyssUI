@@ -832,11 +832,12 @@ parrySection:Toggle({
     Type  = "Toggle",
     Value = false,
     Callback = function(state)
+        getgenv().AbyssAutoParry = state
         parryEnabled = state
         if state then
             notify("Auto Parry", "Enabled.", "shield")
             parryConn = RunService.Heartbeat:Connect(function()
-                if not parryEnabled then return end
+                if not getgenv().AbyssAutoParry then return end
                 local char = player.Character
                 if not char or not char:FindFirstChild("HumanoidRootPart") then return end
                 local root = char.HumanoidRootPart
@@ -874,7 +875,7 @@ parrySection:Toggle({
 parrySection:Slider({
     Title     = "Main Attack Range",
     Desc      = "Detection range for standard killer attacks.",
-    Value     = { Min = 15, Max = 50, Default = 25 },
+    Value     = { Min = 10, Max = 50, Default = 25 },
     Step      = 1,
     Suffix    = " studs",
     IsTextbox = true,
@@ -885,7 +886,7 @@ parrySection:Slider({
 parrySection:Slider({
     Title     = "Ennard Pull Range",
     Desc      = "Detection range for Ennard's pull attack.",
-    Value     = { Min = 15, Max = 75, Default = 50 },
+    Value     = { Min = 10, Max = 75, Default = 50 },
     Step      = 1,
     Suffix    = " studs",
     IsTextbox = true,
