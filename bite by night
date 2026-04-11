@@ -77,7 +77,6 @@ Window:Tag({
 })
 
 Window:SetBackgroundImage("rbxassetid://132996641534150")
-
 Window:ToggleTransparency(true)
 
 -- ── Sidebar ───────────────────────────────────────────────────────────────────
@@ -124,27 +123,27 @@ end
 
 -- ── Safe platform ─────────────────────────────────────────────────────────────
 local pp = Instance.new("Part")
-pp.Name        = "pp"
-pp.Size        = Vector3.new(50, 2, 50)
-pp.Position    = Vector3.new(0, 1000, 0)
-pp.Anchored    = true
-pp.CanCollide  = true
-pp.Material    = Enum.Material.ForceField
-pp.Color       = Color3.fromRGB(0, 170, 255)
+pp.Name         = "pp"
+pp.Size         = Vector3.new(50, 2, 50)
+pp.Position     = Vector3.new(0, 1000, 0)
+pp.Anchored     = true
+pp.CanCollide   = true
+pp.Material     = Enum.Material.ForceField
+pp.Color        = Color3.fromRGB(0, 170, 255)
 pp.Transparency = 0.3
-pp.Parent      = workspace
+pp.Parent       = workspace
 
 -- ═════════════════════════════════════════════════════════════════════════════
 -- TABS
 -- ═════════════════════════════════════════════════════════════════════════════
-local HomeTab     = Window:Tab({ Title = "Home",      Icon = "house",           ShowTabTitle = true, Border = true })
-local MainTab     = Window:Tab({ Title = "Main",       Icon = "person-standing", ShowTabTitle = true, Border = true })
-local SurvivorTab = Window:Tab({ Title = "Survivor",   Icon = "shield",          ShowTabTitle = true, Border = true })
-local KillerTab   = Window:Tab({ Title = "Killer",     Icon = "sword",           ShowTabTitle = true, Border = true })
-local VisualTab   = Window:Tab({ Title = "Visual",     Icon = "eye",             ShowTabTitle = true, Border = true })
-local TPTab       = Window:Tab({ Title = "Teleport",   Icon = "map-pin",         ShowTabTitle = true, Border = true })
-local MiscTab     = Window:Tab({ Title = "Others",     Icon = "blocks",          ShowTabTitle = true, Border = true })
-local InfoTab     = Window:Tab({ Title = "Info",       Icon = "info",            ShowTabTitle = true, Border = true })
+local HomeTab     = Window:Tab({ Title = "Home",     Icon = "house",           ShowTabTitle = true, Border = true })
+local MainTab     = Window:Tab({ Title = "Main",     Icon = "person-standing", ShowTabTitle = true, Border = true })
+local SurvivorTab = Window:Tab({ Title = "Survivor", Icon = "shield",          ShowTabTitle = true, Border = true })
+local KillerTab   = Window:Tab({ Title = "Killer",   Icon = "sword",           ShowTabTitle = true, Border = true })
+local VisualTab   = Window:Tab({ Title = "Visual",   Icon = "eye",             ShowTabTitle = true, Border = true })
+local TPTab       = Window:Tab({ Title = "Teleport", Icon = "map-pin",         ShowTabTitle = true, Border = true })
+local MiscTab     = Window:Tab({ Title = "Others",   Icon = "blocks",          ShowTabTitle = true, Border = true })
+local InfoTab     = Window:Tab({ Title = "Info",     Icon = "info",            ShowTabTitle = true, Border = true })
 
 Window:SelectTab(HomeTab)
 
@@ -168,7 +167,7 @@ HomeTab:Paragraph({
 
 HomeTab:Divider({})
 
-local homeStats = HomeTab:Stats({
+HomeTab:Stats({
     Title = "Session Info",
     Desc  = "Live info about this session.",
     Items = {
@@ -220,7 +219,7 @@ infoGroup:Button({
 })
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- MAIN TAB  (Character Movement)
+-- MAIN TAB
 -- ═════════════════════════════════════════════════════════════════════════════
 local mainSection = MainTab:Section({
     Title     = "Character Movement",
@@ -312,7 +311,7 @@ mainSection:Toggle({
             notify("Allow Jumping", "Enabled.", "arrow-up")
         else
             if jpLoop then jpLoop:Disconnect() end
-            if jpCA  then jpCA:Disconnect()  end
+            if jpCA   then jpCA:Disconnect()  end
             local char = player.Character
             if char then
                 local hum = char:FindFirstChildOfClass("Humanoid")
@@ -361,14 +360,13 @@ mainSection:Toggle({
     end
 })
 
--- ── Aimlock (con teamcheck + bind configurable) ───────────────────────────────
--- ACTUALIZADO: teamcheck implementado, bind configurable, reemplaza al viejo Lock On
-local aimlockEnabled  = false
-local lockedTarget    = nil
-local inputConnection = nil
+-- ── Aimlock ───────────────────────────────────────────────────────────────────
+local aimlockEnabled   = false
+local lockedTarget     = nil
+local inputConnection  = nil
 local renderConnection = nil
-local camera          = workspace.CurrentCamera
-local aimlockBind     = Enum.UserInputType.MouseButton2
+local camera           = workspace.CurrentCamera
+local aimlockBind      = Enum.UserInputType.MouseButton2
 
 local function getMyTeamFolder()
     local char = player.Character
@@ -394,17 +392,13 @@ mainSection:Toggle({
             inputConnection = UserInputService.InputBegan:Connect(function(input, gp)
                 if gp then return end
                 if input.UserInputType ~= aimlockBind and input.KeyCode ~= aimlockBind then return end
-                if lockedTarget then
-                    lockedTarget = nil
-                    return
-                end
+                if lockedTarget then lockedTarget = nil; return end
                 local myTeam = getMyTeamFolder()
                 if not myTeam then return end
                 local myChar = player.Character
                 if not myChar then return end
                 local myRoot = myChar:FindFirstChild("HumanoidRootPart")
                 if not myRoot then return end
-                -- Apuntar al equipo contrario
                 local targetFolderName = (myTeam == "ALIVE") and "KILLER" or "ALIVE"
                 local playersFolder    = workspace:FindFirstChild("PLAYERS")
                 local targetFolder     = playersFolder and playersFolder:FindFirstChild(targetFolderName)
@@ -439,36 +433,36 @@ mainSection:Toggle({
 
 mainSection:Input({
     Title       = "Aimlock Bind",
-    Desc        = "Enter Key (e.g. LeftAlt, MouseButton2). Debe estar capitalizado.",
+    Desc        = "Enter Key (e.g. LeftAlt, MouseButton2). Must be capitalized.",
     Placeholder = "MouseButton2",
     Callback    = function(text)
         if typeof(text) ~= "string" then
             aimlockBind = Enum.UserInputType.MouseButton2
-            notify("Aimlock Bind", "Input inválido. Bind = M2.", "alert-triangle")
+            notify("Aimlock Bind", "Invalid input. Bind reset to M2.", "alert-triangle")
             return
         end
         local formatted = text:gsub("%s+", "")
         local ok1, key = pcall(function() return Enum.KeyCode[formatted] end)
         if ok1 and key then
             aimlockBind = key
-            notify("Aimlock Bind", "Bind: " .. key.Name, "check")
+            notify("Aimlock Bind", "Bind set to: " .. key.Name, "check")
             return
         end
         local ok2, itype = pcall(function() return Enum.UserInputType[formatted] end)
         if ok2 and itype then
             aimlockBind = itype
-            notify("Aimlock Bind", "Bind: " .. itype.Name, "check")
+            notify("Aimlock Bind", "Bind set to: " .. itype.Name, "check")
         else
             aimlockBind = Enum.UserInputType.MouseButton2
-            notify("Aimlock Bind", "Input inválido. Bind = M2.", "alert-triangle")
+            notify("Aimlock Bind", "Invalid input. Bind reset to M2.", "alert-triangle")
         end
     end,
 })
 
 -- ── Full Bright ───────────────────────────────────────────────────────────────
-local oldLighting     = {}
-local fullBrightMode  = "Normal"
-local fullBrightConn  = nil
+local oldLighting    = {}
+local fullBrightMode = "Normal"
+local fullBrightConn = nil
 
 local function applyFullBright()
     local lighting = game:GetService("Lighting")
@@ -531,7 +525,6 @@ mainSection:Toggle({
     end
 })
 
-
 -- ── Safety Area ───────────────────────────────────────────────────────────────
 local safePart  = nil
 local safeSpeed = 25
@@ -566,8 +559,8 @@ mainSection:Toggle({
         local root = char:FindFirstChild("HumanoidRootPart")
         if not root then return end
         if state then
-            local pos  = root.Position
-            safePart   = Instance.new("Part")
+            local pos = root.Position
+            safePart          = Instance.new("Part")
             safePart.Size     = Vector3.new(50, 1, 50)
             safePart.Anchored = true
             safePart.Position = pos - Vector3.new(0, 100, 0)
@@ -596,7 +589,7 @@ local survivorSection = SurvivorTab:Section({
     BoxBorder = true,
 })
 
--- ── Auto Generator (Blatant / Silent) ────────────────────────────────────────
+-- ── Auto Generator ────────────────────────────────────────────────────────────
 local AutoGen      = false
 local genConn      = nil
 local firingConn   = nil
@@ -605,13 +598,13 @@ local genMode      = "Blatant"
 
 survivorSection:Dropdown({
     Title    = "Generator Mode",
-    Desc     = "Blatant = instant. Silent = cooldown de 5s para evitar bans.",
+    Desc     = "Blatant = instant. Silent = 5s cooldown to avoid bans.",
     Values   = { "Blatant", "Silent" },
     Value    = "Blatant",
     Callback = function(selected)
         genMode = selected
         if AutoGen then
-            notify("Generator Mode", "Modo: " .. selected, "zap")
+            notify("Generator Mode", "Mode: " .. selected, "zap")
         end
     end,
 })
@@ -625,7 +618,7 @@ survivorSection:Toggle({
     Callback = function(v)
         AutoGen = v
         if AutoGen then
-            notify("Auto Generator", "Enabled. Modo: " .. genMode, "zap")
+            notify("Auto Generator", "Enabled. Mode: " .. genMode, "zap")
             genConn = RunService.Heartbeat:Connect(function()
                 local plr    = Players.LocalPlayer
                 local genGui = plr.PlayerGui:FindFirstChild("Gen")
@@ -697,7 +690,7 @@ survivorSection:Toggle({
                                 root.Anchored = true
                                 char.PrimaryPart.CFrame = part.CFrame
                                 task.delay(1.5, function() if root then root.Anchored = false end end)
-                                task.delay(10, function() teleported = false end)
+                                task.delay(10,  function() teleported = false end)
                             end
                         end
                     end
@@ -780,14 +773,124 @@ survivorSection:Toggle({
             end
             notify("View Killer", "Enabled.", "eye")
         else
-            if killerAddedConn   then killerAddedConn:Disconnect()   end
-            if killerRemovedConn then killerRemovedConn:Disconnect()  end
+            if killerAddedConn   then killerAddedConn:Disconnect()  end
+            if killerRemovedConn then killerRemovedConn:Disconnect() end
             local char = player.Character
             local hum  = char and char:FindFirstChildOfClass("Humanoid")
             if hum then camera.CameraSubject = hum end
             notify("View Killer", "Disabled.", "eye")
         end
     end
+})
+
+-- ── Auto Parry ────────────────────────────────────────────────────────────────
+SurvivorTab:Divider({})
+
+local parrySection = SurvivorTab:Section({
+    Title     = "Auto Parry",
+    Desc      = "Automatically attempts to parry killer attacks.",
+    Icon      = "shield",
+    Opened    = true,
+    Box       = true,
+    BoxBorder = true,
+})
+
+local parryEnabled = false
+local parryConn    = nil
+
+local attackAnimIds = {
+    "rbxassetid://70869035406359",
+    "rbxassetid://106673226682917",
+    "rbxassetid://112503015929213",
+    "rbxassetid://120428956410756",
+    "rbxassetid://102810363618918",
+    "rbxassetid://133752270724243",
+    "rbxassetid://71147082224885",
+}
+
+local function isAttackAnimation(track)
+    if not track or not track.Animation then return false end
+    local id = track.Animation.AnimationId
+    for _, aid in ipairs(attackAnimIds) do
+        if id == aid then return true end
+    end
+    return false
+end
+
+local function getParryRange(track)
+    if not track or not track.Animation then return 30 end
+    if track.Animation.AnimationId == "rbxassetid://133752270724243" then
+        return getgenv().PullAttackRange or 50
+    end
+    return getgenv().BasicAttackRange or 30
+end
+
+parrySection:Toggle({
+    Title = "Auto Parry",
+    Desc  = "Works best on good ping. Cannot parry Springtrap M1s.",
+    Icon  = "shield",
+    Type  = "Toggle",
+    Value = false,
+    Callback = function(state)
+        parryEnabled = state
+        if state then
+            notify("Auto Parry", "Enabled.", "shield")
+            parryConn = RunService.Heartbeat:Connect(function()
+                if not parryEnabled then return end
+                local char = player.Character
+                if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+                local root = char.HumanoidRootPart
+                for _, plr in ipairs(Players:GetPlayers()) do
+                    if plr == player then continue end
+                    local pchar = plr.Character
+                    if not pchar or not pchar:FindFirstChild("HumanoidRootPart") then continue end
+                    local hum = pchar:FindFirstChildOfClass("Humanoid")
+                    if not hum then continue end
+                    local animator = hum:FindFirstChildOfClass("Animator")
+                    if not animator then continue end
+                    for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+                        if track.IsPlaying and isAttackAnimation(track) then
+                            local range = getParryRange(track)
+                            if (pchar.HumanoidRootPart.Position - root.Position).Magnitude > range then continue end
+                            local args = {
+                                buffer.fromstring("\a"),
+                                buffer.fromstring("\254\001\000\254\002\000\006\aAbility\001\002")
+                            }
+                            game:GetService("ReplicatedStorage"):WaitForChild("Modules")
+                                :WaitForChild("Warp"):WaitForChild("Index")
+                                :WaitForChild("Event"):WaitForChild("Reliable"):FireServer(unpack(args))
+                            break
+                        end
+                    end
+                end
+            end)
+        else
+            if parryConn then parryConn:Disconnect(); parryConn = nil end
+            notify("Auto Parry", "Disabled.", "shield")
+        end
+    end
+})
+
+parrySection:Slider({
+    Title     = "Main Attack Range",
+    Desc      = "Detection range for standard killer attacks.",
+    Value     = { Min = 15, Max = 50, Default = 25 },
+    Step      = 1,
+    Suffix    = " studs",
+    IsTextbox = true,
+    IsTooltip = true,
+    Callback  = function(v) getgenv().BasicAttackRange = v end,
+})
+
+parrySection:Slider({
+    Title     = "Ennard Pull Range",
+    Desc      = "Detection range for Ennard's pull attack.",
+    Value     = { Min = 15, Max = 75, Default = 50 },
+    Step      = 1,
+    Suffix    = " studs",
+    IsTextbox = true,
+    IsTooltip = true,
+    Callback  = function(v) getgenv().PullAttackRange = v end,
 })
 
 -- ── Anti Death ────────────────────────────────────────────────────────────────
@@ -911,7 +1014,7 @@ local killerSection = KillerTab:Section({
 local tpKill     = false
 local tpConn     = nil
 local targetName = ""
-local mode       = "Closest"
+local killMode   = "Closest"
 
 killerSection:Toggle({
     Title = "Teleport Kill",
@@ -932,7 +1035,7 @@ killerSection:Toggle({
                 local aliveFolder   = playersFolder and playersFolder:FindFirstChild("ALIVE")
                 if not aliveFolder then return end
                 local targetChar
-                if mode == "Closest" then
+                if killMode == "Closest" then
                     local closest, dist = nil, math.huge
                     for _, v in ipairs(aliveFolder:GetChildren()) do
                         local hrp = v:FindFirstChild("HumanoidRootPart")
@@ -942,7 +1045,7 @@ killerSection:Toggle({
                         end
                     end
                     targetChar = closest
-                elseif mode == "Specific" then
+                elseif killMode == "Specific" then
                     targetChar = aliveFolder:FindFirstChild(targetName)
                 end
                 if targetChar then
@@ -969,7 +1072,7 @@ killerSection:Dropdown({
     Desc     = "Changes The Kill Method Between Closest / Specific Username.",
     Values   = { "Closest", "Specific" },
     Value    = "Closest",
-    Callback = function(v) mode = v end,
+    Callback = function(v) killMode = v end,
 })
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -977,7 +1080,7 @@ killerSection:Dropdown({
 -- ═════════════════════════════════════════════════════════════════════════════
 local espSection = VisualTab:Section({
     Title     = "ESP",
-    Desc      = "Highlight tools for survivors, killers, generators, batteries y más.",
+    Desc      = "Highlight tools for survivors, killers, generators, batteries and more.",
     Icon      = "eye",
     Opened    = true,
     Box       = true,
@@ -985,9 +1088,7 @@ local espSection = VisualTab:Section({
 })
 
 -- ── ESP shared state ──────────────────────────────────────────────────────────
--- ACTUALIZADO: nuevo método Drawing añadido
 local espMethod = "Highlight"
-
 local esp = { survivors = {}, killers = {}, generators = {}, doors = {} }
 
 local function newHighlight(obj, color)
@@ -1005,9 +1106,9 @@ end
 
 local function createDrawingBox(color)
     local box = Drawing.new("Square")
-    box.Color       = color
-    box.Thickness   = 2
-    box.Filled      = false
+    box.Color        = color
+    box.Thickness    = 2
+    box.Filled       = false
     box.Transparency = 1
     return box
 end
@@ -1028,39 +1129,102 @@ local function updateDrawingBox(box, obj)
     end
 end
 
+-- ── Health Labels ─────────────────────────────────────────────────────────────
+local healthLabels = {}
+
+local function createHealthLabel(char)
+    if not char or healthLabels[char] then return end
+    local humanoid = char:FindFirstChild("Humanoid")
+    if not humanoid then return end
+    local labelGui = Instance.new("BillboardGui")
+    labelGui.Adornee      = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
+    labelGui.Size         = UDim2.new(3, 0, 1, 0)
+    labelGui.StudsOffset  = Vector3.new(0, 3, 0)
+    labelGui.AlwaysOnTop  = true
+    labelGui.LightInfluence = 0
+    labelGui.Parent       = char
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size                   = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3             = Color3.fromRGB(255, 255, 255)
+    textLabel.TextStrokeTransparency = 0
+    textLabel.TextStrokeColor3       = Color3.fromRGB(0, 0, 0)
+    textLabel.Font                   = Enum.Font.GothamBold
+    textLabel.TextSize               = 16
+    textLabel.Text                   = "100 / 100"
+    textLabel.Parent                 = labelGui
+    healthLabels[char] = { gui = labelGui, text = textLabel, humanoid = humanoid, connection = nil }
+    local conn = humanoid.HealthChanged:Connect(function()
+        if not healthLabels[char] then conn:Disconnect(); return end
+        healthLabels[char].text.Text = math.floor(humanoid.Health) .. " / " .. math.floor(humanoid.MaxHealth)
+    end)
+    healthLabels[char].connection = conn
+    textLabel.Text = math.floor(humanoid.Health) .. " / " .. math.floor(humanoid.MaxHealth)
+end
+
+local function removeHealthLabel(char)
+    if not healthLabels[char] then return end
+    if healthLabels[char].connection then healthLabels[char].connection:Disconnect() end
+    if healthLabels[char].gui        then healthLabels[char].gui:Destroy()           end
+    healthLabels[char] = nil
+end
+
 local function addESP(tbl, obj, color)
     if not obj or tbl[obj] then return end
-    if espMethod == "Highlight" then
+    if espMethod == "Dual" then
+        tbl[obj] = {
+            highlight = newHighlight(obj, color),
+            drawing   = createDrawingBox(color),
+        }
+    elseif espMethod == "Highlight" then
         tbl[obj] = newHighlight(obj, color)
     else
         tbl[obj] = createDrawingBox(color)
+    end
+    if tbl == esp.survivors then
+        createHealthLabel(obj)
     end
 end
 
 local function removeESP(tbl, obj)
     if not tbl[obj] then return end
-    if typeof(tbl[obj]) == "Instance" then tbl[obj]:Destroy()
-    else tbl[obj]:Remove() end
+    if typeof(tbl[obj]) == "table" then
+        if tbl[obj].highlight then tbl[obj].highlight:Destroy() end
+        if tbl[obj].drawing   then tbl[obj].drawing:Remove()   end
+    elseif typeof(tbl[obj]) == "Instance" then
+        tbl[obj]:Destroy()
+    else
+        tbl[obj]:Remove()
+    end
     tbl[obj] = nil
+    removeHealthLabel(obj)
 end
 
 local function clearESP(tbl)
     for obj, v in pairs(tbl) do
         if v then
-            if typeof(v) == "Instance" then v:Destroy()
-            else v:Remove() end
+            if typeof(v) == "table" then
+                if v.highlight then v.highlight:Destroy() end
+                if v.drawing   then v.drawing:Remove()   end
+            elseif typeof(v) == "Instance" then
+                v:Destroy()
+            else
+                v:Remove()
+            end
         end
         tbl[obj] = nil
+        removeHealthLabel(obj)
     end
 end
 
--- Actualizar drawing boxes en RenderStepped
 RunService.RenderStepped:Connect(function()
-    if espMethod ~= "Drawing" then return end
+    if espMethod ~= "Drawing" and espMethod ~= "Dual" then return end
     for _, tbl in pairs({ esp.survivors, esp.killers, esp.generators }) do
-        for obj, box in pairs(tbl) do
-            if box and typeof(box) ~= "Instance" then
-                updateDrawingBox(box, obj)
+        for obj, data in pairs(tbl) do
+            if typeof(data) == "table" and data.drawing then
+                updateDrawingBox(data.drawing, obj)
+            elseif typeof(data) ~= "Instance" then
+                updateDrawingBox(data, obj)
             end
         end
     end
@@ -1069,18 +1233,18 @@ end)
 -- ── ESP Method Dropdown ───────────────────────────────────────────────────────
 espSection:Dropdown({
     Title    = "ESP Method",
-    Desc     = "Selecciona el método de ESP: Highlight o Drawing.",
-    Values   = { "Highlight", "Drawing" },
+    Desc     = "Select the ESP method. Dual shows both highlight and box.",
+    Values   = { "Highlight", "Drawing", "Dual" },
     Value    = "Highlight",
     Callback = function(selected)
         espMethod = selected
-        notify("ESP Method", "Cambiado a: " .. selected, "eye")
+        notify("ESP Method", "Changed to: " .. selected, "eye")
     end,
 })
 
 espSection:Toggle({
     Title = "Survivor ESP",
-    Desc  = "Highlight All Survivors.",
+    Desc  = "Highlights All Survivors. Shows HP above their head.",
     Icon  = "users",
     Type  = "Checkbox",
     Value = false,
@@ -1209,6 +1373,7 @@ espSection:Toggle({
     end
 })
 
+-- ── Door ESP ──────────────────────────────────────────────────────────────────
 espSection:Toggle({
     Title = "Door ESP",
     Desc  = "Highlights All Doors.",
@@ -1237,78 +1402,6 @@ espSection:Toggle({
             notify("Door ESP", "Disabled.", "door-open")
             if esp.doorAdd then esp.doorAdd:Disconnect(); esp.doorAdd = nil end
             clearESP(esp.doors)
-        end
-    end
-})
-
--- ── Minion ESP (NUEVO) ────────────────────────────────────────────────────────
-local minionHighlights = {}
-local minionConn       = nil
-
-local function createMinionHighlight(obj)
-    if not obj or minionHighlights[obj] then return end
-    local h = Instance.new("Highlight")
-    h.FillColor           = Color3.fromRGB(255, 165, 0)
-    h.FillTransparency    = 0.4
-    h.OutlineColor        = Color3.fromRGB(255, 140, 0)
-    h.OutlineTransparency = 0
-    h.DepthMode           = Enum.HighlightDepthMode.AlwaysOnTop
-    h.Adornee = obj
-    h.Parent  = obj
-    minionHighlights[obj] = h
-end
-
-espSection:Toggle({
-    Title = "Minion ESP",
-    Desc  = "Highlights All Minions.",
-    Icon  = "ghost",
-    Type  = "Checkbox",
-    Value = false,
-    Callback = function(state)
-        if state then
-            notify("Minion ESP", "Enabled.", "ghost")
-            local ignore = workspace:FindFirstChild("IGNORE")
-            if ignore then
-                for _, obj in ipairs(ignore:GetDescendants()) do
-                    if obj:IsA("Model") and obj.Name == "Minion" then
-                        createMinionHighlight(obj)
-                    end
-                end
-            end
-            minionConn = workspace.DescendantAdded:Connect(function(obj)
-                if obj:IsA("Model") and obj.Name == "Minion" then
-                    createMinionHighlight(obj)
-                end
-            end)
-        else
-            notify("Minion ESP", "Disabled.", "ghost")
-            if minionConn then minionConn:Disconnect(); minionConn = nil end
-            for _, h in pairs(minionHighlights) do if h then h:Destroy() end end
-            minionHighlights = {}
-        end
-    end
-})
-
-local perfSection = VisualTab:Section({
-    Title     = "Performance",
-    Icon      = "cpu",
-    Opened    = true,
-    Box       = true,
-    BoxBorder = true,
-})
-
-perfSection:Toggle({
-    Title = "FPS Booster",
-    Desc  = "Optimizes the game to improve FPS.",
-    Icon  = "zap",
-    Type  = "Toggle",
-    Value = false,
-    Callback = function(state)
-        if state then
-            loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ahhsempai/bitebynighttuffsmth/refs/heads/main/fps.lua"))()
-            notify("FPS Booster", "Enabled.", "zap")
-        else
-            notify("FPS Booster", "Rejoin to revert changes.", "zap")
         end
     end
 })
@@ -1369,8 +1462,8 @@ espSection:Toggle({
 })
 
 -- ── Bear Trap ESP ─────────────────────────────────────────────────────────────
-local trapHighlights  = {}
-local trapEspConn     = nil
+local trapHighlights = {}
+local trapEspConn    = nil
 
 local function createTrapHighlight(obj)
     if not obj or trapHighlights[obj] then return end
@@ -1423,6 +1516,79 @@ espSection:Toggle({
     end
 })
 
+-- ── Minion ESP ────────────────────────────────────────────────────────────────
+local minionHighlights = {}
+local minionConn       = nil
+
+local function createMinionHighlight(obj)
+    if not obj or minionHighlights[obj] then return end
+    local h = Instance.new("Highlight")
+    h.FillColor           = Color3.fromRGB(255, 165, 0)
+    h.FillTransparency    = 0.4
+    h.OutlineColor        = Color3.fromRGB(255, 140, 0)
+    h.OutlineTransparency = 0
+    h.DepthMode           = Enum.HighlightDepthMode.AlwaysOnTop
+    h.Adornee = obj
+    h.Parent  = obj
+    minionHighlights[obj] = h
+end
+
+espSection:Toggle({
+    Title = "Minion ESP",
+    Desc  = "Highlights All Minions.",
+    Icon  = "ghost",
+    Type  = "Checkbox",
+    Value = false,
+    Callback = function(state)
+        if state then
+            notify("Minion ESP", "Enabled.", "ghost")
+            local ignore = workspace:FindFirstChild("IGNORE")
+            if ignore then
+                for _, obj in ipairs(ignore:GetDescendants()) do
+                    if obj:IsA("Model") and obj.Name == "Minion" then
+                        createMinionHighlight(obj)
+                    end
+                end
+            end
+            minionConn = workspace.DescendantAdded:Connect(function(obj)
+                if obj:IsA("Model") and obj.Name == "Minion" then
+                    createMinionHighlight(obj)
+                end
+            end)
+        else
+            notify("Minion ESP", "Disabled.", "ghost")
+            if minionConn then minionConn:Disconnect(); minionConn = nil end
+            for _, h in pairs(minionHighlights) do if h then h:Destroy() end end
+            minionHighlights = {}
+        end
+    end
+})
+
+-- ── Performance ───────────────────────────────────────────────────────────────
+local perfSection = VisualTab:Section({
+    Title     = "Performance",
+    Icon      = "cpu",
+    Opened    = true,
+    Box       = true,
+    BoxBorder = true,
+})
+
+perfSection:Toggle({
+    Title = "FPS Booster",
+    Desc  = "Optimizes the game to improve FPS.",
+    Icon  = "zap",
+    Type  = "Toggle",
+    Value = false,
+    Callback = function(state)
+        if state then
+            loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ahhsempai/bitebynighttuffsmth/refs/heads/main/fps.lua"))()
+            notify("FPS Booster", "Enabled.", "zap")
+        else
+            notify("FPS Booster", "Rejoin to revert changes.", "zap")
+        end
+    end
+})
+
 -- ── Remove Fog ────────────────────────────────────────────────────────────────
 local removeFogEnabled = false
 local originalFog      = {}
@@ -1430,7 +1596,7 @@ local removeFogConn    = nil
 
 perfSection:Toggle({
     Title = "Remove Fog",
-    Desc  = "Remove the fog from the map.",
+    Desc  = "Removes the fog from the map.",
     Icon  = "wind",
     Type  = "Toggle",
     Value = false,
@@ -1469,7 +1635,7 @@ perfSection:Toggle({
 -- ═════════════════════════════════════════════════════════════════════════════
 local tpSection = TPTab:Section({
     Title     = "Teleport Features",
-    Desc      = "Teleport to generators and batteries.",
+    Desc      = "Teleport to generators, batteries and fuse boxes.",
     Icon      = "map-pin",
     Opened    = true,
     Box       = true,
@@ -1634,6 +1800,7 @@ tpSection:Button({
         if fuseIndex > #batteries then fuseIndex = 1 end
     end,
 })
+
 -- ═════════════════════════════════════════════════════════════════════════════
 -- OTHERS TAB
 -- ═════════════════════════════════════════════════════════════════════════════
