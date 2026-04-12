@@ -54,7 +54,7 @@ local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/oriald
 
 local Window = WindUI:CreateWindow({
     Title = "Abyss UI (Uma reacing)",
-    Author = "tze",
+    Author = "made by tze",
     Folder = "AbyssUi_umar",
     Icon = "rbxassetid://103402395157353",
     IconThemed = true,
@@ -114,7 +114,7 @@ end, {
     EnabledWhenClosed = true,
 })
 
-Window:Tag({ Title = "v3", Color = Color3.fromRGB(248, 155, 41), Icon = "badge-check" })
+Window:Tag({ Title = "v1.7", Color = Color3.fromRGB(248, 155, 41), Icon = "badge-check" })
 Window:Tag({ Title = "users", Color = Color3.fromRGB(48, 255, 106), Icon = "check" })
 Window:SetBackgroundImage("rbxassetid://132996641534150")
 Window:ToggleTransparency(true)
@@ -125,8 +125,8 @@ Window:SideBarLabel({ Title = "Quick Actions", Icon = "zap" })
 Window:SideBarButton({
     Title = "Discord", Icon = "message-circle", Variant = "Secondary",
     Callback = function()
-        setclipboard("tze")
-        WindUI:Notify({ Title = "Discord", Content = "Copied 'tze' to clipboard.", Icon = "check", Duration = 3 })
+        setclipboard("tze0638")
+        WindUI:Notify({ Title = "Discord", Content = "Copied 'tze0638' to clipboard.", Icon = "check", Duration = 3 })
     end,
 })
 
@@ -171,7 +171,7 @@ HomeTab:Stats({
     Items = {
         { Key = "Script", Value = "Uma Racing" },
         { Key = "Version", Value = "v1.7" },
-        { Key = "Author", Value = "tze" },
+        { Key = "Made By", Value = "tze" },
         { Key = "Toggle", Value = "Right Alt" },
     },
 })
@@ -229,9 +229,9 @@ local infoGroup = InfoTab:Group({})
 
 infoGroup:Button({
     Title = "Copy Owner Discord", Icon = "copy",
-    Desc = "Copies 'tze' to clipboard.",
+    Desc = "Copies 'tze0638' to clipboard.",
     Callback = function()
-        setclipboard("tze")
+        setclipboard("tze0638")
         notify("Discord", "Copied username!", "check", 3)
     end,
 })
