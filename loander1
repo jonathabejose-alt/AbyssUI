@@ -73,6 +73,9 @@ task.spawn(function()
     elseif idJuego == 70845479499574 then
         nombreJuego = "Bite by Night"
         scriptURL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/bite%20by%20night"
+    elseif idJuego == 94101948530988 then
+        nombreJuego = "Uma Racing"
+        scriptURL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/umareacing.lua"
     end
 
     if scriptURL ~= "" then
