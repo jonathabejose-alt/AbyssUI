@@ -50,7 +50,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- Ahora cargar la UI de WindUI
-local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/orialdev/WindUI-Boreal/main/WindUI%20Boreal"))()
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/x7dJJ9vnFH23/WindUI-Boreal/refs/heads/main/WindUI%20Boreal"))()
 
 local Window = WindUI:CreateWindow({
     Title = "Abyss UI (Uma reacing)",
