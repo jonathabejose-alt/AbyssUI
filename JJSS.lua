@@ -350,7 +350,7 @@ superSection:Button({
     Icon     = "bird",
     Callback = function()
         local ok, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/super%20tze"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/super%20tzee"))()
         end)
         if ok then
             notify("SuperTze v3", "Loaded! K = Transform, H = Fly.", "bird")
