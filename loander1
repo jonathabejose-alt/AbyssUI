@@ -1,4 +1,4 @@
--- AbyssUI Final Loader 11
+-- AbyssUI Final Loader
 local CoreGui = game:GetService("CoreGui")
 
 if CoreGui:FindFirstChild("AbyssLoader") then
@@ -55,7 +55,7 @@ ProgressBar.Parent = BarBackground
 Instance.new("UICorner", BarBackground)
 Instance.new("UICorner", ProgressBar)
 
--- Lógica de Carga con Pausas para que se vea el texto
+-- Lógica de Carga
 task.spawn(function()
     -- Paso 1: Buscando
     ProgressBar:TweenSize(UDim2.new(0.4, 0, 1, 0), "Out", "Quad", 1)
@@ -76,12 +76,15 @@ task.spawn(function()
     elseif idJuego == 94101948530988 then
         nombreJuego = "Uma Racing"
         scriptURL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/umareacing.lua"
+    elseif idJuego == 9391468976 then
+        nombreJuego = "Jujutsu Shenanigans"
+        scriptURL = "https://cypher-protector.vercel.app/api/load/jjs"
     end
 
     if scriptURL ~= "" then
         -- Animación de éxito
         StatusLabel.Text = nombreJuego .. " Found!"
-        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 150) -- Verde éxito
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
         ProgressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 1)
         task.wait(1.2)
         LoadingGui:Destroy()
@@ -89,7 +92,7 @@ task.spawn(function()
     else
         -- Animación de error
         StatusLabel.Text = "Game Not Supported"
-        StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80) -- Rojo error
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
         ProgressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.5)
         task.wait(2.5)
         LoadingGui:Destroy()
