@@ -1,0 +1,4230 @@
+local d = game
+local V = workspace
+local l = V.CurrentCamera
+local O = getgenv
+local e = Instance
+local R = V.CurrentCamera
+local u = task.wait
+local w = task.spawn
+local z = task.delay
+local D = math.huge
+local Y = math.clamp
+local c = math.rad
+local G = math.sin
+local X = math.cos
+local C = math.random
+local T = math.noise
+local S = math.max
+local H = math.min
+local k = math.floor
+local b = {
+	FlySpeed = 450,
+	BoostSpeed = 800,
+	BoostDuration = 1.2;
+	ThemeMusicEnabled = true;
+	ThemeMusicVolume = 1.2,
+	SkipIntro = false,
+	CameraShakeEnabled = true;
+	ScreenFlashEnabled = true,
+	ReExecuteOnSpawn = true;
+	FlyKey = "\104",
+	TransformKey = "\107";
+	LockOnKey = "\114",
+	BoostKey = "\113";
+	DialogueKey = "\108",
+	HyperSonicKey = "\118";
+	CutsceneEnabled = false;
+	HyperMusicEnabled = true
+}
+local N = {}
+local m = {}
+local a = "\083\117\112\101\114\084\122\101\067\111\110\102\105\103\046\106\115\111\110"
+local i = d:GetService("\072\116\116\112\083\101\114\118\105\099\101")
+local function p(...)
+	if not isfile then
+		return
+	end
+	if isfile(a) then
+		local q, d = pcall(function(...)
+			local q = readfile(a)
+			local d = i:JSONDecode(q)
+			for q, d in pairs(d) do
+				if b[q] ~= nil then
+					b[q] = d
+				end
+			end
+		end)
+	end
+end
+local function v(...)
+	if not writefile then
+		return
+	end
+	pcall(function(...)
+		local q = i:JSONEncode(b)
+		writefile(a, q)
+	end)
+end
+p()
+local function Q(q, d, V, l, ...)
+	local O = (q + d) / 2
+	local R = e.new("\080\097\114\116")
+	R.Size = Vector3.new(V, V, (q - d).Magnitude + .1)
+	R.CFrame = CFrame.lookAt(O, d)
+	R.Color = Color3.fromRGB(255, 255, 127)
+	R.Material = Enum.Material.Neon
+	R.Anchored = true
+	R.CanCollide = false
+	R.CastShadow = false
+	R.Parent = l
+	Debris:AddItem(R, .52)
+	return R
+end
+local F = {}
+local function U(q, ...)
+	if not q then
+		return
+	end
+	local d = {
+		...
+	}
+	local V, l = pcall(function(...)
+		return q(table.unpack(d))
+	end)
+	if not V then
+		return nil
+	end
+	return l
+end
+local function M(...)
+	local q = debug and (debug.getupvalue and debug.setupvalue)
+	local d = hookmetamethod
+	if q and d then
+		return true, identifyexecutor and identifyexecutor() or "\069\120\101\099\117\116\111\114"
+	end
+	return "\108\105\109\105\116\101\100", identifyexecutor and identifyexecutor() or "\085\110\107\110\111\119\110 \069\120\101\099\117\116\111\114"
+end
+local y, n = M()
+if y == "\108\105\109\105\116\101\100" then
+	local function q(...)
+		local q = d:GetService("\080\108\097\121\101\114\115")
+		local V = q.LocalPlayer
+		if not V then
+			return
+		end
+		local l = d:GetService("\083\116\097\114\116\101\114\071\117\105")
+		pcall(function(...)
+			l:SetCore("\083\101\110\100\078\111\116\105\102\105\099\097\116\105\111\110", {
+				Title = "\076\105\109\105\116\101\100 \083\117\112\112\111\114\116 \083\097\100";
+				Text = string.format("\037\115 \100\101\116\101\099\116\101\100\046 \070\117\110\099\116\105\111\110\097\108\105\116\121 \109\097\121 \098\101 \114\101\115\116\114\105\099\116\101\100\046", n);
+				Duration = 5
+			})
+		end)
+	end
+	q()
+end
+local W = y == "\108\105\109\105\116\101\100"
+local K = setmetatable({}, {
+	__mode = "\107"
+})
+local function I(...)
+	if not hookmetamethod then
+		return
+	end
+	local q
+	q = hookmetamethod(d, "\095\095\105\110\100\101\120", function(d, V, ...)
+		if d and (typeof(d) == "\073\110\115\116\097\110\099\101" and (d:IsA("\065\110\105\109\097\116\105\111\110") and V == "\065\110\105\109\097\116\105\111\110\073\100")) then
+			if K[d] then
+				return "\114\098\120\097\115\115\101\116\105\100\058\047\047\048"
+			end
+		end
+		return q(d, V)
+	end)
+end
+task.spawn(I)
+local function f(...)
+	local q = e.new("\065\110\105\109\097\116\105\111\110")
+	if K then
+		K[q] = true
+	end
+	return q
+end
+if not W then
+	(d:GetService("\083\116\097\114\116\101\114\071\117\105")):SetCore("\083\101\110\100\078\111\116\105\102\105\099\097\116\105\111\110", {
+		Title = "\083\117\112\101\114\084\122\101 \118\051",
+		Text = string.format("\070\117\108\108\121 \083\117\112\112\111\114\116\101\100", n),
+		Duration = 5,
+		Icon = "\114\098\120\097\115\115\101\116\105\100\058\047\047\055\053\051\051\055\051\054\050\053\052\054\051\051\049"
+	})
+end
+local s = d:GetService("\084\119\101\101\110\083\101\114\118\105\099\101")
+local E = d:GetService("\082\101\112\108\105\099\097\116\101\100\083\116\111\114\097\103\101")
+local r = d:GetService("\080\108\097\121\101\114\115")
+local t = d:GetService("\083\111\117\110\100\083\101\114\118\105\099\101")
+local J = d:GetService("\082\117\110\083\101\114\118\105\099\101")
+local P = d:GetService("\068\101\098\114\105\115")
+local L = d:GetService("\085\115\101\114\073\110\112\117\116\083\101\114\118\105\099\101")
+local B = d:GetService("\084\101\120\116\067\104\097\116\083\101\114\118\105\099\101")
+local o = d:GetService("\076\105\103\104\116\105\110\103")
+local h = r.LocalPlayer
+local A = h.Character or h.CharacterAdded:Wait()
+local Z = A:WaitForChild("\072\117\109\097\110\111\105\100")
+local j = 9391468976
+if d.PlaceId ~= j then
+	(d:GetService("\083\116\097\114\116\101\114\071\117\105")):SetCore("\083\101\110\100\078\111\116\105\102\105\099\097\116\105\111\110", {
+		Title = "\087\114\111\110\103 \071\097\109\101";
+		Text = "\084\104\105\115 \115\099\114\105\112\116 \111\110\108\121 \119\111\114\107\115 \105\110 \103\097\109\101\058 \074\117\106\117\116\115\117 \083\104\101\110\097\110\105\103\097\110\115",
+		Duration = 10
+	})
+	return
+end
+if Z.RigType ~= Enum.HumanoidRigType.R6 then
+	(d:GetService("\083\116\097\114\116\101\114\071\117\105")):SetCore("\083\101\110\100\078\111\116\105\102\105\099\097\116\105\111\110", {
+		Title = "\082\054 \079\110\108\121";
+		Text = "\084\104\105\115 \115\099\114\105\112\116 \105\115 \111\110\108\121 \119\111\114\107 \111\110 \114\054 \099\104\097\114\097\099\116\101\114\115";
+		Duration = 10
+	})
+	return
+end
+local x = A:WaitForChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+local g = Z:FindFirstChildOfClass("\065\110\105\109\097\116\111\114") or e.new("\065\110\105\109\097\116\111\114", Z)
+local qY = h:GetMouse()
+local dY = {
+	PlaySound = function(q, V, l, ...)
+		if V and l then
+			local q = V:Clone()
+			q.Parent = l
+			q:Play();
+			(d:GetService("\068\101\098\114\105\115")):AddItem(q, V.TimeLength + 1)
+		end
+	end;
+	ArmFlash = function(...)
+	end
+}
+local VY = h:WaitForChild("\080\108\097\121\101\114\083\099\114\105\112\116\115")
+if not W then
+	task.spawn(function(...)
+		pcall(function(...)
+			local q = require((VY:WaitForChild("\067\111\110\116\114\111\108\108\101\114\115")):WaitForChild("\070\088\067\111\110\116\114\111\108\108\101\114"))
+			if q then
+				for q, d in pairs(q) do
+					dY[q] = d
+				end
+			end
+		end)
+	end)
+end
+local lY = (E:WaitForChild("\077\111\100\117\108\101\115")):FindFirstChild("\067\097\109\101\114\097\083\104\097\107\101\114")
+local OY = {
+	HeavyHit = {
+		Magnitude = 5;
+		Roughness = 5;
+		FadeIn = .2,
+		FadeOut = .5
+	};
+	Bump = {
+		Magnitude = 2;
+		Roughness = 2,
+		FadeIn = .1,
+		FadeOut = .1
+	},
+	Snap = {
+		Magnitude = 1,
+		Roughness = 10;
+		FadeIn = .1;
+		FadeOut = .1
+	},
+	Vibration = {
+		Magnitude = .5,
+		Roughness = 25;
+		FadeIn = .1;
+		FadeOut = .1
+	},
+	Explosion = {
+		Magnitude = 8,
+		Roughness = 8,
+		FadeIn = .1,
+		FadeOut = 1
+	};
+	Earthquake = {
+		Magnitude = 2;
+		Roughness = 20,
+		FadeIn = .2,
+		FadeOut = 1
+	}
+}
+local eY = {
+	Presets = OY
+}
+local RY = {
+	Shake = function(...)
+	end;
+	ShakeOnce = function(...)
+	end,
+	Stop = function(...)
+	end,
+	Start = function(...)
+	end
+}
+if lY and not W then
+	pcall(function(...)
+		local q = require(lY)
+		eY = q
+		RY = eY.new(Enum.RenderPriority.Camera.Value, function(q, ...)
+			R.CFrame = R.CFrame * q
+		end)
+		RY:Start()
+	end)
+end
+local function uY(q, ...)
+	if W then
+		return
+	end
+	if RY and (type(RY) == "\116\097\098\108\101" and (RY.ShakeOnce and q)) then
+		RY:ShakeOnce(q.Magnitude, q.Roughness, q.FadeIn, q.FadeOut)
+	end
+end
+local wY = r.LocalPlayer
+local zY = {}
+local DY = nil
+local function YY(...)
+	return ((wY:WaitForChild("\080\108\097\121\101\114\071\117\105")):WaitForChild("\077\097\105\110")):WaitForChild("\077\111\118\101\115\101\116")
+end
+local function cY(...)
+	if DY then
+		return DY
+	end
+	local q = YY()
+	local d = {}
+	for q, V in ipairs(q:GetChildren()) do
+		if V:IsA("\070\114\097\109\101") then
+			table.insert(d, V)
+		end
+	end
+	table.sort(d, function(q, d, ...)
+		return (q.LayoutOrder or 0) < (d.LayoutOrder or 0)
+	end)
+	DY = d
+	return d
+end
+function zY.ChangeMove(q, d, V, ...)
+	local l = cY()
+	local O = l[q]
+	if not O then
+		return
+	end
+	local e = O:FindFirstChild("\073\116\101\109\078\097\109\101", true)
+	local R = O:FindFirstChild("\084\105\112", true)
+	if e then
+		e.Text = tostring(d)
+	end
+	if R then
+		R.Text = tostring(V)
+	end
+end
+function zY.ChangeMultiple(q, ...)
+	local d = cY()
+	for q, V in pairs(q) do
+		local l = d[q]
+		if l then
+			local q = l:FindFirstChild("\073\116\101\109\078\097\109\101", true)
+			local d = l:FindFirstChild("\084\105\112", true)
+			if q and V.Name then
+				q.Text = tostring(V.Name)
+			end
+			if d and V.Tip then
+				d.Text = tostring(V.Tip)
+			end
+		end
+	end
+end;
+(O()).HotbarManager = zY
+local GY = ((E:WaitForChild("\085\116\105\108\115")):WaitForChild("\077\105\115\099")):WaitForChild("\083")
+local XY = ((E:WaitForChild("\083\111\117\110\100\115")):WaitForChild("\077\105\115\099")):WaitForChild("\083")
+local CY = f()
+CY.AnimationId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\057\049\052\057\054\054\049\052\057\053\050\057\054\056"
+local TY
+pcall(function(...)
+	TY = g:LoadAnimation(CY)
+end)
+if TY then
+	TY.Priority = Enum.AnimationPriority.Action4
+end
+local SY = (((E:WaitForChild("\085\116\105\108\115")):WaitForChild("\077\105\115\099")):WaitForChild("\083")):WaitForChild("\066\111\111\115\116")
+local HY = SY:WaitForChild("\087\105\110\100\050")
+local kY = "\114\098\120\097\115\115\101\116\105\100\058\047\047\056\051\056\056\057\049\053\056\050\056\053\055\056\055"
+local bY = 250
+local NY = {
+	"\114\098\120\097\115\115\101\116\105\100\058\047\047\049\055\049\054\057\051\054\053\049\049\049",
+	"\114\098\120\097\115\115\101\116\105\100\058\047\047\049\055\049\054\057\051\054\053\051\051\049"
+}
+local mY = V:FindFirstChild("\069\102\102\101\099\116\115")
+if not mY then
+	mY = e.new("\070\111\108\100\101\114")
+	mY.Name = "\069\102\102\101\099\116\115"
+	mY.Parent = V
+end
+local aY = nil
+local iY = false
+local pY = false
+local vY = nil
+local QY = false
+local FY = false
+local UY = false
+local MY = nil
+local yY = 0
+local nY = 0
+local WY
+local KY
+local IY
+local fY
+local sY
+local EY
+pcall(function(...)
+	EY = require(((d:GetService("\082\101\112\108\105\099\097\116\101\100\083\116\111\114\097\103\101")):WaitForChild("\077\111\100\117\108\101\115")):WaitForChild("\084\101\107\114\105\110\110\068\105\097\108\111\103\117\101"))
+end)
+local rY
+local tY = b.ThemeMusicEnabled
+local JY
+local function PY(...)
+	if JY then
+		JY:Disconnect()
+	end
+	local q = 0
+	JY = J.Heartbeat:Connect(function(V, ...)
+		q = q + V
+		if q < .1 then
+			return
+		end
+		q = 0
+		local l = Z and (Z.Health <= 0 and Z.Parent)
+		local O = x and x.Position.Y < -200
+		if l or O then
+			if QY then
+				pcall(stopFlying)
+			end
+			if FY then
+				pcall(function(...)
+					unTransform(A)
+				end)
+			end
+			currentVelocity = Vector3.new(0, 0, 0)
+			if vY then
+				pcall(function(...)
+					vY:Destroy()
+				end)
+			end
+			if fY then
+				fY:Disconnect()
+				fY = nil
+			end
+			if KY then
+				KY:Destroy()
+				KY = nil
+			end
+			if IY then
+				IY:Destroy()
+				IY = nil
+			end
+			if x then
+				x.Velocity = Vector3.new(0, 0, 0)
+				x.RotVelocity = Vector3.new(0, 0, 0)
+				x.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+				x.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+				for q, d in ipairs(A:GetChildren()) do
+					if d:IsA("\066\097\115\101\080\097\114\116") then
+						d.Velocity = Vector3.new(0, 0, 0)
+						d.RotVelocity = Vector3.new(0, 0, 0)
+						d.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+						d.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+					end
+				end
+			end
+			if RY then
+				pcall(function(...)
+					if RY.Stop then
+						RY:Stop()
+					end
+				end)
+			end
+			if R then
+				R.FieldOfView = 70
+			end
+			if hoverTrack and hoverTrack.IsPlaying then
+				hoverTrack:Stop(0)
+			end
+			if activeTracks then
+				for q, d in ipairs(activeTracks) do
+					if d.track and d.track.IsPlaying then
+						local q = d.track.Animation and d.track.Animation.AnimationId or ""
+						if not q:find("\049\051\048\056\052\057\057\054\054\049\050\054\056\052\053") then
+							d.track:Stop(0)
+						end
+					end
+				end
+			end
+			activeTracks = {}
+			if WY then
+				WY:Stop()
+				WY.Volume = 0
+				task.delay(.1, function(...)
+					if WY then
+						WY:Destroy()
+					end
+				end)
+				WY = nil
+			end
+			if rY then
+				local q = rY
+				local d = s:Create(q, TweenInfo.new(1.5), {
+					Volume = 0
+				})
+				d:Play()
+				task.delay(1.6, function(...)
+					if q then
+						q:Destroy()
+					end
+				end)
+				rY = nil
+			end
+			if sY then
+				sY:Destroy()
+				sY = nil
+			end
+			if vY then
+				vY:Destroy()
+				vY = nil
+			end
+			pcall(function(...)
+				local q = h.PlayerGui:FindFirstChild("\073\110\116\114\111\087\097\114\110\105\110\103")
+				if q then
+					q:Destroy()
+				end
+			end)
+			pcall(function(...)
+				local q = (d:GetService("\067\111\114\101\071\117\105")):FindFirstChild("\073\110\116\114\111\087\097\114\110\105\110\103")
+				if q then
+					q:Destroy()
+				end
+			end)
+			if mY then
+				mY:ClearAllChildren()
+			end
+			pcall(function(...)
+				if h.Character then
+					for q, d in ipairs(h.Character:GetDescendants()) do
+						if d:IsA("\080\097\114\116\105\099\108\101\069\109\105\116\116\101\114") or d:IsA("\066\101\097\109") or d:IsA("\084\114\097\105\108") or d:IsA("\072\105\103\104\108\105\103\104\116") or d:IsA("\080\111\105\110\116\076\105\103\104\116") then
+							d:Destroy()
+						end
+					end
+				end
+			end)
+			if JY then
+				JY:Disconnect()
+			end
+		end
+	end)
+end
+task.spawn(function(...)
+	task.wait(.5)
+	PY()
+end)
+h.CharacterAdded:Connect(function(q, ...)
+	A = q
+	Z = q:WaitForChild("\072\117\109\097\110\111\105\100")
+	x = q:WaitForChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	g = Z:WaitForChild("\065\110\105\109\097\116\111\114")
+	QY = false
+	FY = false
+	UY = false
+	activeTracks = {}
+	N = {}
+	m = {}
+	currentState = nil
+	lastAnimChangeTime = 0
+	loadedAnims = {}
+	hoverTrack = nil
+	hoverTrack = nil
+	R = V.CurrentCamera
+	if WY then
+		pcall(function(...)
+			WY:Destroy()
+		end)
+	end
+	WY = e.new("\083\111\117\110\100")
+	WY.Name = "\087\105\110\100\083\111\117\110\100"
+	WY.SoundId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\057\051\048\051\053\050\049\052\051\055\057\048\052\051"
+	WY.Looped = true
+	WY.Volume = 0
+	WY.Pitch = 1
+	WY.Parent = x
+	if lY and not W then
+		pcall(function(...)
+			local q = require(lY)
+			eY = q
+			RY = eY.new(Enum.RenderPriority.Camera.Value, function(q, ...)
+				R.CFrame = R.CFrame * q
+			end)
+			RY:Start()
+		end)
+	end
+	if g then
+		pcall(function(...)
+			TY = g:LoadAnimation(CY)
+			TY.Priority = Enum.AnimationPriority.Action4
+		end)
+		loadAnims()
+		m1AnimTracks = {}
+		syncAnimObjects = {}
+		if createSyncAnims then
+			createSyncAnims()
+		end
+	end
+	if b.ReExecuteOnSpawn then
+		task.wait(.5)
+		playFormEffect(q)
+	end
+	PY()
+end)
+local LY = false
+local BY = true
+local oY = 0
+local hY = .4
+local AY = true
+local ZY = nil
+local jY = false
+task.spawn(function(...)
+	pcall(function(...)
+		(d:GetService("\083\116\097\114\116\101\114\071\117\105")):SetCore("\083\101\110\100\078\111\116\105\102\105\099\097\116\105\111\110", {
+			Title = "\083\117\112\101\114\084\122\101 \118\051";
+			Text = "\083\099\114\105\112\116 \076\111\097\100\101\100 \083\117\099\099\101\115\115\102\117\108\108\121";
+			Duration = 5
+		})
+	end)
+end)
+local function xY(q, ...)
+	local d, V = R:WorldToViewportPoint(q)
+	if V then
+		local q = Vector2.new(qY.X, qY.Y)
+		local V = Vector2.new(d.X, d.Y)
+		return (q - V).Magnitude
+	end
+	return math.huge
+end
+local function gY(q, ...)
+	local d = (B:WaitForChild("\084\101\120\116\067\104\097\110\110\101\108\115")):WaitForChild("\082\066\088\071\101\110\101\114\097\108")
+	d:SendAsync(tostring(q))
+end
+local function qS(q, ...)
+	if vY then
+		vY:Destroy()
+		vY = nil
+	end
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not d then
+		return
+	end
+	local V = e.new("\066\105\108\108\098\111\097\114\100\071\117\105")
+	V.Name = "\076\111\099\107\079\110\085\073"
+	V.Adornee = d
+	V.Size = UDim2.new(15, 0, 15, 0)
+	V.StudsOffset = Vector3.new(0, 0, 0)
+	V.AlwaysOnTop = true
+	V.Parent = d
+	local l = e.new("\073\109\097\103\101\076\097\098\101\108")
+	l.BackgroundTransparency = 1
+	l.Image = "\114\098\120\097\115\115\101\116\105\100\058\047\047\056\051\056\056\057\049\053\056\050\056\053\055\056\055"
+	l.ImageColor3 = UY and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(255, 255, 0)
+	l.Size = UDim2.new(1, 0, 1, 0)
+	l.Position = UDim2.new(0, 0, 0, 0)
+	l.ScaleType = Enum.ScaleType.Fit
+	l.Parent = V
+	vY = V
+	task.spawn(function(...)
+		while V and (V.Parent and (d and x)) do
+			local q = (d.Position - x.Position).Magnitude
+			local O = 15 + q * .35
+			V.Size = UDim2.new(O, 0, O, 0)
+			l.ImageColor3 = UY and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(255, 255, 0)
+			task.wait(.1)
+		end
+	end)
+	local O = XY:FindFirstChild("\079\110")
+	if O and (dY and typeof(dY.PlaySound) == "\102\117\110\099\116\105\111\110") then
+		dY:PlaySound(O, x, t.Effect)
+	end
+end
+WY = e.new("\083\111\117\110\100")
+WY.Name = "\087\105\110\100\083\111\117\110\100"
+WY.SoundId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\057\051\048\051\053\050\049\052\051\055\057\048\052\051"
+WY.Looped = true
+WY.Volume = 0
+WY.Pitch = 1
+WY.Parent = x
+local function dS(...)
+	if aY then
+		if vY then
+			vY:Destroy()
+			vY = nil
+		end
+		aY = nil
+		local q = XY:FindFirstChild("\079\110")
+		if q and (dY and typeof(dY.PlaySound) == "\102\117\110\099\116\105\111\110") then
+			local d = q:Clone()
+			d.Pitch = .8
+			d.Parent = x
+			d:Play()
+			P:AddItem(d, 1)
+		end
+		return
+	end
+	local q = nil
+	local d = math.huge
+	local function l(V, ...)
+		if V == h.Character then
+			return
+		end
+		local l = V:FindFirstChildOfClass("\072\117\109\097\110\111\105\100")
+		local O = V:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+		if l and (O and l.Health > 0) then
+			local l = xY(O.Position)
+			if l < d and l < 1000 then
+				d = l
+				q = V
+			end
+		end
+	end
+	local O = {}
+	if V:FindFirstChild("\076\105\118\101") then
+		table.insert(O, V.Live)
+	end
+	if V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115") then
+		table.insert(O, V.Characters)
+	end
+	if V:FindFirstChild("\078\080\067\115") then
+		table.insert(O, V.NPCs)
+	end
+	if #O == 0 then
+		for q, d in ipairs(r:GetPlayers()) do
+			if d ~= h and d.Character then
+				l(d.Character)
+			end
+		end
+	else
+		for q, d in ipairs(O) do
+			for q, d in ipairs(d:GetChildren()) do
+				l(d)
+			end
+		end
+	end
+	if not q and #O == 0 then
+		for q, d in ipairs(V:GetChildren()) do
+			if d:IsA("\077\111\100\101\108") then
+				l(d)
+			end
+		end
+	end
+	if q then
+		aY = {
+			Character = q,
+			Name = q.Name
+		}
+		qS(aY.Character)
+		local d = XY:FindFirstChild("\079\110")
+		if d then
+			local q = d:Clone()
+			q.Parent = x
+			q:Play()
+			P:AddItem(q, 1)
+		end
+	else
+		local q = e.new("\083\111\117\110\100")
+		q.SoundId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\052\054\049\050\051\055\053\050\051\051"
+		q.Volume = .5
+		q.Parent = x
+		q:Play()
+		P:AddItem(q, 1)
+	end
+end
+local VS = (((((E:WaitForChild("\075\110\105\116")):WaitForChild("\075\110\105\116")):WaitForChild("\083\101\114\118\105\099\101\115")):WaitForChild("\073\116\097\100\111\114\105\083\101\114\118\105\099\101")):WaitForChild("\082\069")):WaitForChild("\065\099\116\105\118\097\116\101\100")
+VS.OnClientEvent:Connect(function(...)
+	pY = true
+	task.delay(.1, function(...)
+		pY = false
+	end)
+end)
+local function lS(...)
+	local q = ((h:WaitForChild("\080\108\097\121\101\114\071\117\105")):WaitForChild("\077\097\105\110")):FindFirstChild("\085\108\116\105\109\097\116\101")
+	if not q then
+		return
+	end
+	local d = Color3.fromRGB(245, 245, 255)
+	local V = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255));
+		ColorSequenceKeypoint.new(.25, Color3.fromRGB(180, 255, 255)),
+		ColorSequenceKeypoint.new(.5, Color3.fromRGB(255, 200, 255)),
+		ColorSequenceKeypoint.new(.75, Color3.fromRGB(255, 255, 180));
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+	})
+	local function l(q, ...)
+		if not q then
+			return
+		end
+		local l = q:FindFirstChild("\070\105\108\108")
+		if not l then
+			return
+		end
+		l.BackgroundColor3 = d
+		local O = l:FindFirstChild("\085\073\071\114\097\100\105\101\110\116") or e.new("\085\073\071\114\097\100\105\101\110\116")
+		O.Name = "\085\073\071\114\097\100\105\101\110\116"
+		O.Parent = l
+		O.Color = V
+	end
+	l(q:FindFirstChild("\066\097\114"))
+	l(q:FindFirstChild("\083\112\101\099\105\097\108"))
+	local O = q:FindFirstChild("\084\105\116\108\101")
+	if O then
+		O.Text = "\072\121\112\101\114 \070\111\114\109"
+	end
+end
+function shakeform(...)
+	if RY then
+		uY(OY.HeavyHit)
+	end
+end
+function LoadAndAttachParticles(q, d, ...)
+	local V = d and d.Character
+	if not V then
+		return
+	end
+	local l = {
+		"\072\101\097\100";
+		"\084\111\114\115\111";
+		"\076\101\102\116 \065\114\109",
+		"\082\105\103\104\116 \065\114\109";
+		"\076\101\102\116 \076\101\103",
+		"\082\105\103\104\116 \076\101\103"
+	}
+	for q, d in ipairs(l) do
+		local l = V:FindFirstChild(d)
+		if l then
+			local q = e.new("\080\097\114\116\105\099\108\101\069\109\105\116\116\101\114")
+			q.Name = "\065\117\114\097\080\097\114\116\105\099\108\101"
+			q.Color = ColorSequence.new(Color3.fromRGB(255, 255, 127))
+			q.LightEmission = 1
+			q.LightInfluence = 0
+			q.Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, .5);
+				NumberSequenceKeypoint.new(1, 0)
+			})
+			q.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, .2),
+				NumberSequenceKeypoint.new(1, 1)
+			})
+			q.Lifetime = NumberRange.new(.3, .6)
+			q.Rate = 30
+			q.Speed = NumberRange.new(1, 3)
+			q.SpreadAngle = Vector2.new(180, 180)
+			q.RotSpeed = NumberRange.new(-45, 45)
+			q.Rotation = NumberRange.new(0, 360)
+			q.LockedToPart = false
+			q.VelocityInheritance = 1
+			q.Parent = l
+			table.insert(N, {
+				emitter = q,
+				originalRate = q.Rate
+			})
+		end
+	end
+end
+local function OS(...)
+	local q = r.LocalPlayer
+	if not q then
+		return
+	end
+	local d = q.Name
+	local l = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	if not l then
+		return
+	end
+	local O = l:FindFirstChild(d)
+	if not O then
+		return
+	end
+	for q, d in ipairs(O:GetChildren()) do
+		if d:IsA("\065\099\099\101\115\115\111\114\121") and d.AccessoryType == Enum.AccessoryType.Hair then
+			local q = d:FindFirstChildWhichIsA("\070\111\108\100\101\114") or d
+			local V = q:FindFirstChild("\072\097\110\100\108\101")
+			if V then
+				local q = V:FindFirstChildWhichIsA("\083\112\101\099\105\097\108\077\101\115\104") or V:FindFirstChildWhichIsA("\077\101\115\104")
+				if q then
+					local l = q.MeshId
+					local R = q.Scale
+					local u = q.Offset or Vector3.new(0, 0, 0)
+					local w = V.CFrame
+					local z = d.AttachmentPoint or CFrame.new()
+					local D = e.new("\065\099\099\101\115\115\111\114\121")
+					D.Name = "\067\111\110\118\101\114\116\101\100\072\097\105\114"
+					D.AttachmentPoint = z
+					local Y
+					if not W then
+						local q, d = pcall(function(...)
+							local q = e.new("\077\101\115\104\080\097\114\116")
+							q.MeshId = l
+							return q
+						end)
+						if q then
+							Y = d
+						end
+					end
+					if not Y then
+						Y = e.new("\080\097\114\116")
+						local q = e.new("\083\112\101\099\105\097\108\077\101\115\104")
+						q.MeshType = Enum.MeshType.FileMesh
+						q.MeshId = l
+						q.Scale = Vector3.new(1, 1, 1)
+						q.Parent = Y
+					end
+					Y.Name = "\072\097\110\100\108\101"
+					Y.Size = R
+					Y.Color = Color3.fromRGB(255, 255, 0)
+					Y.Transparency = 1
+					Y.Material = Enum.Material.Plastic
+					Y.Anchored = false
+					Y.CanCollide = false
+					Y.CFrame = w * CFrame.new(u)
+					Y.Parent = D
+					D.Parent = O
+					local c = e.new("\087\101\108\100\067\111\110\115\116\114\097\105\110\116")
+					c.Name = "\072\097\105\114\087\101\108\100\067\111\110\115\116\114\097\105\110\116"
+					c.Part0 = Y
+					c.Part1 = O:FindFirstChild("\072\101\097\100") or O.PrimaryPart
+					c.Parent = Y
+					task.spawn(function(...)
+						for q = 1, 10, 1 do
+							task.wait(.05)
+							V.Transparency = math.clamp(V.Transparency + .1, 0, 1)
+							Y.Transparency = math.clamp(Y.Transparency - .1, 0, 1)
+						end
+						d:Destroy()
+					end)
+				end
+			end
+		end
+	end
+end
+local eS = Vector3.new(0, 0, 0)
+local RS = {
+	Forward = "\114\098\120\097\115\115\101\116\105\100\058\047\047\055\050\051\054\054\052\050\048\053\052\051\050\051\049";
+	Backward = "\114\098\120\097\115\115\101\116\105\100\058\047\047\049\048\055\056\051\050\048\056\056\049\053\056\057\056\049",
+	Right = "\114\098\120\097\115\115\101\116\105\100\058\047\047\056\051\055\056\054\051\050\056\051\054\051\052\050\049";
+	Left = "\114\098\120\097\115\115\101\116\105\100\058\047\047\049\051\056\055\049\051\055\050\049\055\051\049\054\048\049",
+	Hover = "\114\098\120\097\115\115\101\116\105\100\058\047\047\057\049\052\050\056\056\054\051\051\051\054\053\051\052"
+}
+local uS = {}
+local wS = {}
+local zS = nil
+local DS = nil
+local YS = false
+local cS = Vector3.new(50000, 50000, 50000)
+local GS = Vector3.new(50000, 50000, 50000)
+local XS = b.FlySpeed or 300
+local CS = 4
+local TS = 6
+local SS = 6
+local HS = b.BoostSpeed or 700
+local kS = b.BoostDuration or 1.2
+local function bS(...)
+	for q, d in pairs(RS) do
+		local V = f()
+		V.AnimationId = d
+		local l, O = pcall(function(...)
+			local q = g:LoadAnimation(V)
+			q.Priority = Enum.AnimationPriority.Action4
+			return q
+		end)
+		if l and O then
+			uS[q] = O
+			if q == "\072\111\118\101\114" then
+				zS = O
+				O.Looped = true
+			end
+			O:AdjustSpeed(0)
+		end
+	end
+end
+local function NS(...)
+	local q = {
+		"\114\098\120\097\115\115\101\116\105\100\058\047\047\049\051\052\051\052\051\050\049\057\057\055\048\048\055\050",
+		"\114\098\120\097\115\115\101\116\105\100\058\047\047\049\050\054\053\055\050\053\055\053\057\051\056\051\055\056",
+		"\114\098\120\097\115\115\101\116\105\100\058\047\047\057\054\052\056\057\049\056\052\053\057\054\048\050\051"
+	}
+	local d = {
+		"\114\098\120\097\115\115\101\116\105\100\058\047\047\049\051\048\056\052\057\057\054\054\049\050\054\056\052\053"
+	}
+	if not g then
+		return
+	end
+	for V, l in ipairs(g:GetPlayingAnimationTracks()) do
+		if l.Animation then
+			local V = false
+			for q, d in ipairs(d) do
+				if l.Animation.AnimationId == d then
+					V = true
+					break
+				end
+			end
+			if not V then
+				for q, d in ipairs(q) do
+					if l.Animation.AnimationId == d then
+						l:Stop()
+					end
+				end
+			end
+		end
+	end
+end
+local function mS(q, d, ...)
+	if not q then
+		return
+	end
+	q:AdjustWeight(0, d)
+	task.delay(d + .05, function(...)
+		if q.IsPlaying then
+			q:Stop(0)
+		end
+	end)
+end
+local aS = 0
+local iS = .03
+local pS = {}
+local vS = .18
+local function QS(q, d, ...)
+	local V = uS[q]
+	if not V then
+		return
+	end
+	if d > 0 then
+		if not V.IsPlaying then
+			V:Play(vS)
+		end
+		V:AdjustWeight(d, vS)
+		pS[q] = true
+	else
+		if pS[q] then
+			V:AdjustWeight(0, vS)
+			task.delay(vS + .05, function(...)
+				if not pS[q] and V.IsPlaying then
+					V:Stop(0)
+				end
+			end)
+			pS[q] = false
+		end
+	end
+end
+local function FS(q, d, ...)
+	local V = tick()
+	if V - aS < iS then
+		return
+	end
+	aS = V
+	local l = q.w or q.s or q.a or q.d
+	if YS then
+		if zS and zS.IsPlaying then
+			zS:Stop(vS)
+		end
+		local d = q.w and 1 or 0
+		QS("\070\111\114\119\097\114\100", d)
+		QS("\066\097\099\107\119\097\114\100", 0)
+		QS("\082\105\103\104\116", 0)
+		QS("\076\101\102\116", 0)
+		if d == 0 then
+			if zS then
+				if not zS.IsPlaying then
+					zS:Play(vS)
+				end
+				zS:AdjustWeight(1, vS)
+			end
+		end
+		DS = "\098\111\111\115\116"
+		return
+	end
+	if not l then
+		if zS then
+			if not zS.IsPlaying then
+				zS:Play(vS)
+			end
+			zS:AdjustWeight(1, vS)
+		end
+		QS("\070\111\114\119\097\114\100", 0)
+		QS("\066\097\099\107\119\097\114\100", 0)
+		QS("\082\105\103\104\116", 0)
+		QS("\076\101\102\116", 0)
+		DS = "\104\111\118\101\114"
+		return
+	end
+	local O = eS
+	local e = O.Magnitude
+	local R = x.CFrame
+	local u, w, z, D = 0, 0, 0, 0
+	if e > 2 then
+		local q = O.Unit
+		local d = q:Dot(R.LookVector)
+		local V = q:Dot(R.RightVector)
+		u = math.max(0, d)
+		w = math.max(0, -d)
+		z = math.max(0, V)
+		D = math.max(0, -V)
+	else
+		if q.w then
+			u = 1
+		end
+		if q.s then
+			w = 1
+		end
+		if q.d then
+			z = 1
+		end
+		if q.a then
+			D = 1
+		end
+	end
+	local Y = ((u + w) + z) + D
+	if Y > 0 then
+		u = u / Y
+		w = w / Y
+		z = z / Y
+		D = D / Y
+	end
+	local c = u > .5 and (z < .15 and D < .15)
+	if zS then
+		if c then
+			if not zS.IsPlaying then
+				zS:Play(vS)
+			end
+			zS:AdjustWeight(.35, vS)
+		else
+			if zS.IsPlaying then
+				zS:Stop(vS)
+			end
+		end
+	end
+	QS("\070\111\114\119\097\114\100", u > .05 and u or 0)
+	QS("\066\097\099\107\119\097\114\100", w > .05 and w or 0)
+	QS("\082\105\103\104\116", z > .05 and z or 0)
+	QS("\076\101\102\116", D > .05 and D or 0)
+	DS = "\109\111\118\105\110\103"
+	local G = e >= 50 and 0 or 1
+	if #N > 0 then
+		for q, d in ipairs(N) do
+			if d.emitter and (d.emitter.Parent and d.emitter:IsA("\080\097\114\116\105\099\108\101\069\109\105\116\116\101\114")) then
+				d.emitter.VelocityInheritance = G
+			end
+		end
+	end
+end
+L.InputBegan:Connect(function(q, d, ...)
+	if q.UserInputType == Enum.UserInputType.MouseButton1 or q.UserInputType == Enum.UserInputType.Touch then
+		LY = true
+	end
+end)
+L.InputEnded:Connect(function(q, d, ...)
+	if q.UserInputType == Enum.UserInputType.MouseButton1 or q.UserInputType == Enum.UserInputType.Touch then
+		LY = false
+		BY = true
+	end
+end)
+local US = false
+function startFlying(...)
+	if QY or not FY then
+		return
+	end
+	QY = true
+	XS = b.FlySpeed or 400
+	Z.PlatformStand = true
+	if TY and TY.IsPlaying then
+		TY:Stop(.3)
+	end
+	pS = {}
+	DS = nil
+	if zS then
+		if not zS.IsPlaying then
+			zS:Play(vS)
+		end
+		zS:AdjustWeight(1, vS)
+	end
+	task.spawn(function(...)
+		local q = 0
+		local d
+		d = J.Heartbeat:Connect(function(V, ...)
+			if not QY then
+				d:Disconnect()
+				return
+			end
+			q = q + V
+			if q < .2 then
+				return
+			end
+			q = 0
+			if not g then
+				return
+			end
+			local l = {
+				"\049\051\052\051\052\051\050\049\057\057\055\048\048\055\050";
+				"\049\050\054\053\055\050\053\055\053\057\051\056\051\055\056",
+				"\057\054\052\056\057\049\056\052\053\057\054\048\050\051"
+			}
+			for q, d in ipairs(g:GetPlayingAnimationTracks()) do
+				local V = d.Animation and d.Animation.AnimationId or ""
+				local O = d == zS or d == TY
+				if not O then
+					for q, V in pairs(uS) do
+						if d == V then
+							O = true
+							break
+						end
+					end
+				end
+				if not O then
+					local q = false
+					for d, l in ipairs(l) do
+						if V:find(l) then
+							q = true
+							break
+						end
+					end
+					if V:match("\049\051\048\056\052\057\057\054\054\049\050\054\056\052\053") then
+						q = false
+					end
+					if q then
+						d:AdjustWeight(.0001, 0)
+					end
+				end
+			end
+		end)
+	end)
+	KY = e.new("\066\111\100\121\071\121\114\111")
+	KY.P = 20000
+	KY.D = 800
+	KY.MaxTorque = GS
+	KY.CFrame = x.CFrame
+	KY.Parent = x
+	IY = e.new("\066\111\100\121\086\101\108\111\099\105\116\121")
+	IY.P = 15000
+	IY.Velocity = Vector3.new(0, 0, 0)
+	IY.MaxForce = cS
+	IY.Parent = x
+	if WY then
+		WY:Play();
+		(s:Create(WY, TweenInfo.new(.5), {
+			Volume = 1
+		})):Play()
+	end
+	local q
+	local d
+	pcall(function(...)
+		q = require(VY:WaitForChild("\080\108\097\121\101\114\077\111\100\117\108\101"))
+		if q then
+			d = q:GetControls()
+		end
+	end)
+	local l = x.Position
+	local O = false
+	local u = 0
+	fY = J.RenderStepped:Connect(function(q, ...)
+		if not QY then
+			return
+		end
+		local w = Vector3.new(0, 0, 0)
+		local z = V.CurrentCamera.CFrame
+		if d then
+			local V = d:GetMoveVector()
+			if V.Magnitude > 0 then
+				w = z.RightVector * V.X - z.LookVector * V.Z
+			end
+			if w.Magnitude > 0 then
+				w = w.Unit
+			end
+			local l = {
+				w = V.Z < -0.01,
+				s = V.Z > .01,
+				a = V.X < -0.01;
+				d = V.X > .01
+			}
+			local O = V.Magnitude > .1
+			FS(l, eS.Magnitude)
+			local e = z
+			if aY and (aY.Character and (aY.Character:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116") and LY)) then
+				local q = aY.Character.HumanoidRootPart.Position
+				e = CFrame.lookAt(x.Position, q)
+			else
+				local q = L.MouseBehavior == Enum.MouseBehavior.LockCenter
+				if O or q then
+					if not YS then
+						e = e * CFrame.Angles(math.rad(10), 0, 0)
+					end
+				else
+					e = KY.CFrame
+				end
+			end
+			if KY then
+				KY.CFrame = KY.CFrame:Lerp(e, math.clamp(q * 7, 0, .3))
+			end
+		end
+		if WY then
+			u = u + q
+			if u >= .05 then
+				u = 0
+				local q = eS.Magnitude
+				local d = XS
+				WY.Volume = 1.3 * Y(q / d, .2, 1)
+				WY.PlaybackSpeed = .8 + (q / d) * .4
+			end
+		end
+		do
+			local d = eS.Magnitude
+			local V = XS * 1.6
+			local l = 70 + Y((d - 50) / V, 0, 1) * 40
+			R.FieldOfView = R.FieldOfView + ((l - R.FieldOfView) * q) * 5
+			if KY then
+				KY.CFrame = KY.CFrame:Lerp(KY.CFrame, 1)
+			end
+			if b.CameraShakeEnabled and (RY and d > 50) then
+				local q = Y(d / V, 0, 1) * .3
+				local l = Vector3.new(C(-1, 1) * q, C(-1, 1) * q, C(-1, 1) * q)
+				R.CFrame = R.CFrame * CFrame.new(l)
+			end
+		end
+		local D = w * XS
+		if aY and (LY and (aY.Character and aY.Character:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116"))) then
+			local q = aY.Character:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+			local d = aY.Character:FindFirstChildOfClass("\072\117\109\097\110\111\105\100")
+			if q and d then
+				local R = q.AssemblyLinearVelocity
+				local u = x.Position
+				local w = (q.Position - u).Magnitude
+				local z = 900
+				local Y = math.clamp(w / z, 0, .25)
+				local c = q.Position + R * Y
+				local G = c
+				local X = (G - u).Magnitude
+				l = x.Position
+				if X < 6 and (not O and X > .1) then
+					O = true
+					local q = e.new("\083\111\117\110\100")
+					q.SoundId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\057\049\050\053\052\051\056\049\056\056"
+					q.Volume = 2
+					q.PlaybackSpeed = math.random(80, 120) / 100
+					q.Parent = x
+					q:Play()
+					P:AddItem(q, 2)
+					local d = e.new("\080\097\114\116")
+					d.Shape = Enum.PartType.Ball
+					d.Size = Vector3.new(2, 2, 2)
+					d.Position = x.Position
+					d.Color = Color3.fromRGB(255, 255, 150)
+					d.Material = Enum.Material.Neon
+					d.Anchored = true
+					d.CanCollide = false
+					d.Parent = mY;
+					(s:Create(d, TweenInfo.new(.4), {
+						Size = Vector3.new(25, 25, 25),
+						Transparency = 1
+					})):Play()
+					P:AddItem(d, .4)
+				elseif X > 15 then
+					O = false
+				end
+				if X > 12 then
+					local q = (G - u).Unit
+					local d = math.clamp(X * 8, 50, 900)
+					D = q * d
+				else
+					D = Vector3.zero
+					local q = CFrame.new(c, c + x.CFrame.LookVector)
+					x.CFrame = q
+				end
+				if AY and tick() - oY >= hY then
+					AY = false
+					oY = tick()
+					local q = XY:FindFirstChild("\068\097\115\104\050")
+					if q and (dY and typeof(dY.PlaySound) == "\102\117\110\099\116\105\111\110") then
+						local d = q:Clone()
+						d.PlaybackSpeed = math.random(100, 200) / 100
+						dY:PlaySound(d, x, t.Effect)
+						P:AddItem(d, 4)
+					end
+					local V = {
+						"\076\101\102\116 \065\114\109",
+						"\082\105\103\104\116 \065\114\109",
+						"\076\101\102\116 \076\101\103",
+						"\082\105\103\104\116 \076\101\103"
+					}
+					local l = A:FindFirstChild(V[math.random(1, #V)])
+					if l and (dY and typeof(dY.ArmFlash) == "\102\117\110\099\116\105\111\110") then
+						local q = UY and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(255, 255, 127)
+						dY:ArmFlash(l, q, .5)
+					end
+					local O = NY[math.random(1, #NY)]
+					local R = e.new("\083\111\117\110\100")
+					R.SoundId = O
+					R.Volume = 1
+					R.Parent = x
+					R:Play()
+					P:AddItem(R, 1)
+					ZY = d.Health
+					jY = true
+					task.delay(2, function(...)
+						jY = false
+					end)
+					task.delay(hY, function(...)
+						AY = true
+					end)
+				end
+				if jY and (d and (ZY and d.Health < ZY)) then
+					jY = false
+					local d = (((E:WaitForChild("\085\116\105\108\115")):WaitForChild("\077\105\115\099")):WaitForChild("\083")):FindFirstChild("\072\101\097\118\121\072\105\116")
+					if d then
+						local l = d:Clone()
+						l.Position = q.Position
+						l.Parent = V:FindFirstChild("\069\102\102\101\099\116\115") or V
+						P:AddItem(l, .4)
+						if l:FindFirstChild("\080\111\105\110\116\076\105\103\104\116") then
+							if UY then
+								l.PointLight.Color = Color3.fromRGB(255, 255, 255)
+							end;
+							(s:Create(l.PointLight, TweenInfo.new(.6), {
+								Brightness = 0
+							})):Play()
+						end
+						if l:FindFirstChild("\071\108\111\119") then
+							l.Glow:Emit(1)
+						end
+						if l:FindFirstChild("\083\112\097\114\107\115") then
+							l.Sparks:Emit(50)
+						end
+						if l:FindFirstChild("\087\105\110\100") then
+							l.Wind:Emit(7)
+						end
+						if l:FindFirstChild("\087\105\110\100\050") then
+							l.Wind2:Emit(7)
+						end
+						local O = (V.CurrentCamera.CFrame.Position - q.Position).Magnitude
+						if O > 300 then
+							uY(OY.HeavyHit)
+						else
+							uY(OY.Snap)
+						end
+					end
+				end
+				if d then
+					ZY = d.Health
+				end
+			end
+		end
+		local c = D.Magnitude > eS.Magnitude and CS or TS
+		if aY and (LY and (aY.Character and aY.Character:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116"))) then
+			local q = (aY.Character.HumanoidRootPart.Position - x.Position).Magnitude
+			if q > 12 then
+				c = 9999
+			end
+		end
+		eS = eS:Lerp(D, math.clamp(c * q, 0, 1))
+		if IY then
+			IY.Velocity = eS
+		end
+	end)
+end
+local MS = false
+function stopFlying(...)
+	if not QY then
+		return
+	end
+	QY = false
+	eS = Vector3.new(0, 0, 0)
+	for q, d in pairs(uS) do
+		if d and d.IsPlaying then
+			local q = d.Animation and d.Animation.AnimationId or ""
+			if not q:find("\049\051\048\056\052\057\057\054\054\049\050\054\056\052\053") then
+				d:Stop(0)
+			end
+		end
+	end
+	if zS and zS.IsPlaying then
+		zS:Stop(0)
+	end
+	wS = {}
+	pS = {}
+	DS = nil
+	if WY and WY.IsPlaying then
+		local q = s:Create(WY, TweenInfo.new(.5), {
+			Volume = 0
+		})
+		q:Play()
+		task.delay(.5, function(...)
+			if WY and not QY then
+				WY:Stop()
+			end
+		end)
+	end;
+	(s:Create(R, TweenInfo.new(.5), {
+		FieldOfView = 70
+	})):Play()
+	if KY then
+		KY:Destroy()
+	end
+	if IY then
+		IY:Destroy()
+	end
+	if fY then
+		fY:Disconnect()
+	end
+	Z.PlatformStand = false
+	x.Velocity = Vector3.new(0, 0, 0)
+	x.RotVelocity = Vector3.new(0, 0, 0)
+	if BroadcastToScriptUsers then
+		BroadcastToScriptUsers("\070\076\089\073\078\071\095\083\084\079\080", {})
+	end
+end
+bS()
+local yS = 0
+local function nS(...)
+	if not QY or YS then
+		return
+	end
+	if tick() - yS < .1 then
+		return
+	end
+	yS = tick()
+	if eS.Magnitude < 50 then
+		return
+	end
+	YS = true
+	local q = b.FlySpeed or 250
+	XS = HS
+	TS = 1
+	local V = x
+	local l = E.Utils
+	local O = P
+	local u = s
+	local w = dY
+	local z = E.Sounds
+	if V then
+		task.spawn(function(...)
+			local q = l.Misc.S.Boost:Clone()
+			q.Parent = mY
+			O:AddItem(q, 1.1)
+			task.delay(.7, function(...)
+				for q, d in q:GetDescendants() do
+					if d:IsA("\066\101\097\109") then
+						(u:Create(d, TweenInfo.new(.4), {
+							Width0 = 0;
+							Width1 = 0
+						})):Play()
+					elseif d:IsA("\080\097\114\116\105\099\108\101\069\109\105\116\116\101\114") then
+						d.Enabled = false
+					end
+				end
+			end)
+			local d
+			d = J.Heartbeat:Connect(function(...)
+				if not q.Parent then
+					d:Disconnect()
+					return
+				end
+				if V and V.Parent then
+					q.CFrame = CFrame.lookAlong(V.Position, -V.Velocity) * CFrame.Angles(0, 0, C(0, 3))
+				end
+			end)
+		end)
+		w:PlaySound(z.Misc.S.Dash, V, d.SoundService.Effect)
+		uY(OY.HeavyHit)
+		local q = e.new("\080\111\105\110\116\076\105\103\104\116")
+		q.Color = Color3.fromRGB(150, 255, 255)
+		q.Brightness = 3
+		q.Range = 30
+		q.Parent = V
+		O:AddItem(q, kS);
+		(s:Create(q, TweenInfo.new(kS), {
+			Brightness = 0
+		})):Play()
+		task.spawn(function(...)
+			local q = tick()
+			while tick() - q < kS and YS do
+				local q = l.Mahito.BodyRepel["\087\105\110\100" .. C(1, 5)]:Clone()
+				if V then
+					local d = CFrame.lookAlong(V.Position, V.Velocity)
+					local l = C(0, 360)
+					q.CFrame = d * CFrame.Angles(1.5707963267949, c(l), 0)
+					q.Transparency = .4
+					q.Size = Vector3.new(8, 8, 25);
+					(u:Create(q, TweenInfo.new(.3, Enum.EasingStyle.Quad), {
+						CFrame = q.CFrame + V.CFrame.LookVector * 5,
+						Size = Vector3.new(50, 0, 50)
+					})):Play()
+					O:AddItem(q, .2)
+					q.Parent = mY;
+					(u:Create(q, TweenInfo.new(.2), {
+						Transparency = .5
+					})):Play()
+					task.delay(.15, function(...)
+						(u:Create(q, TweenInfo.new(.2), {
+							Transparency = 1
+						})):Play()
+					end)
+				end
+				task.wait(.05)
+				if b.CameraShakeEnabled and RY then
+					local q = .8
+					local d = Vector3.new(C(-1, 1) * q, C(-1, 1) * q, C(-1, 1) * q)
+					R.CFrame = R.CFrame * CFrame.new(d)
+				end
+			end
+		end)
+	end
+	task.delay(kS, function(...)
+		YS = false
+		aS = 0
+		TS = SS
+		if QY then
+			local d = e.new("\078\117\109\098\101\114\086\097\108\117\101")
+			d.Value = HS
+			local V = s:Create(d, TweenInfo.new(1, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+				Value = q
+			})
+			V:Play()
+			local l
+			l = d.Changed:Connect(function(q, ...)
+				if not YS then
+					XS = q
+				else
+					l:Disconnect()
+					d:Destroy()
+				end
+			end)
+			V.Completed:Connect(function(...)
+				if l then
+					l:Disconnect()
+				end
+				d:Destroy()
+				if not YS then
+					XS = b.FlySpeed or 250
+				end
+			end)
+		else
+			XS = b.FlySpeed or 250
+		end
+	end)
+end
+local function WS(q, d, l, ...)
+	if not b.CutsceneEnabled then
+		return
+	end
+	local O = V.CurrentCamera
+	local e = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not e then
+		return
+	end
+	local R = true
+	local u = tick()
+	local w = O.CameraType
+	O.CameraType = Enum.CameraType.Scriptable
+	local z = l and 90 or 80
+	local D = l and 60 or 65
+	local C = l and 18 or 14
+	local S = l and 1 or 2
+	local H = l and 5 or 4
+	local k = l and 120 or 60
+	local N = l and .8 or .35
+	local m = l and 5 or 2
+	local a
+	a = J.RenderStepped:Connect(function(...)
+		if not R or not q.Parent or not e.Parent then
+			if a then
+				a:Disconnect()
+			end
+			pcall(function(...)
+				O.CameraType = w
+			end)
+			return
+		end
+		local V = tick() - u
+		local b = Y(V / d, 0, 1)
+		local i = s:GetValue(b, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+		O.FieldOfView = z + (D - z) * i
+		local p = 180 + i * k
+		local v = c(p)
+		local Q = S + (H - S) * i
+		local F = Vector3.new(G(v) * C, Q, X(v) * C)
+		local U = e.Position
+		local M = U + F
+		local y = tick() * (l and 15 or 10)
+		local n = (T(y, 1, 1) - .5) * N
+		local W = (T(y, 2, 2) - .5) * N
+		local K = (T(y, 3, 3) - .5) * N
+		local I = Vector3.new(n, W, K)
+		local f = c(m * G(y * 2))
+		local E = U + Vector3.new(0, 1.5, 0)
+		O.CFrame = (CFrame.lookAt(M, E) * CFrame.new(I)) * CFrame.Angles(0, 0, f)
+		if V >= d then
+			R = false
+			O.CameraType = w
+			if a then
+				a:Disconnect()
+			end
+		end
+	end)
+end
+local KS = {
+	[Enum.PoseEasingStyle.Linear] = Enum.EasingStyle.Linear,
+	[Enum.PoseEasingStyle.Bounce] = Enum.EasingStyle.Bounce;
+	[Enum.PoseEasingStyle.Cubic] = Enum.EasingStyle.Cubic,
+	[Enum.PoseEasingStyle.Elastic] = Enum.EasingStyle.Elastic,
+	[Enum.PoseEasingStyle.Constant] = Enum.EasingStyle.Linear
+}
+local IS = {
+	[Enum.PoseEasingDirection.In] = Enum.EasingDirection.In;
+	[Enum.PoseEasingDirection.Out] = Enum.EasingDirection.Out,
+	[Enum.PoseEasingDirection.InOut] = Enum.EasingDirection.InOut
+}
+local function fS(q, d, V, l, ...)
+	V = V or 1
+	l = l ~= false
+	local O = {}
+	for q, d in ipairs(d:GetKeyframes()) do
+		table.insert(O, {
+			Time = d.Time;
+			KF = d
+		})
+	end
+	table.sort(O, function(q, d, ...)
+		return q.Time < d.Time
+	end)
+	if #O == 0 then
+		return
+	end
+	local R = {}
+	local u = {}
+	local w = {}
+	local z = {}
+	local function D(d, ...)
+		local V = d.Name
+		if R[V] then
+			return R[V], "\077\111\116\111\114\054\068"
+		end
+		if u[V] then
+			return u[V], "\066\111\110\101"
+		end
+		for q, l in ipairs(q:GetDescendants()) do
+			if l:IsA("\077\111\116\111\114\054\068") and (l.Part1 and l.Part0) then
+				if l.Part1.Name == V and l.Part0.Name == d.Parent.Name then
+					R[V] = l
+					return l, "\077\111\116\111\114\054\068"
+				end
+			end
+		end
+		for q, l in ipairs(q:GetDescendants()) do
+			if l:IsA("\066\111\110\101") and (l.Name == V and (l.Parent and l.Parent.Name == d.Parent.Name)) then
+				u[V] = l
+				return l, "\066\111\110\101"
+			end
+		end
+		return nil, nil
+	end
+	local Y = {}
+	for q, d in ipairs(O) do
+		local V = {
+			Time = d.Time,
+			Poses = {}
+		}
+		for q, d in ipairs(d.KF:GetDescendants()) do
+			if d:IsA("\080\111\115\101") and d.Weight > 0 then
+				local q, l = D(d)
+				if q then
+					if not w[d.Name] then
+						local V = e.new("\067\070\114\097\109\101\086\097\108\117\101")
+						V.Name = "\065\110\105\109\086\097\108\117\101"
+						V.Parent = q
+						w[d.Name] = V
+					end
+					V.Poses[d.Name] = {
+						Instance = q;
+						Type = l,
+						CFrame = d.CFrame,
+						Style = d.EasingStyle,
+						Dir = d.EasingDirection
+					}
+				end
+			end
+		end
+		Y[q] = V
+	end
+	for q = 1, #Y - 1, 1 do
+		local d = Y[q]
+		local l = Y[q + 1]
+		local O = (l.Time - d.Time) / V
+		local e = {
+			Duration = O,
+			Tweens = {}
+		}
+		for q, V in pairs(l.Poses) do
+			local l = d.Poses[q] or Y[1].Poses[q]
+			if l then
+				local d = TweenInfo.new(O, KS[V.Style] or Enum.EasingStyle.Linear, IS[V.Dir] or Enum.EasingDirection.InOut)
+				local l = s:Create(w[q], d, {
+					Value = V.CFrame
+				})
+				e.Tweens[q] = l
+			end
+		end
+		table.insert(z, e)
+	end
+	local c = true
+	local G
+	G = J.Heartbeat:Connect(function(...)
+		if not c then
+			if G then
+				G:Disconnect()
+			end
+			return
+		end
+		for q, d in pairs(w) do
+			local V = R[q] or u[q]
+			if V then
+				if R[q] then
+					R[q].Transform = d.Value
+				elseif u[q] then
+					u[q].Transform = d.Value
+				end
+			end
+		end
+	end)
+	local function X(...)
+		for q, d in ipairs(z) do
+			for q, d in pairs(d.Tweens) do
+				d:Play()
+			end
+			task.wait(d.Duration)
+		end
+		c = false
+	end
+	local C = O[#O].Time / V
+	if l then
+		task.spawn(function(...)
+			while c do
+				X()
+			end
+		end)
+	else
+		task.spawn(X)
+	end
+	return {
+		Length = function(...)
+			return C
+		end,
+		Stop = function(...)
+			c = false
+			if G and G.Connected then
+				G:Disconnect()
+			end
+			for q, d in ipairs(z) do
+				for q, d in pairs(d.Tweens) do
+					d:Cancel()
+				end
+			end
+			for q, d in pairs(w) do
+				d:Destroy()
+			end
+			w = {}
+		end
+	}
+end
+local sS = nil
+local function ES(q, d, ...)
+	if sS then
+		sS:Stop()
+	end
+	if q then
+		sS = fS(d, q, 1.1, true)
+	end
+end
+local rS = nil
+local tS = "\085\110\107\110\111\119\110 \101\114\114\111\114"
+local function JS(...)
+	if rS then
+		return rS
+	end
+	local q = "\069\109\101\114\097\108\100\115\046\114\098\120\109"
+	if isfile and (isfile(q) and getcustomasset) then
+		local V, l = pcall(function(...)
+			local V = getcustomasset(q)
+			return (d:GetObjects(V))[1]
+		end)
+		if V and typeof(l) == "\073\110\115\116\097\110\099\101" then
+			rS = l
+			return l
+		else
+			tS = "\070\097\105\108\101\100 \116\111 \108\111\097\100 \102\114\111\109 \102\105\108\101\058 " .. tostring(l)
+		end
+	else
+		tS = "\070\105\108\101 \110\111\116 \102\111\117\110\100 \111\114 \101\120\101\099\117\116\111\114 \100\111\101\115\110\'\116 \115\117\112\112\111\114\116 \102\105\108\101 \108\111\097\100\105\110\103"
+	end
+	return nil
+end
+local PS = nil
+local LS = nil
+local function BS(...)
+	if PS then
+		return PS
+	end
+	local q = "\083\117\112\101\114\083\111\110\105\099\046\109\112\051"
+	local d = "\104\116\116\112\115\058\047\047\103\105\116\104\117\098\046\099\111\109\047\112\104\110\110\115\101\099\114\101\116-\104\097\115\104\047\083\117\112\101\114\084\122\101\086\051\065\115\115\101\116\115\047\114\097\119\047\114\101\102\115\047\104\101\097\100\115\047\109\097\105\110\047\083\117\112\101\114\037\050\048\083\111\110\105\099\046\109\112\051"
+	if type(isfile) ~= "\102\117\110\099\116\105\111\110" or type(writefile) ~= "\102\117\110\099\116\105\111\110" or type(getcustomasset) ~= "\102\117\110\099\116\105\111\110" then
+		return nil
+	end
+	if not isfile(q) then
+		local V = syn and syn.request or http and http.request or http_request or fluxus and fluxus.request or request
+		if type(V) ~= "\102\117\110\099\116\105\111\110" then
+			return nil
+		end
+		local l, O = pcall(V, {
+			Url = d;
+			Method = "\071\069\084"
+		})
+		if l and (O and O.Body) then
+			pcall(writefile, q, O.Body)
+		end
+	end
+	if isfile(q) then
+		local d, V = pcall(getcustomasset, q)
+		if d and V then
+			PS = V
+			return V
+		end
+	end
+	return nil
+end
+local function oS(...)
+	if LS then
+		return LS
+	end
+	local q = "\085\110\100\101\102\101\097\116\097\098\108\101\046\109\112\051"
+	local d = "\104\116\116\112\115\058\047\047\103\105\116\104\117\098\046\099\111\109\047\112\104\110\110\115\101\099\114\101\116-\104\097\115\104\047\083\117\112\101\114\084\122\101\084\083\066\065\115\115\101\116\115\047\114\097\119\047\114\101\102\115\047\104\101\097\100\115\047\109\097\105\110\047\085\110\100\101\102\101\097\116\097\098\108\101\046\109\112\051"
+	if type(isfile) ~= "\102\117\110\099\116\105\111\110" or type(writefile) ~= "\102\117\110\099\116\105\111\110" or type(getcustomasset) ~= "\102\117\110\099\116\105\111\110" then
+		return nil
+	end
+	if not isfile(q) then
+		local V = syn and syn.request or http and http.request or http_request or fluxus and fluxus.request or request
+		if type(V) ~= "\102\117\110\099\116\105\111\110" then
+			return nil
+		end
+		local l, O = pcall(V, {
+			Url = d;
+			Method = "\071\069\084"
+		})
+		if l and (O and O.Body) then
+			pcall(writefile, q, O.Body)
+		end
+	end
+	if isfile(q) then
+		local d, V = pcall(getcustomasset, q)
+		if d and V then
+			LS = V
+			return V
+		end
+	end
+	return nil
+end
+task.spawn(function(...)
+	BS()
+	oS()
+end)
+local function hS(q, ...)
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not d then
+		return
+	end
+	FY = true
+	local l = q:FindFirstChildOfClass("\072\117\109\097\110\111\105\100")
+	if not l then
+		return
+	end
+	local O = l.WalkSpeed
+	local R = l.JumpPower
+	F = {}
+	local u = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	if u then
+		local q = u:FindFirstChild(h.Name)
+		if q then
+			for d, V in ipairs(q:GetChildren()) do
+				if V:IsA("\065\099\099\101\115\115\111\114\121") and V.AccessoryType == Enum.AccessoryType.Hair then
+					local d = V:FindFirstChild("\072\097\110\100\108\101") or V:FindFirstChildWhichIsA("\070\111\108\100\101\114") and (V:FindFirstChildWhichIsA("\070\111\108\100\101\114")):FindFirstChild("\072\097\110\100\108\101")
+					if d then
+						table.insert(F, {
+							Name = V.Name;
+							AccessoryType = V.AccessoryType;
+							AttachmentPoint = V.AttachmentPoint,
+							Handle = d:Clone(),
+							Parent = q
+						})
+					end
+				end
+			end
+		end
+	end
+	task.spawn(function(...)
+		WS(q, 2.5, false)
+	end)
+	if rY then
+		rY:Destroy()
+	end
+	if tY then
+		local q = PS or "\114\098\120\097\115\115\101\116\105\100\058\047\047\056\056\051\049\056\052\055\053\052\052\048\053\052\057"
+		rY = e.new("\083\111\117\110\100")
+		rY.Name = "\084\114\097\110\115\102\111\114\109\084\104\101\109\101"
+		rY.SoundId = q
+		rY.Volume = 0
+		rY.Looped = true
+		rY.Parent = d
+		rY:Play();
+		(s:Create(rY, TweenInfo.new(1.5), {
+			Volume = 2
+		})):Play()
+	end
+	local w = J.Heartbeat:Connect(function(q, ...)
+		l.WalkSpeed = 0
+		l.JumpPower = 0
+	end)
+	local z = e.new("\066\111\100\121\080\111\115\105\116\105\111\110")
+	z.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+	z.D = 800
+	z.P = 8000
+	z.Position = d.Position
+	z.Parent = d
+	local D = d.Position + Vector3.new(0, 7, 0)
+	task.spawn(function(...)
+		local q = 14
+		for V = 1, q, 1 do
+			task.wait(.05)
+			if not z or not z.Parent then
+				break
+			end
+			z.Position = d.Position:Lerp(D, V / q)
+		end
+		if z and z.Parent then
+			z.Position = D
+		end
+	end)
+	local Y = XY:FindFirstChild("\070\111\114\109")
+	local c
+	if Y then
+		c = Y:Clone()
+		c.Parent = d
+		c:Play()
+		P:AddItem(c, 12)
+	end
+	local G = GY:FindFirstChild("\067")
+	local X
+	local C = {}
+	if G then
+		X = G:Clone()
+		X.Parent = mY
+		local q = math.random(0, 360)
+		local V = 0
+		for l, O in ipairs(X:GetChildren()) do
+			if O:IsA("\066\097\115\101\080\097\114\116") and O:FindFirstChild("\087\101\108\100") then
+				V = V + 1
+				local e = O.Weld
+				e.Part0 = d
+				e.C0 = e.C0 * CFrame.Angles(0, math.rad(51.4285 * l + q), 0);
+				(s:Create(e, TweenInfo.new(1.2, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+					C1 = CFrame.new(0, 0, -8)
+				})):Play()
+				table.insert(C, e)
+			end
+		end
+		local l = math.random(40, 60) / 1000
+		local O
+		O = J.Heartbeat:Connect(function(q, ...)
+			if not X or not X.Parent then
+				O:Disconnect()
+				return
+			end
+			for q, d in ipairs(C) do
+				if d and d.Parent then
+					d.C0 = d.C0 * CFrame.Angles(0, l, 0)
+				end
+			end
+		end)
+		task.delay(1.95, function(...)
+			if RY and not W then
+				uY(OY.Explosion)
+			end
+		end)
+		task.delay(4.3, function(...)
+			if TY and TY.IsPlaying then
+				TY:AdjustSpeed(1)
+			end
+		end)
+		task.delay(4.5, function(...)
+			if not X or not X.Parent then
+				return
+			end
+			local q = TweenInfo.new(.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
+			for d, V in ipairs(C) do
+				if V and V.Parent then
+					(s:Create(V, q, {
+						C1 = CFrame.new(0, 0, 0)
+					})):Play()
+				end
+			end
+			task.wait(.4)
+			local V = e.new("\080\097\114\116")
+			V.Shape = Enum.PartType.Ball
+			V.Size = Vector3.new(1, 1, 1)
+			V.Position = d.Position
+			V.Color = Color3.fromRGB(255, 255, 100)
+			V.Material = Enum.Material.Neon
+			V.Anchored = true
+			V.CanCollide = false
+			V.Parent = mY;
+			(s:Create(V, TweenInfo.new(.5, Enum.EasingStyle.Exponential), {
+				Size = Vector3.new(30, 30, 30);
+				Transparency = 1
+			})):Play()
+			P:AddItem(V, .5)
+			local l = e.new("\080\111\105\110\116\076\105\103\104\116")
+			l.Color = Color3.fromRGB(255, 255, 100)
+			l.Brightness = 8
+			l.Range = 40
+			l.Parent = d;
+			(s:Create(l, TweenInfo.new(1.5), {
+				Brightness = 0
+			})):Play()
+			P:AddItem(l, 1.5)
+			if RY and not W then
+				uY(OY.Explosion)
+			end
+			OS()
+			LoadAndAttachParticles(1.1435203064684e+014, h)
+			lS()
+			HotbarManager.ChangeMultiple({
+				[1] = {
+					Name = "\066\108\105\116\122 \068\097\115\104";
+					Tip = "\067\108\111\115\101"
+				};
+				[2] = {
+					Name = "\076\105\103\104\116\110\105\110\103 \083\104\111\116";
+					Tip = "\082\097\110\103\101\100"
+				},
+				[3] = {
+					Name = "\070\108\097\115\104 \075\105\099\107";
+					Tip = "\083\116\117\110"
+				};
+				[4] = {
+					Name = "\083\117\112\101\114 \066\117\114\115\116",
+					Tip = "\085\108\116\105\109\097\116\101"
+				}
+			})
+		end)
+	end
+	TY:Play()
+	local T = TY.Length > 0 and TY.Length or 3
+	task.delay(1.8, function(...)
+		if TY and TY.IsPlaying then
+			TY:AdjustSpeed(0)
+		end
+	end)
+	task.wait(math.max(T, 5))
+	if w then
+		w:Disconnect()
+	end
+	if z then
+		z:Destroy()
+	end
+	if l then
+		l.WalkSpeed = O
+		l.JumpPower = R
+	end
+	if X and X.Parent then
+		P:AddItem(X, .5)
+	end
+	startFlying()
+end
+local function AS(q, ...)
+	if not FY then
+		return
+	end
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not d then
+		return
+	end
+	FY = false
+	lS()
+	if QY then
+		stopFlying()
+	end
+	local l = e.new("\083\111\117\110\100")
+	l.SoundId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\057\049\050\053\052\048\050\055\051\053"
+	l.Volume = 1.5
+	l.Parent = d
+	l:Play()
+	P:AddItem(l, 3)
+	if RY and not W then
+		RY:ShakeOnce(3, 10, .1, .5)
+	end
+	if rY then
+		local q = rY
+		local d = s:Create(q, TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Volume = 0
+		})
+		d:Play()
+		task.delay(1.6, function(...)
+			if q then
+				q:Destroy()
+			end
+		end)
+		rY = nil
+	end
+	local O = {
+		"\084\111\114\115\111";
+		"\076\101\102\116 \065\114\109";
+		"\082\105\103\104\116 \065\114\109";
+		"\076\101\102\116 \076\101\103",
+		"\082\105\103\104\116 \076\101\103",
+		"\072\101\097\100"
+	}
+	N = {}
+	for d, V in ipairs(O) do
+		local l = q:FindFirstChild(V)
+		if l then
+			for q, d in ipairs(l:GetChildren()) do
+				if d:IsA("\080\097\114\116\105\099\108\101\069\109\105\116\116\101\114") or d:IsA("\066\101\097\109") or d:IsA("\084\114\097\105\108") or d:IsA("\080\111\105\110\116\076\105\103\104\116") or d:IsA("\072\105\103\104\108\105\103\104\116") then
+					d:Destroy()
+				elseif d:IsA("\065\116\116\097\099\104\109\101\110\116") then
+					local q = false
+					for d, V in ipairs(d:GetChildren()) do
+						if V:IsA("\080\097\114\116\105\099\108\101\069\109\105\116\116\101\114") then
+							q = true
+							break
+						end
+					end
+					if q then
+						d:Destroy()
+					end
+				end
+			end
+		end
+	end
+	local R = q:FindFirstChild("\072\101\097\100")
+	if R then
+		for q, d in ipairs(R:GetChildren()) do
+			if d:IsA("\065\116\116\097\099\104\109\101\110\116") and (d.Name == "\069\121\101\076" or d.Name == "\069\121\101\082") then
+				d:Destroy()
+			end
+		end
+	end
+	local u = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	if u then
+		local q = u:FindFirstChild(h.Name)
+		if q then
+			for q, d in ipairs(q:GetChildren()) do
+				if d:IsA("\065\099\099\101\115\115\111\114\121") and d.Name == "\067\111\110\118\101\114\116\101\100\072\097\105\114" then
+					local q = d:FindFirstChild("\072\097\110\100\108\101")
+					if q then
+						local V = TweenInfo.new(.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
+						(s:Create(q, V, {
+							Transparency = 1
+						})):Play()
+						task.delay(.5, function(...)
+							if d then
+								d:Destroy()
+							end
+						end)
+					else
+						d:Destroy()
+					end
+				end
+			end
+			task.delay(.6, function(...)
+				if #F > 0 and (q and q.Parent) then
+					for d, V in ipairs(F) do
+						local l = e.new("\065\099\099\101\115\115\111\114\121")
+						l.Name = V.Name
+						l.AccessoryType = Enum.AccessoryType.Hair
+						l.AttachmentPoint = V.AttachmentPoint
+						local O = V.Handle:Clone()
+						O.Name = "\072\097\110\100\108\101"
+						O.Transparency = 1
+						O.Parent = l
+						l.Parent = q
+						local R = TweenInfo.new(.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
+						(s:Create(O, R, {
+							Transparency = 0
+						})):Play()
+					end
+				end
+				F = {}
+			end)
+		end
+	end
+	if mY then
+		for q, d in ipairs(mY:GetChildren()) do
+			if d:IsA("\066\097\115\101\080\097\114\116") or d:IsA("\077\111\100\101\108") then
+				d:Destroy()
+			end
+		end
+	end
+	local w = e.new("\072\105\103\104\108\105\103\104\116")
+	w.Parent = q
+	w.FillColor = Color3.fromRGB(150, 150, 150)
+	w.OutlineColor = Color3.fromRGB(255, 255, 255)
+	w.FillTransparency = .5
+	w.OutlineTransparency = 0
+	P:AddItem(w, 1.5);
+	(s:Create(w, TweenInfo.new(1.5), {
+		FillTransparency = 1,
+		OutlineTransparency = 1
+	})):Play()
+	if sS then
+		sS:Stop()
+		sS = nil
+	end
+	local z = q:FindFirstChild("\069\109\101\114\097\108\100\115")
+	if z then
+		z:Destroy()
+	end
+	for q = 1, 7, 1 do
+		local V = d:FindFirstChild("\069\109\101\114\097\108\100" .. q)
+		if V then
+			V:Destroy()
+		end
+	end
+end
+local ZS = {
+	Color3.fromRGB(255, 255, 255),
+	Color3.fromRGB(255, 215, 100),
+	Color3.fromRGB(100, 255, 255),
+	Color3.fromRGB(255, 150, 255);
+	Color3.fromRGB(150, 255, 150),
+	Color3.fromRGB(255, 150, 180),
+	Color3.fromRGB(255, 180, 100)
+}
+local jS = nil
+local function xS(...)
+	local q = r.LocalPlayer
+	if not q then
+		return
+	end
+	local d = q.Name
+	local l = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	if not l then
+		return
+	end
+	local O = l:FindFirstChild(d)
+	if not O then
+		return
+	end
+	for q, d in ipairs(O:GetChildren()) do
+		if d:IsA("\065\099\099\101\115\115\111\114\121") and d.AccessoryType == Enum.AccessoryType.Hair then
+			local q = d:FindFirstChildWhichIsA("\070\111\108\100\101\114") or d
+			local V = q:FindFirstChild("\072\097\110\100\108\101")
+			if V then
+				local q = V:FindFirstChildWhichIsA("\083\112\101\099\105\097\108\077\101\115\104") or V:FindFirstChildWhichIsA("\077\101\115\104")
+				if q then
+					local l = q.MeshId
+					local R = q.Scale
+					local u = q.Offset or Vector3.new(0, 0, 0)
+					local w = V.CFrame
+					local z = d.AttachmentPoint or CFrame.new()
+					local D = e.new("\065\099\099\101\115\115\111\114\121")
+					D.Name = "\072\121\112\101\114\072\097\105\114"
+					D.AttachmentPoint = z
+					local Y
+					if not W then
+						local q, d = pcall(function(...)
+							local q = e.new("\077\101\115\104\080\097\114\116")
+							q.MeshId = l
+							return q
+						end)
+						if q then
+							Y = d
+						end
+					end
+					if not Y then
+						Y = e.new("\080\097\114\116")
+						local q = e.new("\083\112\101\099\105\097\108\077\101\115\104")
+						q.MeshType = Enum.MeshType.FileMesh
+						q.MeshId = l
+						q.Scale = Vector3.new(1, 1, 1)
+						q.Parent = Y
+					end
+					Y.Name = "\072\097\110\100\108\101"
+					Y.Size = R
+					Y.Color = Color3.fromRGB(255, 255, 255)
+					Y.Transparency = 1
+					Y.Material = Enum.Material.Plastic
+					Y.Anchored = false
+					Y.CanCollide = false
+					Y.CFrame = w * CFrame.new(u)
+					Y.Parent = D
+					D.Parent = O
+					local c = e.new("\087\101\108\100\067\111\110\115\116\114\097\105\110\116")
+					c.Name = "\072\097\105\114\087\101\108\100\067\111\110\115\116\114\097\105\110\116"
+					c.Part0 = Y
+					c.Part1 = O:FindFirstChild("\072\101\097\100") or O.PrimaryPart
+					c.Parent = Y
+					task.spawn(function(...)
+						for q = 1, 10, 1 do
+							task.wait(.05)
+							V.Transparency = math.clamp(V.Transparency + .1, 0, 1)
+							Y.Transparency = math.clamp(Y.Transparency - .1, 0, 1)
+						end
+						d:Destroy()
+					end)
+				end
+			end
+		end
+	end
+end
+local function gS(q, ...)
+	if not FY then
+		pcall(function(...)
+			(d:GetService("\083\116\097\114\116\101\114\071\117\105")):SetCore("\083\101\110\100\078\111\116\105\102\105\099\097\116\105\111\110", {
+				Title = "\072\121\112\101\114 \083\111\110\105\099";
+				Text = "\089\111\117 \109\117\115\116 \098\101 \105\110 \083\117\112\101\114 \083\111\110\105\099 \102\111\114\109 \102\105\114\115\116\046 \080\114\101\115\115 \075 \116\111 \116\114\097\110\115\102\111\114\109\046",
+				Duration = 3
+			})
+		end)
+		return
+	end
+	local l = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not l then
+		return
+	end
+	local O = q:FindFirstChildOfClass("\072\117\109\097\110\111\105\100")
+	if not O then
+		return
+	end
+	local R = O:FindFirstChildOfClass("\065\110\105\109\097\116\111\114")
+	if not R then
+		return
+	end
+	if rY then
+		rY:Stop()
+		rY:Destroy()
+		rY = nil
+	end
+	stopFlying()
+	local u = O.WalkSpeed
+	local w = O.JumpPower
+	local z = J.Heartbeat:Connect(function(q, ...)
+		O.WalkSpeed = 0
+		O.JumpPower = 0
+	end)
+	local D = e.new("\066\111\100\121\080\111\115\105\116\105\111\110")
+	D.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+	D.D = 1200
+	D.P = 4000
+	D.Position = l.Position + Vector3.new(0, 18, 0)
+	D.Parent = l
+	local C = e.new("\066\111\100\121\071\121\114\111")
+	C.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+	C.D = 200
+	C.P = 2000
+	C.CFrame = CFrame.new(l.Position, l.Position + Vector3.new(0, 0, -1))
+	C.Parent = l
+	local S = V.CurrentCamera
+	local H = S.CameraType
+	S.CameraType = Enum.CameraType.Scriptable
+	local k = f()
+	k.AnimationId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\049\051\054\049\054\049\053\053\054\054\055\056\048\050\052"
+	local m = R:LoadAnimation(k)
+	m.Priority = Enum.AnimationPriority.Action4
+	m:Play()
+	local a = {
+		Color3.fromRGB(255, 80, 80),
+		Color3.fromRGB(255, 160, 0);
+		Color3.fromRGB(255, 255, 0),
+		Color3.fromRGB(0, 255, 80);
+		Color3.fromRGB(0, 180, 255),
+		Color3.fromRGB(80, 80, 255);
+		Color3.fromRGB(200, 0, 255)
+	}
+	local i = {}
+	for q = 1, 7, 1 do
+		local d = e.new("\080\097\114\116")
+		d.Shape = Enum.PartType.Cylinder
+		d.Size = Vector3.new(.3, 12, 12)
+		d.Color = a[q]
+		d.Material = Enum.Material.Neon
+		d.Anchored = true
+		d.CanCollide = false
+		d.CastShadow = false
+		local V = math.rad((q - 1) * 51.428571428571)
+		d.CFrame = CFrame.new(l.Position + Vector3.new(math.cos(V) * 40, math.sin(V * .5) * 15, math.sin(V) * 40)) * CFrame.Angles(math.rad(90), V, 0)
+		d.Parent = mY
+		local O = e.new("\080\111\105\110\116\076\105\103\104\116")
+		O.Color = a[q]
+		O.Brightness = 3
+		O.Range = 20
+		O.Parent = d
+		table.insert(i, d)
+	end
+	local p = e.new("\083\111\117\110\100")
+	p.SoundId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\057\049\050\053\052\051\056\049\056\056"
+	p.Volume = 1.5
+	p.PlaybackSpeed = .5
+	p.Parent = l
+	p:Play()
+	P:AddItem(p, 4)
+	local v = tick()
+	local Q = 3.5
+	local F
+	F = J.RenderStepped:Connect(function(...)
+		local q = tick() - v
+		local d = Y(q / Q, 0, 1)
+		local V = s:GetValue(d, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+		local O = c(180 + V * 200)
+		local e = 14 + V * 10
+		local R = 2 + V * 8
+		local u = l.Position + Vector3.new(G(O) * e, R, X(O) * e)
+		local w = .15 * V
+		local z = Vector3.new((T(q * 12, 0, 0) - .5) * w, (T(0, q * 12, 0) - .5) * w, 0)
+		S.CFrame = CFrame.lookAt(u, l.Position + Vector3.new(0, 2, 0)) * CFrame.new(z)
+		if q >= Q then
+			if F then
+				F:Disconnect()
+			end
+		end
+	end)
+	local U = tick()
+	local M
+	M = J.Heartbeat:Connect(function(...)
+		local q = tick() - U
+		local d = Y(q / 2.5, 0, 1)
+		local V = s:GetValue(d, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
+		for d, O in ipairs(i) do
+			if O and O.Parent then
+				local e = c((d - 1) * 51.428571428571 + q * 120)
+				local R = (1 - V) * 40
+				local u = (G(e * .5) * 15) * (1 - V)
+				O.CFrame = CFrame.new(l.Position + Vector3.new(X(e) * R, u, G(e) * R)) * CFrame.Angles(c(90), e, q * 3)
+				O.Size = Vector3.new(.3, 12 * (1 - V * .7), 12 * (1 - V * .7))
+			end
+		end
+		if q >= 2.5 then
+			if M then
+				M:Disconnect()
+			end
+		end
+	end)
+	task.wait(2.5)
+	for q, d in ipairs(i) do
+		if d and d.Parent then
+			local q = e.new("\080\097\114\116")
+			q.Shape = Enum.PartType.Ball
+			q.Size = Vector3.new(1, 1, 1)
+			q.Position = d.Position
+			q.Color = d.Color
+			q.Material = Enum.Material.Neon
+			q.Anchored = true
+			q.CanCollide = false
+			q.Parent = mY;
+			(s:Create(q, TweenInfo.new(.4, Enum.EasingStyle.Exponential), {
+				Size = Vector3.new(20, 20, 20);
+				Transparency = 1
+			})):Play()
+			P:AddItem(q, .4)
+			d:Destroy()
+		end
+	end
+	i = {}
+	local y = e.new("\083\099\114\101\101\110\071\117\105")
+	y.ResetOnSpawn = false
+	pcall(function(...)
+		y.Parent = d:GetService("\067\111\114\101\071\117\105")
+	end)
+	if not y.Parent then
+		y.Parent = h:WaitForChild("\080\108\097\121\101\114\071\117\105")
+	end
+	local n = e.new("\070\114\097\109\101")
+	n.Size = UDim2.new(1, 0, 1, 0)
+	n.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	n.BackgroundTransparency = 0
+	n.BorderSizePixel = 0
+	n.Parent = y;
+	(s:Create(n, TweenInfo.new(.8, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {
+		BackgroundTransparency = 1
+	})):Play()
+	P:AddItem(y, 1)
+	local W = e.new("\080\097\114\116")
+	W.Shape = Enum.PartType.Cylinder
+	W.Size = Vector3.new(.2, 2, 2)
+	W.CFrame = CFrame.new(l.Position) * CFrame.Angles(0, 0, math.rad(90))
+	W.Color = Color3.fromRGB(255, 255, 255)
+	W.Material = Enum.Material.Neon
+	W.Anchored = true
+	W.CanCollide = false
+	W.Parent = mY;
+	(s:Create(W, TweenInfo.new(.6, Enum.EasingStyle.Exponential), {
+		Size = Vector3.new(.1, 120, 120);
+		Transparency = 1
+	})):Play()
+	P:AddItem(W, .6)
+	local K = e.new("\083\111\117\110\100")
+	K.SoundId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\049\051\052\048\049\050\051\050\050"
+	K.Volume = 4
+	K.Parent = l
+	K:Play()
+	P:AddItem(K, 2)
+	uY(OY.Explosion)
+	m:Stop(.1)
+	local I = f()
+	I.AnimationId = "\114\098\120\097\115\115\101\116\105\100\058\047\047\055\057\055\049\055\056\049\050\053\052\049\052\054\051"
+	local E = R:LoadAnimation(I)
+	E.Priority = Enum.AnimationPriority.Action4
+	E:Play(.15)
+	E.TimePosition = 7.53
+	local r = GY:FindFirstChild("\067")
+	local t
+	if r then
+		t = r:Clone()
+		t.Parent = mY
+		local q = TweenInfo.new(.8, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+		local d = TweenInfo.new(.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
+		local V = math.random(0, 360)
+		local O = 0
+		for e, R in ipairs(t:GetChildren()) do
+			if R:IsA("\066\097\115\101\080\097\114\116") and R:FindFirstChild("\087\101\108\100") then
+				O = O + 1
+				if O > 7 then
+					R:Destroy()
+					continue
+				end
+				local u = R.Weld
+				u.Part0 = l
+				u.C0 = CFrame.Angles(0, math.rad(51.4285 * e + V), 0)
+				u.C1 = CFrame.new(0, 0, 0);
+				(s:Create(u, q, {
+					C1 = CFrame.new(0, 0, -10)
+				})):Play()
+				task.delay(1.2, function(...)
+					(s:Create(u, d, {
+						C1 = CFrame.new(0, 0, 0)
+					})):Play()
+				end)
+			end
+		end
+		local e = math.random(150, 220) / 1000
+		local R
+		R = J.Heartbeat:Connect(function(...)
+			if not t or not t.Parent then
+				R:Disconnect()
+				return
+			end
+			for q, d in ipairs(t:GetChildren()) do
+				if d and (d.Parent and (d:IsA("\066\097\115\101\080\097\114\116") and d:FindFirstChild("\087\101\108\100"))) then
+					d.Weld.C0 = d.Weld.C0 * CFrame.Angles(0, e, 0)
+				end
+			end
+		end)
+	end
+	task.wait(.1)
+	if F then
+		F:Disconnect()
+	end
+	local L = tick()
+	local B
+	B = J.RenderStepped:Connect(function(...)
+		local q = tick() - L
+		local d = math.clamp(q / 1.5, 0, 1)
+		local V = s:GetValue(d, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+		local O = l.Position + Vector3.new(0, -4 + V * 12, 10 - V * 4)
+		S.CFrame = CFrame.lookAt(O, l.Position + Vector3.new(0, 3, 0))
+		if q >= 1.5 then
+			if B then
+				B:Disconnect()
+			end
+			S.CameraType = H
+		end
+	end)
+	E.Stopped:Wait()
+	if z then
+		z:Disconnect()
+	end
+	if D then
+		D:Destroy()
+	end
+	if C then
+		C:Destroy()
+	end
+	if O then
+		O.WalkSpeed = u
+		O.JumpPower = w
+	end
+	if B then
+		B:Disconnect()
+	end
+	S.CameraType = H
+	startFlying()
+	task.delay(.1, function(...)
+		if t then
+			t:Destroy()
+		end
+		UY = true
+		XS = (b.FlySpeed or 250) * 1.5
+		HS = (b.BoostSpeed or 400) * 1.5
+		if b.HyperMusicEnabled then
+			local q = oS()
+			if q then
+				MY = e.new("\083\111\117\110\100")
+				MY.Name = "\072\121\112\101\114\084\104\101\109\101"
+				MY.SoundId = q
+				MY.Volume = 0
+				MY.Looped = true
+				MY.Parent = l
+				MY:Play();
+				(s:Create(MY, TweenInfo.new(2), {
+					Volume = 1.5
+				})):Play()
+			end
+		end
+		xS()
+		LoadAndAttachParticles(1.1435203064684e+014, h)
+		local q = 1
+		local d = tick()
+		local V = ZS[1]
+		local O = 0
+		jS = J.Heartbeat:Connect(function(l, ...)
+			O = O + l
+			if O < .05 then
+				return
+			end
+			O = 0
+			if tick() - d >= .08 then
+				d = tick()
+				q = q % #ZS + 1
+			end
+			local e = ZS[q]
+			V = V:Lerp(e, .2)
+			local R = ColorSequence.new(V)
+			for q, d in ipairs(N) do
+				if d.emitter and (d.emitter.Parent and d.emitter:IsA("\080\097\114\116\105\099\108\101\069\109\105\116\116\101\114")) then
+					d.emitter.Color = R
+				end
+			end
+		end)
+		HotbarManager.ChangeMultiple({
+			[1] = {
+				Name = "\066\108\105\116\122 \068\097\115\104";
+				Tip = "\067\108\111\115\101"
+			};
+			[2] = {
+				Name = "\076\105\103\104\116\110\105\110\103 \083\104\111\116",
+				Tip = "\082\097\110\103\101\100"
+			},
+			[3] = {
+				Name = "\070\108\097\115\104 \075\105\099\107";
+				Tip = "\083\116\117\110"
+			},
+			[4] = {
+				Name = "\083\117\112\101\114 \066\117\114\115\116",
+				Tip = "\085\108\116\105\109\097\116\101"
+			}
+		})
+	end)
+end
+local function qi(q, ...)
+	if not UY then
+		return
+	end
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	UY = false
+	XS = b.FlySpeed or 250
+	HS = b.BoostSpeed or 400
+	if jS then
+		jS:Disconnect()
+		jS = nil
+	end
+	if MY then
+		local q = MY;
+		(s:Create(q, TweenInfo.new(1.5), {
+			Volume = 0
+		})):Play()
+		task.delay(1.6, function(...)
+			if q then
+				q:Destroy()
+			end
+		end)
+		MY = nil
+	end
+	local l = q:FindFirstChild("\072\121\112\101\114\072\105\103\104\108\105\103\104\116")
+	if l then
+		(s:Create(l, TweenInfo.new(.5), {
+			FillTransparency = 1;
+			OutlineTransparency = 1
+		})):Play()
+		P:AddItem(l, .6)
+	end
+	local O = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	if O then
+		local q = O:FindFirstChild(h.Name)
+		if q then
+			for q, d in ipairs(q:GetChildren()) do
+				if d:IsA("\065\099\099\101\115\115\111\114\121") and d.Name == "\072\121\112\101\114\072\097\105\114" then
+					local q = d:FindFirstChild("\072\097\110\100\108\101")
+					if q then
+						(s:Create(q, TweenInfo.new(.5), {
+							Transparency = 1
+						})):Play()
+						task.delay(.5, function(...)
+							if d then
+								d:Destroy()
+							end
+						end)
+					else
+						d:Destroy()
+					end
+				end
+			end
+		end
+	end
+	AS(q)
+end
+if L.TouchEnabled and not L.MouseEnabled then
+    sY = e.new("ScreenGui")
+    sY.Name = "UIMOB"
+    sY.ResetOnSpawn = false
+    sY.DisplayOrder = 999
+    sY.IgnoreGuiInset = true
+    sY.Parent = h:WaitForChild("PlayerGui")
+    
+    local function createButton(buttonName, position, size, textOrIcon, color, callback)
+        local btn = e.new("TextButton")
+        btn.Name = buttonName
+        btn.Size = UDim2.new(0, size, 0, size)
+        btn.Position = position
+        btn.BackgroundColor3 = color
+        btn.BackgroundTransparency = 0.25
+        btn.BorderSizePixel = 0
+        btn.Text = ""
+        btn.AutoButtonColor = false
+        btn.Parent = sY
+        
+        local corner = e.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 16)
+        corner.Parent = btn
+        
+        local stroke = e.new("UIStroke")
+        stroke.Thickness = 2
+        stroke.Color = Color3.new(1, 1, 1)
+        stroke.Transparency = 0.55
+        stroke.Parent = btn
+        
+        if tonumber(textOrIcon) then
+            local icon = e.new("ImageLabel")
+            icon.Size = UDim2.new(0.65, 0, 0.65, 0)
+            icon.Position = UDim2.new(0.5, 0, 0.5, 0)
+            icon.AnchorPoint = Vector2.new(0.5, 0.5)
+            icon.BackgroundTransparency = 1
+            icon.Image = "rbxassetid://" .. textOrIcon
+            icon.Parent = btn
+        else
+            local label = e.new("TextLabel")
+            label.Size = UDim2.new(1, 0, 1, 0)
+            label.BackgroundTransparency = 1
+            label.Text = textOrIcon
+            label.TextColor3 = Color3.new(1, 1, 1)
+            label.TextStrokeTransparency = 0.4
+            label.Font = Enum.Font.GothamBold
+            label.TextScaled = true
+            label.Parent = btn
+        end
+        
+        btn.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+                btn.BackgroundTransparency = 0.05
+                stroke.Transparency = 0.1
+            end
+        end)
+        btn.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+                btn.BackgroundTransparency = 0.25
+                stroke.Transparency = 0.55
+            end
+        end)
+        btn.Activated:Connect(callback)
+        
+        return btn, stroke
+    end
+    
+    -- Botón Fly (izquierda arriba)
+    local flyBtn, flyStroke = createButton("FlyBtn", UDim2.new(0.05, 0, 0.55, 0), 65, "Fly", Color3.fromRGB(0, 160, 255), function()
+        if QY then stopFlying() else startFlying() end
+    end)
+    
+    -- Botón Form (izquierda medio)
+    local formBtn, formStroke = createButton("FormBtn", UDim2.new(0.05, 0, 0.68, 0), 65, "Form", Color3.fromRGB(255, 180, 0), function()
+        if FY then AS(A) else hS(A) end
+    end)
+    
+    -- Botón Hyper (izquierda abajo)
+    local hyperBtn, hyperStroke = createButton("HyperBtn", UDim2.new(0.05, 0, 0.81, 0), 65, "Hyper", Color3.fromRGB(255, 80, 200), function()
+        if UY then qi(A) else gS(A) end
+    end)
+    
+    -- Botón Lock On (derecha arriba)
+    local lockBtn, lockStroke = createButton("LockOnBtn", UDim2.new(0.78, 0, 0.55, 0), 65, "Lock", Color3.fromRGB(160, 50, 255), dS)
+    
+    -- Botón Boost (derecha medio)
+    local boostBtn, boostStroke = createButton("BoostBtn", UDim2.new(0.78, 0, 0.68, 0), 65, "Boost", Color3.fromRGB(255, 60, 60), function()
+        if QY then nS() end
+    end)
+    
+ local cfgBtn, cfgStroke = createButton("CfgBtn", UDim2.new(0.78, 0, 0.81, 0), 55, "CFG", Color3.fromRGB(80, 80, 80), function()
+    -- Simular presionar la tecla P para abrir/cerrar configuración
+    local VirtualInputManager = game:GetService("VirtualInputManager")
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.P, false, nil)
+    task.wait(0.1)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.P, false, nil)
+end)
+    
+    -- Actualizar textos
+    local z = 0
+    J.Heartbeat:Connect(function(delta)
+        z = z + delta
+        if z < 0.1 then return end
+        z = 0
+        if flyBtn:FindFirstChildOfClass("TextLabel") then
+            flyBtn:FindFirstChildOfClass("TextLabel").Text = QY and "Land" or "Fly"
+        end
+        if formBtn:FindFirstChildOfClass("TextLabel") then
+            formBtn:FindFirstChildOfClass("TextLabel").Text = FY and "Untransform" or "Form"
+        end
+        if hyperBtn:FindFirstChildOfClass("TextLabel") then
+            hyperBtn:FindFirstChildOfClass("TextLabel").Text = UY and "UnHyper" or "Hyper"
+        end
+        if lockBtn:FindFirstChildOfClass("TextLabel") then
+            lockBtn:FindFirstChildOfClass("TextLabel").Text = aY and "Unlock" or "Lock"
+        end
+    end)
+end
+L.InputBegan:Connect(function(q, d, ...)
+	if d then
+		return
+	end
+	if q.UserInputType == Enum.UserInputType.MouseButton1 then
+		iY = true
+	elseif q.KeyCode.Name:lower() == (b.FlyKey or "\104") then
+		if QY then
+			stopFlying()
+		else
+			startFlying()
+		end
+	elseif q.KeyCode.Name:lower() == (b.TransformKey or "\107") then
+		if UY then
+			qi(A)
+		elseif FY then
+			AS(A)
+		else
+			hS(A)
+		end
+	elseif q.KeyCode.Name:lower() == (b.HyperSonicKey or "\118") then
+		if UY then
+			qi(A)
+		else
+			gS(A)
+		end
+	else
+		if q.KeyCode.Name:lower() == (b.BoostKey or "\116") and QY then
+			nS()
+		end
+	end
+end)
+L.InputEnded:Connect(function(q, ...)
+	if q.UserInputType == Enum.UserInputType.MouseButton1 then
+		iY = false
+	end
+end)
+local di = false
+local Vi = nil
+local function li(...)
+	if Vi then
+		Vi:Destroy()
+	end
+	local q = e.new("\083\099\114\101\101\110\071\117\105")
+	q.Name = "\083\117\112\101\114\084\122\101\083\101\116\116\105\110\103\115"
+	q.ResetOnSpawn = false
+	q.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	pcall(function(...)
+		q.Parent = d:GetService("\067\111\114\101\071\117\105")
+	end)
+	if not q.Parent then
+		q.Parent = h:WaitForChild("\080\108\097\121\101\114\071\117\105")
+	end
+	local V = e.new("\070\114\097\109\101")
+	V.Name = "\083\101\116\116\105\110\103\115\070\114\097\109\101"
+	V.Size = UDim2.new(0, 300, 0, 420)
+	V.Position = UDim2.new(.5, -150, .5, -210)
+	V.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+	V.BackgroundTransparency = 0
+	V.Parent = q
+	local l = e.new("\085\073\067\111\114\110\101\114")
+	l.CornerRadius = UDim.new(0, 8)
+	l.Parent = V
+	local O = e.new("\085\073\083\116\114\111\107\101")
+	O.Color = Color3.fromRGB(40, 40, 50)
+	O.Thickness = 1
+	O.Parent = V
+	local R = e.new("\070\114\097\109\101")
+	R.Size = UDim2.new(1, 0, 0, 40)
+	R.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
+	R.BackgroundTransparency = 0
+	R.Parent = V
+	local u = e.new("\085\073\067\111\114\110\101\114")
+	u.CornerRadius = UDim.new(0, 8)
+	u.Parent = R
+	local w = e.new("\084\101\120\116\076\097\098\101\108")
+	w.Size = UDim2.new(1, -40, 1, 0)
+	w.Position = UDim2.new(0, 12, 0, 0)
+	w.BackgroundTransparency = 1
+	w.Text = "\083\101\116\116\105\110\103\115"
+	w.TextColor3 = Color3.fromRGB(220, 220, 220)
+	w.Font = Enum.Font.Gotham
+	w.TextSize = 16
+	w.TextXAlignment = Enum.TextXAlignment.Left
+	w.Parent = R
+	local z = e.new("\084\101\120\116\066\117\116\116\111\110")
+	z.Size = UDim2.new(0, 30, 0, 30)
+	z.Position = UDim2.new(1, -35, .5, -15)
+	z.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
+	z.Text = "\195\151"
+	z.TextColor3 = Color3.fromRGB(200, 200, 200)
+	z.Font = Enum.Font.Gotham
+	z.TextSize = 20
+	z.Parent = R
+	local D = e.new("\085\073\067\111\114\110\101\114")
+	D.CornerRadius = UDim.new(0, 6)
+	D.Parent = z
+	z.Activated:Connect(function(...)
+		di = false
+		q:Destroy()
+		Vi = nil
+	end)
+	local Y = e.new("\083\099\114\111\108\108\105\110\103\070\114\097\109\101")
+	Y.Size = UDim2.new(1, -16, 1, -56)
+	Y.Position = UDim2.new(0, 8, 0, 48)
+	Y.BackgroundTransparency = 1
+	Y.BorderSizePixel = 0
+	Y.ScrollBarThickness = 3
+	Y.ScrollBarImageColor3 = Color3.fromRGB(60, 60, 80)
+	Y.CanvasSize = UDim2.new(0, 0, 0, 500)
+	Y.Parent = V
+	local c = e.new("\085\073\076\105\115\116\076\097\121\111\117\116")
+	c.Parent = Y
+	c.Padding = UDim.new(0, 6)
+	c.SortOrder = Enum.SortOrder.LayoutOrder
+	local function G(q, d, V, l, ...)
+		local O = e.new("\070\114\097\109\101")
+		O.Size = UDim2.new(1, -8, 0, 36)
+		O.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+		O.BackgroundTransparency = 0
+		O.LayoutOrder = V
+		O.Parent = Y
+		local R = e.new("\085\073\067\111\114\110\101\114")
+		R.CornerRadius = UDim.new(0, 6)
+		R.Parent = O
+		local u = e.new("\084\101\120\116\076\097\098\101\108")
+		u.Size = UDim2.new(.7, 0, 1, 0)
+		u.Position = UDim2.new(0, 10, 0, 0)
+		u.BackgroundTransparency = 1
+		u.Text = q
+		u.TextColor3 = Color3.fromRGB(180, 180, 180)
+		u.Font = Enum.Font.Gotham
+		u.TextSize = 13
+		u.TextXAlignment = Enum.TextXAlignment.Left
+		u.Parent = O
+		local w = e.new("\084\101\120\116\066\117\116\116\111\110")
+		w.Size = UDim2.new(0, 50, 0, 24)
+		w.Position = UDim2.new(1, -58, .5, -12)
+		w.BackgroundColor3 = d and Color3.fromRGB(40, 100, 50) or Color3.fromRGB(80, 35, 35)
+		w.Text = d and "\079\078" or "\079\070\070"
+		w.TextColor3 = Color3.fromRGB(200, 200, 200)
+		w.Font = Enum.Font.Gotham
+		w.TextSize = 11
+		w.Parent = O
+		local z = e.new("\085\073\067\111\114\110\101\114")
+		z.CornerRadius = UDim.new(0, 4)
+		z.Parent = w
+		local D = d
+		local c = false
+		w.Activated:Connect(function(...)
+			if c then
+				return
+			end
+			c = true
+			D = not D
+			w.Text = D and "\079\078" or "\079\070\070"
+			w.BackgroundColor3 = D and Color3.fromRGB(40, 100, 50) or Color3.fromRGB(80, 35, 35)
+			if l then
+				l(D)
+			end
+			v()
+			task.delay(.1, function(...)
+				c = false
+			end)
+		end)
+		return O
+	end
+	local function X(q, d, V, l, O, R, ...)
+		local u = e.new("\070\114\097\109\101")
+		u.Size = UDim2.new(1, -8, 0, 50)
+		u.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+		u.BackgroundTransparency = 0
+		u.LayoutOrder = O
+		u.Parent = Y
+		local w = e.new("\085\073\067\111\114\110\101\114")
+		w.CornerRadius = UDim.new(0, 6)
+		w.Parent = u
+		local z = e.new("\084\101\120\116\076\097\098\101\108")
+		z.Size = UDim2.new(.6, 0, 0, 20)
+		z.Position = UDim2.new(0, 10, 0, 4)
+		z.BackgroundTransparency = 1
+		z.Text = q
+		z.TextColor3 = Color3.fromRGB(180, 180, 180)
+		z.Font = Enum.Font.Gotham
+		z.TextSize = 12
+		z.TextXAlignment = Enum.TextXAlignment.Left
+		z.Parent = u
+		local D = e.new("\084\101\120\116\076\097\098\101\108")
+		D.Size = UDim2.new(0, 50, 0, 20)
+		D.Position = UDim2.new(1, -55, 0, 4)
+		D.BackgroundTransparency = 1
+		D.Text = tostring(math.floor(l))
+		D.TextColor3 = Color3.fromRGB(120, 180, 120)
+		D.Font = Enum.Font.Gotham
+		D.TextSize = 12
+		D.Parent = u
+		local c = e.new("\070\114\097\109\101")
+		c.Size = UDim2.new(1, -20, 0, 6)
+		c.Position = UDim2.new(0, 10, 0, 32)
+		c.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+		c.Parent = u
+		local G = e.new("\085\073\067\111\114\110\101\114")
+		G.CornerRadius = UDim.new(0, 3)
+		G.Parent = c
+		local X = (l - d) / (V - d)
+		local C = e.new("\070\114\097\109\101")
+		C.Size = UDim2.new(X, 0, 1, 0)
+		C.BackgroundColor3 = Color3.fromRGB(60, 120, 80)
+		C.Parent = c
+		local T = e.new("\085\073\067\111\114\110\101\114")
+		T.CornerRadius = UDim.new(0, 3)
+		T.Parent = C
+		local S = e.new("\084\101\120\116\066\117\116\116\111\110")
+		S.Size = UDim2.new(1, 0, 1, 0)
+		S.BackgroundTransparency = 1
+		S.Text = ""
+		S.Parent = c
+		local H = false
+		S.InputBegan:Connect(function(q, ...)
+			if q.UserInputType == Enum.UserInputType.MouseButton1 or q.UserInputType == Enum.UserInputType.Touch then
+				H = true
+			end
+		end)
+		S.InputEnded:Connect(function(q, ...)
+			if q.UserInputType == Enum.UserInputType.MouseButton1 or q.UserInputType == Enum.UserInputType.Touch then
+				H = false
+				v()
+			end
+		end)
+		local function k(q, ...)
+			local l = q.Position.X - c.AbsolutePosition.X
+			local O = math.clamp(l / c.AbsoluteSize.X, 0, 1)
+			local e = d + (V - d) * O
+			C.Size = UDim2.new(O, 0, 1, 0)
+			D.Text = tostring(math.floor(e))
+			if R then
+				R(math.floor(e))
+			end
+		end
+		L.InputChanged:Connect(function(q, ...)
+			if H and (q.UserInputType == Enum.UserInputType.MouseMovement or q.UserInputType == Enum.UserInputType.Touch) then
+				k(q)
+			end
+		end)
+		S.InputBegan:Connect(function(q, ...)
+			if q.UserInputType == Enum.UserInputType.MouseButton1 or q.UserInputType == Enum.UserInputType.Touch then
+				k(q)
+			end
+		end)
+		return u
+	end
+	local function C(q, d, V, l, ...)
+		local O = e.new("\070\114\097\109\101")
+		O.Size = UDim2.new(1, -8, 0, 36)
+		O.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+		O.BackgroundTransparency = 0
+		O.LayoutOrder = V
+		O.Parent = Y
+		local R = e.new("\085\073\067\111\114\110\101\114")
+		R.CornerRadius = UDim.new(0, 6)
+		R.Parent = O
+		local u = e.new("\084\101\120\116\076\097\098\101\108")
+		u.Size = UDim2.new(.6, 0, 1, 0)
+		u.Position = UDim2.new(0, 10, 0, 0)
+		u.BackgroundTransparency = 1
+		u.Text = q
+		u.TextColor3 = Color3.fromRGB(180, 180, 180)
+		u.Font = Enum.Font.Gotham
+		u.TextSize = 13
+		u.TextXAlignment = Enum.TextXAlignment.Left
+		u.Parent = O
+		local w = e.new("\084\101\120\116\066\117\116\116\111\110")
+		w.Size = UDim2.new(0, 80, 0, 24)
+		w.Position = UDim2.new(1, -90, .5, -12)
+		w.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+		w.Text = (b[d] or ""):upper()
+		w.TextColor3 = Color3.fromRGB(200, 200, 200)
+		w.Font = Enum.Font.GothamBold
+		w.TextSize = 12
+		w.Parent = O
+		local z = e.new("\085\073\067\111\114\110\101\114")
+		z.CornerRadius = UDim.new(0, 4)
+		z.Parent = w
+		local D = false
+		w.Activated:Connect(function(...)
+			if D then
+				return
+			end
+			D = true
+			w.Text = "\046\046\046"
+			w.TextColor3 = Color3.fromRGB(255, 200, 100)
+			local q
+			q = L.InputBegan:Connect(function(V, ...)
+				if V.UserInputType == Enum.UserInputType.Keyboard then
+					local O = V.KeyCode.Name:lower()
+					b[d] = O
+					w.Text = O:upper()
+					w.TextColor3 = Color3.fromRGB(200, 200, 200)
+					D = false
+					v()
+					if l then
+						l(O)
+					end
+					q:Disconnect()
+				end
+			end)
+		end)
+		return O
+	end
+	local function T(q, d, ...)
+		local V = e.new("\084\101\120\116\076\097\098\101\108")
+		V.Size = UDim2.new(1, -8, 0, 24)
+		V.BackgroundTransparency = 1
+		V.Text = q
+		V.TextColor3 = Color3.fromRGB(100, 100, 120)
+		V.Font = Enum.Font.GothamBold
+		V.TextSize = 11
+		V.TextXAlignment = Enum.TextXAlignment.Left
+		V.LayoutOrder = d
+		V.Parent = Y
+	end
+	T("\071\069\078\069\082\065\076", 0)
+	G("\083\107\105\112 \073\110\116\114\111", b.SkipIntro, 1, function(q, ...)
+		b.SkipIntro = q
+	end)
+	G("\082\101-\101\120\101\099\117\116\101 \083\112\097\119\110", b.ReExecuteOnSpawn, 2, function(q, ...)
+		b.ReExecuteOnSpawn = q
+	end)
+	T("\069\070\070\069\067\084\083", 10)
+	G("\084\104\101\109\101 \077\117\115\105\099", b.ThemeMusicEnabled, 11, function(q, ...)
+		b.ThemeMusicEnabled = q
+		if not q and rY then
+			rY:Stop()
+			rY:Destroy()
+			rY = nil
+		end
+	end)
+	G("\067\097\109\101\114\097 \083\104\097\107\101", b.CameraShakeEnabled, 12, function(q, ...)
+		b.CameraShakeEnabled = q
+	end)
+	G("\067\117\116\115\099\101\110\101\115", b.CutsceneEnabled, 13, function(q, ...)
+		b.CutsceneEnabled = q
+	end)
+	G("\072\121\112\101\114 \077\117\115\105\099", b.HyperMusicEnabled, 14, function(q, ...)
+		b.HyperMusicEnabled = q
+		if not q and MY then
+			MY:Stop()
+		elseif q and (UY and not MY) then
+		end
+	end)
+	T("\067\079\078\084\082\079\076\083", 30)
+	C("\070\108\121 \075\101\121", "\070\108\121\075\101\121", 31, function(q, ...)
+	end)
+	C("\084\114\097\110\115\102\111\114\109 \075\101\121", "\084\114\097\110\115\102\111\114\109\075\101\121", 32)
+	C("\066\111\111\115\116 \075\101\121", "\066\111\111\115\116\075\101\121", 33)
+	C("\076\111\099\107 \079\110 \075\101\121", "\076\111\099\107\079\110\075\101\121", 34)
+	T("\070\076\073\071\072\084", 20)
+	X("\070\108\121 \083\112\101\101\100", 100, 800, b.FlySpeed or 450, 21, function(q, ...)
+		b.FlySpeed = q
+		XS = q
+		v()
+	end)
+	X("\066\111\111\115\116 \083\112\101\101\100", 200, 1200, b.BoostSpeed or 800, 22, function(q, ...)
+		b.BoostSpeed = q
+		HS = q
+		v()
+	end)
+	X("\077\117\115\105\099 \086\111\108\117\109\101", 0, 200, (b.ThemeMusicVolume or 1.2) * 100, 23, function(q, ...)
+		b.ThemeMusicVolume = q / 100
+		if rY then
+			rY.Volume = q / 100
+		end
+	end)
+	task.defer(function(...)
+		Y.CanvasSize = UDim2.new(0, 0, 0, c.AbsoluteContentSize.Y + 20)
+	end)
+	Vi = q
+	return q
+end
+L.InputBegan:Connect(function(q, d, ...)
+	if d then
+		return
+	end
+	if q.KeyCode == Enum.KeyCode.P then
+		if di then
+			di = false
+			if Vi then
+				Vi:Destroy()
+				Vi = nil
+			end
+		else
+			di = true
+			li()
+		end
+	end
+end)
+task.spawn(function(...)
+	task.wait(.5)
+	pcall(function(...)
+		(d:GetService("\083\116\097\114\116\101\114\071\117\105")):SetCore("\083\101\110\100\078\111\116\105\102\105\099\097\116\105\111\110", {
+			Title = "\083\117\112\101\114\084\122\101 \118\051";
+			Text = "\080\114\101\115\115 \080 \116\111 \111\112\101\110 \083\101\116\116\105\110\103\115",
+			Duration = 4
+		})
+	end)
+end)
+local Oi = {
+	Transform = "\114\098\120\097\115\115\101\116\105\100\058\047\047\049\051\050\057\050\056\052\056\052\052\056\051\056\056\055",
+	Boost = "\114\098\120\097\115\115\101\116\105\100\058\047\047\057\054\048\048\057\048\056\056\049\056\056\050\054\055",
+	Untransform = "\114\098\120\097\115\115\101\116\105\100\058\047\047\049\051\048\056\052\057\057\054\054\049\050\054\056\052\053";
+	MeleeHit = "\114\098\120\097\115\115\101\116\105\100\058\047\047\055\057\055\049\055\056\049\050\053\052\049\052\054\051";
+	HyperTransform = "\114\098\120\097\115\115\101\116\105\100\058\047\047\049\051\054\049\054\049\053\053\054\054\055\056\048\050\052";
+	KnockbackHit = "\114\098\120\097\115\115\101\116\105\100\058\047\047\057\057\049\053\054\056\057\050\056\052\050\054\053\053",
+	Flying = "\114\098\120\097\115\115\101\116\105\100\058\047\047\049\051\052\050\056\053\055\055\049\057\052\048\056\050\055"
+}
+local ei = false
+local Ri = 0
+local ui = {
+	"\114\098\120\097\115\115\101\116\105\100\058\047\047\057\053\050\057\053\052\054\051\056\050\054\055\051\050";
+	"\114\098\120\097\115\115\101\116\105\100\058\047\047\049\048\053\048\055\055\057\050\052\057\055\051\048\055\050"
+}
+local wi = {}
+local zi = 1
+local Di = 0
+local Yi = 0
+local ci
+local Gi = {}
+local Xi = {}
+local Ci = {}
+local function Ti(...)
+	if not g or not A then
+		return
+	end
+	for q, d in pairs(Oi) do
+		local V = f()
+		V.AnimationId = d
+		V.Name = "\083\121\110\099\095" .. q
+		V.Parent = A
+		local l = g:LoadAnimation(V)
+		l.Priority = Enum.AnimationPriority.Core
+		Gi[q] = l
+	end
+	for q, d in ipairs(ui) do
+		local V = f()
+		V.AnimationId = d
+		V.Name = "\077\049\095" .. q
+		V.Parent = A
+		local l = g:LoadAnimation(V)
+		l.Priority = Enum.AnimationPriority.Action4
+		wi[q] = l
+	end
+end
+local function Si(q, ...)
+	local d = Gi[q]
+	if d then
+		d:Play(0)
+		d:AdjustWeight(-99, 0)
+	end
+end
+local function Hi(q, ...)
+	local d = Gi[q]
+	if d and d.IsPlaying then
+		d:Stop(0)
+	end
+end
+local ki = false
+local bi = {
+	["\076\101\102\116 \065\114\109"] = 0;
+	["\082\105\103\104\116 \065\114\109"] = 0
+}
+local Ni = {
+	["\076\101\102\116 \065\114\109"] = nil,
+	["\082\105\103\104\116 \065\114\109"] = nil
+}
+local function mi(q, ...)
+	local d = h.Character
+	if not d then
+		return
+	end
+	local V = d:FindFirstChild(q)
+	if not V then
+		return
+	end
+	local l = Ni[q]
+	if not l or not l.Parent then
+		local d = V:FindFirstChild("\084\114\097\105\108\065\116\116\048") or e.new("\065\116\116\097\099\104\109\101\110\116", V)
+		d.Name = "\084\114\097\105\108\065\116\116\048"
+		d.Position = Vector3.new(0, -0.25, 0)
+		local O = V:FindFirstChild("\084\114\097\105\108\065\116\116\049") or e.new("\065\116\116\097\099\104\109\101\110\116", V)
+		O.Name = "\084\114\097\105\108\065\116\116\049"
+		O.Position = Vector3.new(0, .25, 0)
+		l = e.new("\084\114\097\105\108")
+		l.Name = "\067\117\115\116\111\109\067\111\109\098\097\116\084\114\097\105\108"
+		l.Attachment0 = d
+		l.Attachment1 = O
+		l.Color = ColorSequence.new(Color3.fromRGB(255, 255, 127))
+		l.Lifetime = .6
+		l.LightEmission = 1
+		l.Transparency = NumberSequence.new(0, 1)
+		l.FaceCamera = true
+		l.Parent = V
+		Ni[q] = l
+	end
+	l.Enabled = true
+	bi[q] = tick() + 1
+	if not ki then
+		ki = true
+		task.spawn(function(...)
+			while true do
+				local q = tick()
+				local d = false
+				for V, l in pairs(bi) do
+					if q < l then
+						d = true
+						local q = Ni[V]
+						if not q or not q.Parent then
+						end
+					else
+						local q = Ni[V]
+						if q and q.Parent then
+							q.Enabled = false
+						end
+					end
+				end
+				if not d then
+					break
+				end
+				task.wait(.1)
+			end
+			ki = false
+		end)
+	end
+end
+local function ai(...)
+	if not FY then
+		return
+	end
+	if #wi == 0 then
+		return
+	end
+	if tick() - Di < .05 then
+		return
+	end
+	Di = tick()
+	local q = zi % 2 == 1 and "\082\105\103\104\116 \065\114\109" or "\076\101\102\116 \065\114\109"
+	mi(q)
+	local d = wi[zi]
+	if d then
+		d:Play(.05, 1, 3)
+	end
+	zi = zi % #wi + 1
+	Si("\077\101\108\101\101\072\105\116")
+	task.delay(.2, function(...)
+		Hi("\077\101\108\101\101\072\105\116")
+	end)
+	if aY and (aY.Character and x) then
+		local q = aY.Character:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+		if q then
+			local d = q.Position - x.Position
+			local V = d.Magnitude
+			if V > 5 and V < 250 then
+				local q = d.Unit
+				local V = q:Cross(Vector3.new(0, 1, 0))
+				local l = zi % 2 == 0 and 1 or -1
+				local O = ((V * math.sin(tick() * 30)) * 220) * l
+				local R = e.new("\066\111\100\121\086\101\108\111\099\105\116\121")
+				R.MaxForce = Vector3.new(100000, 100000, 100000)
+				R.Velocity = q * 180 + O
+				R.Parent = x
+				P:AddItem(R, .2)
+			end
+			if V < 35 then
+				ci(aY.Character)
+				Si("\075\110\111\099\107\098\097\099\107\072\105\116")
+				task.delay(.2, function(...)
+					Hi("\075\110\111\099\107\098\097\099\107\072\105\116")
+				end)
+			end
+		end
+	end
+end
+ci = function(q, ...)
+	if not q then
+		return
+	end
+	if tick() - Yi < .05 then
+		return
+	end
+	Yi = tick()
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not d then
+		return
+	end
+	local l = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	local O = l and l:FindFirstChild(q.Name)
+	local e = O and O:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116") or d
+	pcall(function(...)
+		dY:Flash(q, Color3.new(1, 1, 1))
+	end)
+	pcall(function(...)
+		local q = E.Sounds
+		local d = q.Misc.S.Hit["\072\105\116" .. math.random(1, 2)]
+		if d then
+			local q = d:Clone()
+			q.PlaybackSpeed = math.random(100, 150) / 100
+			q.Parent = e
+			q:Play()
+			P:AddItem(q, 1)
+		end
+	end)
+	pcall(function(...)
+		local q = E.Utils
+		local d = q.Misc.S.HeavyHit:Clone()
+		d.Position = e.Position
+		d.Parent = mY
+		P:AddItem(d, 1);
+		(s:Create(d.PointLight, TweenInfo.new(.6), {
+			Brightness = 0
+		})):Play()
+		d.Glow:Emit(1)
+		d.Sparks:Emit(50)
+		d.Wind:Emit(7)
+		d.Wind2:Emit(7)
+	end)
+	if RY then
+		uY(OY.Snap)
+	end
+end
+local function ii(q, ...)
+	if not q then
+		return
+	end
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not d then
+		return
+	end
+	local l = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	local O = l and l:FindFirstChild(q.Name)
+	local e = O and O:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116") or d
+	pcall(function(...)
+		dY:Flash(q, Color3.new(1, 1, 1))
+	end)
+	pcall(function(...)
+		local q = E.Sounds
+		local d = q.Misc.S.Hit["\072\105\116" .. math.random(1, 2)]
+		if d then
+			local q = d:Clone()
+			q.PlaybackSpeed = math.random(100, 150) / 100
+			q.Parent = e
+			q:Play()
+			P:AddItem(q, 1)
+		end
+	end)
+	pcall(function(...)
+		local q = E.Utils
+		local d = q.Misc.S.HeavyHit:Clone()
+		d.Position = e.Position
+		d.Parent = mY
+		P:AddItem(d, 1);
+		(s:Create(d.PointLight, TweenInfo.new(.6), {
+			Brightness = 0
+		})):Play()
+		d.Glow:Emit(1)
+		d.Sparks:Emit(50)
+		d.Wind:Emit(7)
+		d.Wind2:Emit(7)
+	end)
+	if RY then
+		local q = (R.CFrame.Position - e.Position).Magnitude
+		if q < 300 then
+			uY(OY.Snap)
+		end
+	end
+end
+local function pi(q, ...)
+	if not q then
+		return
+	end
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not d then
+		return
+	end
+	local l = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	local O = l and l:FindFirstChild(q.Name)
+	local R = O and O:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116") or d
+	pcall(function(...)
+		local q = E.Sounds
+		local d = q:FindFirstChild("\070\111\114\109")
+		if d then
+			local q = d:Clone()
+			q.Parent = R
+			q:Play()
+			P:AddItem(q, 3)
+		end
+	end)
+	local u = e.new("\072\105\103\104\108\105\103\104\116")
+	u.Name = "\082\101\109\111\116\101\072\121\112\101\114\072\105\103\104\108\105\103\104\116"
+	u.Parent = q
+	u.FillColor = Color3.fromRGB(255, 255, 255)
+	u.OutlineColor = Color3.fromRGB(255, 255, 200)
+	u.FillTransparency = .8
+	u.OutlineTransparency = 0
+	if RY and not W then
+		local q = (d.Position - x.Position).Magnitude
+		if q < 100 then
+			uY(OY.Explosion)
+		end
+	end
+	pcall(function(...)
+		if O then
+			for d, V in ipairs(O:GetChildren()) do
+				if V:IsA("\065\099\099\101\115\115\111\114\121") and V.AccessoryType == Enum.AccessoryType.Hair then
+					local d = V:FindFirstChild("\072\097\110\100\108\101")
+					if d then
+						d.Material = Enum.Material.Neon
+						task.spawn(function(...)
+							local V = 1
+							while O and (O.Parent and (Ci[q.Name] and Ci[q.Name].HyperTransform)) do
+								d.Color = ZS[V] or Color3.new(1, 1, 1)
+								V = V % #ZS + 1
+								task.wait(.15)
+							end
+						end)
+					end
+				end
+			end
+		end
+	end)
+	pcall(function(...)
+		LoadAndAttachParticles(77243694160815, r:GetPlayerFromCharacter(q))
+	end)
+	pcall(function(...)
+		local q = E.Effects.SSJ
+		local d = q:FindFirstChild("\067")
+		if d then
+			local q = d:Clone()
+			q.Parent = mY
+			P:AddItem(q, 3)
+			local V = TweenInfo.new(1.2, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+			local l = TweenInfo.new(.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
+			local O = math.random(0, 360)
+			for q, d in ipairs(q:GetChildren()) do
+				if d:IsA("\066\097\115\101\080\097\114\116") and d:FindFirstChild("\087\101\108\100") then
+					local e = d.Weld
+					e.Part0 = R
+					e.C0 = e.C0 * CFrame.Angles(0, math.rad(51.4285 * q + O), 0);
+					(s:Create(e, V, {
+						C1 = CFrame.new(0, 0, -8)
+					})):Play()
+					task.delay(1.45, function(...)
+						(s:Create(e, l, {
+							C1 = CFrame.new(0, 0, 0)
+						})):Play()
+					end);
+					(s:Create(d, TweenInfo.new(.2), {
+						Color = ZS[q] or Color3.new(1, 1, 1)
+					})):Play()
+				end
+			end
+			local e = .15
+			local u
+			u = J.Heartbeat:Connect(function(...)
+				if not q or not q.Parent then
+					u:Disconnect()
+					return
+				end
+				for q, d in ipairs(q:GetChildren()) do
+					if d:IsA("\066\097\115\101\080\097\114\116") and d:FindFirstChild("\087\101\108\100") then
+						d.Weld.C0 = d.Weld.C0 * CFrame.Angles(0, e, 0)
+					end
+				end
+			end)
+		end
+	end)
+end
+local function vi(q, ...)
+	if not q then
+		return
+	end
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not d then
+		return
+	end
+	local l = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	local O = l and l:FindFirstChild(q.Name)
+	local R = O and O:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116") or d
+	pcall(function(...)
+		local q = E.Sounds
+		local d = q:FindFirstChild("\070\111\114\109")
+		if d then
+			local q = d:Clone()
+			q.Parent = R
+			q:Play()
+			P:AddItem(q, 3)
+		end
+	end)
+	local u = e.new("\072\105\103\104\108\105\103\104\116")
+	u.Parent = q
+	u.FillColor = Color3.fromRGB(255, 255, 255)
+	u.OutlineColor = Color3.fromRGB(255, 255, 255)
+	u.FillTransparency = 0
+	u.OutlineTransparency = 1
+	P:AddItem(u, 4);
+	(s:Create(u, TweenInfo.new(3), {
+		FillTransparency = 1
+	})):Play()
+	pcall(function(...)
+		local q = E.Effects.SSJ
+		local d = q:FindFirstChild("\067")
+		if d then
+			local q = d:Clone()
+			q.Parent = mY
+			P:AddItem(q, 2.5)
+			local V = TweenInfo.new(1.2, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+			local l = TweenInfo.new(.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.In)
+			local O = math.random(0, 360)
+			for q, d in ipairs(q:GetChildren()) do
+				if d:IsA("\066\097\115\101\080\097\114\116") and d:FindFirstChild("\087\101\108\100") then
+					local e = d.Weld
+					e.Part0 = R
+					e.C0 = e.C0 * CFrame.Angles(0, math.rad(51.4285 * q + O), 0)
+					pcall(function(...)
+						d.Color = Color3.fromRGB(255, 255, 127)
+					end);
+					(s:Create(e, V, {
+						C1 = CFrame.new(0, 0, -8)
+					})):Play()
+					task.delay(1.45, function(...)
+						(s:Create(e, l, {
+							C1 = CFrame.new(0, 0, 0)
+						})):Play()
+					end)
+				end
+			end
+			local e = math.random(140, 200) / 1000
+			local u
+			u = J.Heartbeat:Connect(function(...)
+				if not q or not q.Parent then
+					u:Disconnect()
+					return
+				end
+				for q, d in ipairs(q:GetChildren()) do
+					if d and (d.Parent and (d:IsA("\066\097\115\101\080\097\114\116") and d:FindFirstChild("\087\101\108\100"))) then
+						d.Weld.C0 = d.Weld.C0 * CFrame.Angles(0, e, 0)
+					end
+				end
+			end)
+		end
+	end)
+	pcall(function(...)
+		if O then
+			for q, d in ipairs(O:GetChildren()) do
+				if d:IsA("\065\099\099\101\115\115\111\114\121") and d.AccessoryType == Enum.AccessoryType.Hair then
+					local q = d:FindFirstChild("\072\097\110\100\108\101")
+					if q then
+						q.Color = Color3.fromRGB(255, 255, 0)
+						q.Material = Enum.Material.Neon
+					end
+				end
+			end
+		end
+	end)
+	task.delay(2, function(...)
+		pcall(function(...)
+			if q and q.Parent then
+				LoadAndAttachParticles(77243694160815, r:GetPlayerFromCharacter(q))
+			end
+		end)
+	end)
+end
+local function Qi(q, ...)
+	if not q then
+		return
+	end
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not d then
+		return
+	end
+	local V = d.Velocity
+	if V.Magnitude < 50 then
+		return
+	end
+	pcall(function(...)
+		local q = E.Sounds
+		local V = q.Misc.S:FindFirstChild("\068\097\115\104")
+		if V then
+			local q = V:Clone()
+			q.Parent = d
+			q:Play()
+			P:AddItem(q, 2)
+		end
+	end)
+	pcall(function(...)
+		local q = E.Utils
+		local V = q.Misc.S.Boost:Clone()
+		V.Parent = mY
+		P:AddItem(V, 1.1)
+		task.delay(.7, function(...)
+			for q, d in V:GetDescendants() do
+				if d:IsA("\080\097\114\116\105\099\108\101\069\109\105\116\116\101\114") then
+					d.Enabled = false
+				end
+			end
+		end)
+		task.spawn(function(...)
+			local q
+			q = J.Heartbeat:Connect(function(...)
+				if not V.Parent then
+					q:Disconnect()
+					return
+				end
+				if d and d.Parent then
+					local q = d.Velocity
+					if q.Magnitude > 1 then
+						V.CFrame = CFrame.lookAlong(d.Position, -q) * CFrame.Angles(0, 0, C(0, 3))
+					else
+						V.CFrame = d.CFrame * CFrame.Angles(0, 0, C(0, 3))
+					end
+				end
+			end)
+		end)
+	end)
+	local l = e.new("\080\111\105\110\116\076\105\103\104\116")
+	l.Color = Color3.fromRGB(150, 255, 255)
+	l.Brightness = 3
+	l.Range = 30
+	l.Parent = d
+	P:AddItem(l, 1.5);
+	(s:Create(l, TweenInfo.new(1.5), {
+		Brightness = 0
+	})):Play()
+end
+local function Fi(q, ...)
+	if not q then
+		return
+	end
+	local d = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if not d then
+		return
+	end
+	local l = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	local O = l and l:FindFirstChild(q.Name)
+	local R = O and O:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116") or d
+	pcall(function(...)
+		local q = e.new("\065\116\116\097\099\104\109\101\110\116")
+		q.Name = "\082\101\109\111\116\101\070\108\121\065\116\116\048"
+		q.Position = Vector3.new(0, 1, 0)
+		q.Parent = R
+		local d = e.new("\065\116\116\097\099\104\109\101\110\116")
+		d.Name = "\082\101\109\111\116\101\070\108\121\065\116\116\049"
+		d.Position = Vector3.new(0, -3, 0)
+		d.Parent = R
+		local V = e.new("\084\114\097\105\108")
+		V.Name = "\082\101\109\111\116\101\070\108\121\084\114\097\105\108"
+		V.Attachment0 = q
+		V.Attachment1 = d
+		V.Lifetime = .5
+		V.Color = ColorSequence.new(Color3.fromRGB(200, 220, 255))
+		V.Transparency = NumberSequence.new(.3, 1)
+		V.LightEmission = .5
+		V.FaceCamera = true
+		V.Parent = R
+	end)
+	local u = e.new("\080\111\105\110\116\076\105\103\104\116")
+	u.Name = "\082\101\109\111\116\101\070\108\121\076\105\103\104\116"
+	u.Color = Color3.fromRGB(200, 220, 255)
+	u.Brightness = 1.5
+	u.Range = 20
+	u.Parent = d
+end
+local function Ui(q, ...)
+	if not q then
+		return
+	end
+	local d = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	local l = d and d:FindFirstChild(q.Name)
+	pcall(function(...)
+		if l then
+			local q = l:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+			if q then
+				for q, d in ipairs(q:GetChildren()) do
+					if d.Name == "\082\101\109\111\116\101\070\108\121\084\114\097\105\108" or d.Name == "\082\101\109\111\116\101\070\108\121\065\116\116\048" or d.Name == "\082\101\109\111\116\101\070\108\121\065\116\116\049" then
+						d:Destroy()
+					end
+				end
+			end
+		end
+	end)
+	local O = q:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+	if O then
+		local q = O:FindFirstChild("\082\101\109\111\116\101\070\108\121\076\105\103\104\116")
+		if q then
+			q:Destroy()
+		end
+	end
+end
+local function Mi(q, ...)
+	if not q then
+		return
+	end
+	local d = V:FindFirstChild("\067\104\097\114\097\099\116\101\114\115")
+	local l = d and d:FindFirstChild(q.Name)
+	local O = {
+		"\084\111\114\115\111";
+		"\076\101\102\116 \065\114\109",
+		"\082\105\103\104\116 \065\114\109";
+		"\076\101\102\116 \076\101\103";
+		"\082\105\103\104\116 \076\101\103",
+		"\072\101\097\100"
+	}
+	for d, V in ipairs(O) do
+		local l = q:FindFirstChild(V)
+		if l then
+			for q, d in ipairs(l:GetChildren()) do
+				if d:IsA("\080\097\114\116\105\099\108\101\069\109\105\116\116\101\114") or d:IsA("\066\101\097\109") or d:IsA("\084\114\097\105\108") or d:IsA("\080\111\105\110\116\076\105\103\104\116") or d:IsA("\072\105\103\104\108\105\103\104\116") then
+					d:Destroy()
+				end
+			end
+		end
+	end
+	for q, d in ipairs(q:GetChildren()) do
+		if d:IsA("\072\105\103\104\108\105\103\104\116") then
+			d:Destroy()
+		end
+	end
+	pcall(function(...)
+		if l then
+			for q, d in ipairs(l:GetChildren()) do
+				if d:IsA("\065\099\099\101\115\115\111\114\121") and d.AccessoryType == Enum.AccessoryType.Hair then
+					local q = d:FindFirstChild("\072\097\110\100\108\101")
+					if q then
+						q.Material = Enum.Material.SmoothPlastic
+					end
+				end
+			end
+		end
+	end)
+end
+local function yi(q, ...)
+	if q == h then
+		return
+	end
+	local function d(...)
+		local d = q.Character
+		if not d then
+			return
+		end
+		local V = d:FindFirstChildOfClass("\072\117\109\097\110\111\105\100")
+		if not V then
+			return
+		end
+		local l = V:FindFirstChildOfClass("\065\110\105\109\097\116\111\114")
+		if not l then
+			return
+		end
+		local O = {}
+		for q, d in ipairs(l:GetPlayingAnimationTracks()) do
+			local V = d.Animation and d.Animation.AnimationId
+			if V then
+				O[V] = true
+			end
+		end
+		local R = q.Name
+		if not Ci[R] then
+			Ci[R] = {}
+		end
+		local u = Ci[R]
+		if O[Oi.Transform] and not u.Transform then
+			u.Transform = true
+			vi(d)
+		end
+		if O[Oi.Boost] and not u.Boost then
+			u.Boost = true
+			Qi(d)
+			task.delay(1.5, function(...)
+				u.Boost = false
+			end)
+		end
+		if O[Oi.Untransform] and not u.Untransform then
+			u.Untransform = true
+			u.Transform = false
+			u.HyperTransform = false
+			u.Flying = false
+			Ui(d)
+			Mi(d)
+			task.delay(2, function(...)
+				u.Untransform = false
+			end)
+		end
+		if O[Oi.MeleeHit] and not u.MeleeHit then
+			u.MeleeHit = true
+			ii(d)
+			task.delay(.15, function(...)
+				u.MeleeHit = false
+			end)
+		end
+		if O[Oi.HyperTransform] and not u.HyperTransform then
+			u.HyperTransform = true
+			pi(d)
+		end
+		if O[Oi.KnockbackHit] and not u.KnockbackHit then
+			local q = d:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+			if q and (x and not ei) then
+				local d = (q.Position - x.Position).Magnitude
+				if d < 40 then
+					u.KnockbackHit = true
+					ei = true
+					Ri = tick() + 4
+					task.spawn(function(...)
+						local d = tick()
+						local V = 4
+						local l = (math.random() * math.pi) * 2
+						local O = C(100, 180)
+						local R = C(120, 220)
+						local u = (x.Position - q.Position).Unit
+						local w = Vector3.new(u.X * R + X(l) * 80, O, u.Z * R + G(l) * 80)
+						local z = e.new("\066\111\100\121\086\101\108\111\099\105\116\121")
+						z.MaxForce = Vector3.new(100000, 100000, 100000)
+						z.Parent = x
+						while tick() - d < V do
+							if not x or not x.Parent then
+								break
+							end
+							local q = tick() - d
+							local l = G(q * 8) * 50
+							local O = X(q * 6) * 40
+							local e = 1 - (q / V) * .3
+							local R = H(q * 15, 60)
+							z.Velocity = Vector3.new(w.X * e + l, (w.Y * e - R) + O, w.Z * e + l * .8)
+							task.wait(.05)
+						end
+						if z and z.Parent then
+							z:Destroy()
+						end
+						ei = false
+						Ri = 0
+					end)
+					task.delay(.3, function(...)
+						u.KnockbackHit = false
+					end)
+				end
+			end
+		end
+		if O[Oi.Flying] and not u.Flying then
+			u.Flying = true
+			Fi(d)
+		end
+		if u.Flying and not O[Oi.Flying] then
+			u.Flying = false
+			Ui(d)
+		end
+	end
+	task.spawn(function(...)
+		while q and q.Parent do
+			pcall(d)
+			task.wait(.1)
+		end
+		Ci[q.Name] = nil
+	end)
+end
+task.spawn(function(...)
+	Ti()
+	for q, d in ipairs(r:GetPlayers()) do
+		yi(d)
+	end
+	r.PlayerAdded:Connect(yi)
+end)
+local ni = hS
+hS = function(q, ...)
+	if #wi == 0 then
+		Ti()
+	end
+	Si("\084\114\097\110\115\102\111\114\109")
+	return ni(q)
+end
+local Wi = AS
+AS = function(q, ...)
+	Hi("\084\114\097\110\115\102\111\114\109")
+	Si("\085\110\116\114\097\110\115\102\111\114\109")
+	task.delay(2, function(...)
+		Hi("\085\110\116\114\097\110\115\102\111\114\109")
+	end)
+	return Wi(q)
+end
+local Ki = nS
+nS = function(...)
+	Si("\066\111\111\115\116")
+	task.delay(1.5, function(...)
+		Hi("\066\111\111\115\116")
+	end)
+	return Ki()
+end
+local Ii = gS
+gS = function(q, ...)
+	Si("\072\121\112\101\114\084\114\097\110\115\102\111\114\109")
+	return Ii(q)
+end
+local fi = qi
+qi = function(q, ...)
+	Hi("\072\121\112\101\114\084\114\097\110\115\102\111\114\109")
+	Hi("\084\114\097\110\115\102\111\114\109")
+	Hi("\070\108\121\105\110\103")
+	Si("\085\110\116\114\097\110\115\102\111\114\109")
+	task.delay(2, function(...)
+		Hi("\085\110\116\114\097\110\115\102\111\114\109")
+	end)
+	return fi(q)
+end
+local si = startFlying
+startFlying = function(...)
+	Si("\070\108\121\105\110\103")
+	return si()
+end
+local Ei = stopFlying
+stopFlying = function(...)
+	Hi("\070\108\121\105\110\103")
+	return Ei()
+end
+local ri = 0
+L.InputBegan:Connect(function(q, d, ...)
+	local V = L:GetFocusedTextBox() ~= nil
+	if not V and (q.KeyCode.Name == b.LockOnKey:upper() or q.KeyCode == Enum.KeyCode.R) then
+		if tick() - ri < .2 then
+			return
+		end
+		ri = tick()
+		dS()
+	end
+	if d then
+		return
+	end
+	if q.UserInputType == Enum.UserInputType.MouseButton1 or q.UserInputType == Enum.UserInputType.Touch then
+		ai()
+	end
+end)
+task.spawn(function(...)
+	local function q(q, ...)
+		return q and (h.Character and q:IsDescendantOf(h.Character))
+	end
+	local function d(...)
+		local q = h.Character
+		return q and q:FindFirstChild("\076\101\102\116 \065\114\109")
+	end
+	local function l(q, ...)
+		pcall(function(...)
+			q.Color = Color3.fromRGB(255, 255, 127)
+			q.Material = Enum.Material.Neon
+		end)
+		local d = q:FindFirstChildWhichIsA("\084\114\097\105\108", true)
+		if d then
+			pcall(function(...)
+				d.Enabled = true
+				d.Color = ColorSequence.new(Color3.fromRGB(255, 255, 127))
+			end)
+		end
+	end
+	local function O(V, ...)
+		if not V:IsA("\066\097\115\101\080\097\114\116") then
+			return
+		end
+		if V.Name ~= "\067\111\109\098\097\116\084\114\097\105\108" then
+			return
+		end
+		local O = V:FindFirstChildWhichIsA("\087\101\108\100", true)
+		if not O then
+			return
+		end
+		local e = d()
+		if e and (O.Part0 and O.Part1) then
+			if O.Part0.Name == "\082\105\103\104\116 \076\101\103" and q(O.Part0) then
+				O.Part0 = e
+			elseif O.Part1.Name == "\082\105\103\104\116 \076\101\103" and q(O.Part1) then
+				O.Part1 = e
+			end
+		end
+		if q(O.Part0) or q(O.Part1) then
+			l(V)
+		end
+	end
+	local e = V:FindFirstChild("\069\102\102\101\099\116\115")
+	while not e do
+		e = V:FindFirstChild("\069\102\102\101\099\116\115")
+		task.wait(.2)
+	end
+	for q, d in ipairs(e:GetDescendants()) do
+		O(d)
+	end
+	e.DescendantAdded:Connect(function(q, ...)
+		task.wait()
+		O(q)
+	end)
+end)
+if b.ReExecuteOnSpawn then
+	h.CharacterAdded:Connect(function(q, ...)
+		task.wait(.5)
+		A = q
+		Z = q:WaitForChild("\072\117\109\097\110\111\105\100")
+		x = q:WaitForChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116")
+		g = Z:FindFirstChildOfClass("\065\110\105\109\097\116\111\114") or e.new("\065\110\105\109\097\116\111\114", Z)
+		QY = false
+		FY = false
+		UY = false
+		YS = false
+		eS = Vector3.new(0, 0, 0)
+		uS = {}
+		wS = {}
+		Gi = {}
+		wi = {}
+		bS()
+		Ti()
+		PY();
+		(d:GetService("\083\116\097\114\116\101\114\071\117\105")):SetCore("\083\101\110\100\078\111\116\105\102\105\099\097\116\105\111\110", {
+			Title = "\083\117\112\101\114\084\122\101 \118\051";
+			Text = "\083\099\114\105\112\116 \114\101\105\110\105\116\105\097\108\105\122\101\100 \111\110 \114\101\115\112\097\119\110";
+			Duration = 2
+		})
+	end)
+end
