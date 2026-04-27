@@ -5,6 +5,7 @@ local whitelist = {
     { name = "Jonathan584879",  id = 2660096369  },
     { name = "testceleron12",   id = 10691867420 },
     { name = "fudyssbm",        id = 9384281293  },
+    { name = "poufskhdeukfautdshfx", id = 9761604630 },
 }
 
 local player = game.Players.LocalPlayer
