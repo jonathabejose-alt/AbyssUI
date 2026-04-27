@@ -1,0 +1,24 @@
+-- ============================================
+-- WHITELIST SYSTEM
+-- ============================================
+local whitelist = {
+    { name = "Jonathan584879",  id = 2660096369  },
+    { name = "testceleron12",   id = 10691867420 },
+    { name = "fudyssbm",        id = 9384281293  },
+}
+
+local player = game.Players.LocalPlayer
+
+local function isWhitelisted()
+    for _, entry in ipairs(whitelist) do
+        if player.UserId == entry.id and player.Name == entry.name then
+            return true
+        end
+    end
+    return false
+end
+
+if not isWhitelisted() then
+    player:Kick("You are not whitelisted.")
+    return
+end
