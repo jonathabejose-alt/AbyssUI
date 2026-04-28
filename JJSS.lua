@@ -777,6 +777,68 @@ funSection:Toggle({
     end,
 })
 
+-- ── Orbit Target ─────────────────────────────────────────────────────────────
+local orbitDistance = 2
+local orbitSpeed    = 0.05
+local orbitEnabled  = false
+local orbitConn     = nil
+
+funSection:Slider({
+    Title    = "Orbit Distance",
+    Desc     = "Distance from target when orbiting.",
+    Step     = 0.5,
+    Value    = { Min = 1, Max = 10, Default = 2 },
+    IsTooltip = true,
+    Callback = function(v) orbitDistance = v end,
+})
+
+funSection:Slider({
+    Title    = "Orbit Speed",
+    Desc     = "Time between teleports (lower = faster).",
+    Step     = 0.01,
+    Value    = { Min = 0.01, Max = 0.2, Default = 0.05 },
+    IsTooltip = true,
+    Suffix   = "s",
+    Callback = function(v) orbitSpeed = v end,
+})
+
+funSection:Toggle({
+    Title = "Orbit Target",
+    Desc  = "Teleports around all players randomly. Depends on your region, ping & internet.",
+    Icon  = "rotate-cw", Type = "Toggle", Value = false,
+    Callback = function(s)
+        orbitEnabled = s
+        if s then
+            task.spawn(function()
+                while orbitEnabled do
+                    for _, p in ipairs(Players:GetPlayers()) do
+                        if not orbitEnabled then break end
+                        if p ~= player then
+                            local targetChar = p.Character
+                            local myChar     = getChar()
+                            local targetHRP  = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+                            local myHRP      = getRoot()
+                            if targetHRP and myHRP then
+                                local offset = Vector3.new(
+                                    math.random(-orbitDistance, orbitDistance),
+                                    0,
+                                    math.random(-orbitDistance, orbitDistance)
+                                )
+                                myHRP.CFrame = targetHRP.CFrame + offset
+                            end
+                            task.wait(orbitSpeed)
+                        end
+                    end
+                    task.wait(0.01)
+                end
+            end)
+            notify("Orbit Target", "Enabled.", "rotate-cw")
+        else
+            notify("Orbit Target", "Disabled.", "rotate-cw")
+        end
+    end,
+})
+
 -- ============================================
 -- QOL TAB
 -- ============================================
