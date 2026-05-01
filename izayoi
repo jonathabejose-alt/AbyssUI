@@ -90,7 +90,7 @@ local function StepBehind()
     if not char or Stunned() or not HasBall() or IsOnCD("skill1") then return end
 
     CancelMove()
-    DoCD("skill1", 2.5)
+    DoCD("skill1", 0.7)
 
     local humanoid = char.Humanoid
     for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
@@ -133,11 +133,8 @@ local function PowerfulStriker()
         clone.Humanoid:LoadAnimation(izaFolder.striker):Play()
     end
 
-    -- Activar skill real (esto pone el CD real del juego)
+    -- Activar skill real (el juego pone su propio CD)
     remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill2"}})
-
-    -- Poner CD visual usando el CD real del juego (2.43s según Death Port)
-    DoCD("skill2", 2.43)
 
     task.delay(0.1, function()
         for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
