@@ -116,7 +116,6 @@ local function PowerfulStriker()
     if not char or Stunned() or not HasBall() or IsOnCD("skill2") then return end
 
     CancelMove()
-    DoCD("skill2", 2.5)
 
     local root = char.HumanoidRootPart
     local humanoid = char.Humanoid
@@ -134,7 +133,11 @@ local function PowerfulStriker()
         clone.Humanoid:LoadAnimation(izaFolder.striker):Play()
     end
 
+    -- Activar skill real (esto pone el CD real del juego)
     remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill2"}})
+
+    -- Poner CD visual usando el CD real del juego (2.43s según Death Port)
+    DoCD("skill2", 2.43)
 
     task.delay(0.1, function()
         for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
@@ -144,6 +147,7 @@ local function PowerfulStriker()
         end
     end)
 
+    -- Flash dorado
     local screen = Instance.new("ScreenGui", plr.PlayerGui)
     screen.IgnoreGuiInset = true
     local flash = Instance.new("Frame", screen)
