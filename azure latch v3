@@ -2284,7 +2284,6 @@ for _, m in ipairs({
     {"Goku (Req. Isagi)",        "F4 to disable.", "https://raw.githubusercontent.com/ghostofcelleron/Celeron/refs/heads/main/goku%20moveset%20(azl)"},
     {"Aizen (Req. Isagi)",       "F4 to disable.", "https://raw.githubusercontent.com/ghostofcelleron/Celeron/refs/heads/main/aizen%20moveset"},
     {"Loki V2 (Req. Isagi)",     "F4 to disable, rejoin to fix music.", "https://raw.githubusercontent.com/ghostofcelleron/Celeron/refs/heads/main/loki%20v2"},
-    {"Ronaldo V3 (Req. Shidou)", "F4 to disable.", "https://raw.githubusercontent.com/ghostofcelleron/Celeron/refs/heads/main/ronaldov3"},
 }) do
     celeronMoveTab:Button({ Title=m[1], Desc=m[2], Icon="swords", Callback=function() loadstring(game:HttpGet(m[3],true))() end })
 end
@@ -2316,6 +2315,24 @@ tzeMoveTab:Button({
     Icon  = "zap",
     Callback = function()
         loadstring(game:HttpGet("https://pastebin.com/raw/3XaQHzCX", true))()
+    end,
+})
+
+tzeMoveTab:Button({
+    Title = "Ronaldo V4 (Req. Shidou)",
+    Desc  = "Enhanced Ronaldo moveset. F4 to disable.",
+    Icon  = "zap",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/ronaldo%20v4", true))()
+    end,
+})
+
+tzeMoveTab:Button({
+    Title = "Izayoi (Req. kunigami or shidou)",
+    Desc  = "Izayoi with cutscene and VFX. F4 to disable.",
+    Icon  = "moon",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/izayoi", true))()
     end,
 })
 
