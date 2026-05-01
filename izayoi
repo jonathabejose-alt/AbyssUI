@@ -1,0 +1,314 @@
+-- ============================================
+-- IZAYOI MOVESET
+-- ============================================
+
+local plr = game.Players.LocalPlayer
+local cam = game.Workspace.CurrentCamera
+local rep = game:GetService("ReplicatedStorage")
+local remote = rep:WaitForChild("ByteNetReliable")
+local izaFolder = rep.Resources.izayoi
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Debris = game:GetService("Debris")
+
+local stopped = false
+local buffers = {}
+
+loadstring(game:HttpGet("https://pastebin.com/raw/8XJh7dzh"))()
+repeat task.wait() until game.Lighting:FindFirstChild("BUFFERSTRINGS")
+for _, val in ipairs(game.Lighting:FindFirstChild("BUFFERSTRINGS"):GetChildren()) do
+    buffers[val.Name] = val.Value
+end
+game.Lighting:FindFirstChild("BUFFERSTRINGS"):Destroy()
+
+-- ======================
+-- HELPERS
+-- ======================
+local function HasBall()
+    return plr.Character and plr.Character:FindFirstChild("Ball")
+end
+
+local function Stunned()
+    return plr.Character and plr.Character.state.stun.Value
+end
+
+local function CancelMove()
+    local char = plr.Character
+    if char and not char.state.stun.Value then
+        char.state.stun.Value = true
+        task.wait(0.04)
+        char.state.stun.Value = false
+    end
+end
+
+local function IsOnCD(name)
+    local hotbar = plr.PlayerGui:FindFirstChild("Hotbar")
+    if not hotbar then return false end
+    local btn = hotbar.Backpack.Hotbar:FindFirstChild(name)
+    if btn and btn:FindFirstChild("Cooldown") then
+        return btn.Cooldown.Visible
+    end
+    return false
+end
+
+local function DoCD(name, duration)
+    local hotbar = plr.PlayerGui:FindFirstChild("Hotbar")
+    if not hotbar then return end
+    local btn = hotbar.Backpack.Hotbar:FindFirstChild(name)
+    if btn and btn:FindFirstChild("Cooldown") then
+        btn.Cooldown.Visible = true
+        btn.Cooldown.Size = UDim2.new(1, 0, -1, 0)
+        TweenService:Create(btn.Cooldown, TweenInfo.new(duration, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+        task.delay(duration, function() btn.Cooldown.Visible = false end)
+    end
+end
+
+local function Stun(time, disableRotate)
+    local char = plr.Character
+    if not char then return end
+    char.state.stun.Value = true
+    if disableRotate then char:SetAttribute("disableRotate", true) end
+    local cfg = Instance.new("Configuration")
+    cfg:SetAttribute("speed", 0)
+    cfg:SetAttribute("jump", 0)
+    cfg.Parent = char.movements
+    task.delay(time, function()
+        pcall(function()
+            char.state.stun.Value = false
+            if disableRotate then char:SetAttribute("disableRotate", false) end
+        end)
+    end)
+    Debris:AddItem(cfg, time)
+end
+
+-- ======================
+-- SKILL 1 - STEP BEHIND
+-- ======================
+local function StepBehind()
+    local char = plr.Character
+    if not char or Stunned() or not HasBall() or IsOnCD("skill1") then return end
+
+    CancelMove()
+    DoCD("skill1", 2.5)
+
+    local humanoid = char.Humanoid
+    for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
+
+    task.delay(0.1, function()
+        pcall(function()
+            require(rep.client.replication).izayoistepbehind(char)
+        end)
+    end)
+
+    if izaFolder:FindFirstChild("skill1") then
+        humanoid:LoadAnimation(izaFolder.skill1):Play()
+    end
+
+    Stun(0.9, false)
+end
+
+-- ======================
+-- SKILL 2 - POWERFUL STRIKER
+-- ======================
+local function PowerfulStriker()
+    local char = plr.Character
+    if not char or Stunned() or not HasBall() or IsOnCD("skill2") then return end
+
+    CancelMove()
+    DoCD("skill2", 2.5)
+
+    local root = char.HumanoidRootPart
+    local humanoid = char.Humanoid
+
+    for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
+
+    char.Archivable = true
+    local clone = char:Clone()
+    if clone:FindFirstChild("Highlight") then clone:FindFirstChild("Highlight"):Destroy() end
+    clone.Parent = workspace
+    Debris:AddItem(clone, 1)
+
+    if izaFolder:FindFirstChild("striker") then
+        humanoid:LoadAnimation(izaFolder.striker):Play()
+        clone.Humanoid:LoadAnimation(izaFolder.striker):Play()
+    end
+
+    remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill2"}})
+
+    task.delay(0.1, function()
+        for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+            if izaFolder:FindFirstChild("striker") and track.Animation.AnimationId ~= izaFolder.striker.AnimationId then
+                track:Stop(0)
+            end
+        end
+    end)
+
+    local screen = Instance.new("ScreenGui", plr.PlayerGui)
+    screen.IgnoreGuiInset = true
+    local flash = Instance.new("Frame", screen)
+    flash.Size = UDim2.fromScale(1, 1)
+    flash.BackgroundColor3 = Color3.fromRGB(255, 238, 0)
+    flash.BackgroundTransparency = 1
+    TweenService:Create(flash, TweenInfo.new(0.05), {BackgroundTransparency = 0}):Play()
+    task.delay(0.05, function()
+        TweenService:Create(flash, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    end)
+    Debris:AddItem(screen, 0.5)
+
+    Stun(0.43, false)
+end
+
+-- ======================
+-- SKILL 3 - TIME STOP
+-- ======================
+local function TimeStop()
+    local char = plr.Character
+    if not char or Stunned() or not HasBall() or IsOnCD("skill3") then return end
+
+    CancelMove()
+    DoCD("skill3", 6.76)
+    Stun(3.48, true)
+
+    local humanoid = char.Humanoid
+    for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
+
+    task.delay(0.37, function()
+        TweenService:Create(humanoid, TweenInfo.new(0.28, Enum.EasingStyle.Cubic), {HipHeight = 30}):Play()
+    end)
+
+    pcall(function()
+        require(rep.client.replication).TimeStop(char)
+    end)
+
+    if izaFolder:FindFirstChild("TimeStopAnim") then
+        humanoid:LoadAnimation(izaFolder.TimeStopAnim):Play()
+    end
+
+    task.delay(3.48, function()
+        humanoid.HipHeight = 0
+    end)
+end
+
+-- ======================
+-- FLOW - AWAKENING
+-- ======================
+local awkOnCD = false
+
+local function Awakening()
+    local char = plr.Character
+    if not char or Stunned() or awkOnCD then return end
+
+    awkOnCD = true
+
+    local humanoid = char.Humanoid
+
+    -- Solo stun
+    Stun(10.65, true)
+
+    -- Elevar
+    TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 15}):Play()
+
+    -- Animación
+    pcall(function()
+        require(rep.util.animationUtil):loadAnimation(char, izaFolder.ultawk):Play()
+    end)
+
+    -- Cutscene
+    pcall(function()
+        require(rep.client.replication).izayoiAwk(char)
+    end)
+
+    -- Al terminar
+    task.delay(10.65, function()
+        TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 0}):Play()
+
+        local sakuyaTheme = rep.Resources.izayoi["sakuya theme"]:Clone()
+        sakuyaTheme.Parent = char.HumanoidRootPart
+        sakuyaTheme:Play()
+        Debris:AddItem(sakuyaTheme, 60)
+
+        pcall(function()
+            require(rep.client.replication).awkScreen(
+                sakuyaTheme,
+                Color3.fromRGB(255, 238, 0)
+            )
+        end)
+
+        task.delay(30, function()
+            awkOnCD = false
+        end)
+    end)
+end
+
+-- ======================
+-- SETUP
+-- ======================
+local function Setup(char)
+    if stopped then return end
+    repeat task.wait() until plr.Team ~= game.Teams.lobby
+    task.wait(0.1)
+
+    local hotbar = plr.PlayerGui:WaitForChild("Hotbar")
+    local buttons = hotbar.Backpack.Hotbar
+
+    buttons.skill1.Base.MouseButton1Down:Connect(function() StepBehind() end)
+    buttons.skill2.Base.MouseButton1Down:Connect(function() PowerfulStriker() end)
+    buttons.skill3.Base.MouseButton1Down:Connect(function() TimeStop() end)
+
+    buttons.skill1.Base.ToolName.Text = "Step Behind"
+    buttons.skill2.Base.ToolName.Text = "Powerful Striker"
+    buttons.skill3.Base.ToolName.Text = "Time Stop"
+
+    buttons.skill1.Base.Reuse.Text = "Ball Only"
+    buttons.skill2.Base.Reuse.Text = "Ball Only"
+    buttons.skill3.Base.Reuse.Text = "Ball Only"
+    buttons.skill1.Base.Reuse.Visible = true
+    buttons.skill2.Base.Reuse.Visible = true
+    buttons.skill3.Base.Reuse.Visible = true
+
+    buttons.skill4.Visible = false
+    buttons.skill5.Visible = false
+
+    hotbar.MagicHealth.Awakening.Text = "AWAKENING"
+    hotbar.MagicHealth.Health.Frame.UIGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 238, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(168, 157, 0))
+    }
+
+    -- Bloquear el flow del juego completamente
+    char:GetAttributeChangedSignal("FlowActive"):Connect(function()
+        if char:GetAttribute("FlowActive") == true then
+            char:SetAttribute("FlowActive", false)
+        end
+    end)
+end
+
+-- ======================
+-- BOOT
+-- ======================
+Setup(plr.Character)
+plr.CharacterAdded:Connect(function(char)
+    awkOnCD = false
+    task.wait(1)
+    Setup(char)
+end)
+
+UserInputService.InputBegan:Connect(function(input, bg)
+    if bg or stopped then return end
+
+    if input.KeyCode == Enum.KeyCode.One then
+        StepBehind()
+    elseif input.KeyCode == Enum.KeyCode.Two then
+        PowerfulStriker()
+    elseif input.KeyCode == Enum.KeyCode.Three then
+        TimeStop()
+    elseif input.KeyCode == Enum.KeyCode.G then
+        Awakening()
+    elseif input.KeyCode == Enum.KeyCode.F4 then
+        stopped = true
+        print("stopped")
+    end
+end)
+
+print("Izayoi Moveset loaded!")
