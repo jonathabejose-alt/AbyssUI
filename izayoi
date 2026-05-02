@@ -313,3 +313,10 @@ UserInputService.InputBegan:Connect(function(input, bg)
 end)
 
 print("Izayoi Moveset loaded!")
+
+game.StarterGui:SetCore("SendNotification", {
+	Title = "Moveset",
+	Text = "izayoi moveset has been loaded",
+	Duration = 5,
+	Button1 = "Ok",
+})
