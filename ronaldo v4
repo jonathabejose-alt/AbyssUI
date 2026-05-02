@@ -225,6 +225,13 @@ task.spawn(function()
         if gui then
             local hotbar = gui:FindFirstChild("Hotbar")
             if hotbar then
+                -- Flow name
+                hotbar.MagicHealth.Awakening.Text = "The Awakening of The Goat"
+                hotbar.MagicHealth.Health.Frame.UIGradient.Color = ColorSequence.new{
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 225, 150)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(168, 148, 0))
+                }
+
                 local backpack = hotbar:FindFirstChild("Backpack")
                 if backpack then
                     local hb = backpack:FindFirstChild("Hotbar")
@@ -251,7 +258,6 @@ task.spawn(function()
         task.wait(0.1)
     end
 end)
-
 -- ======================
 -- INPUT
 -- ======================
