@@ -12,9 +12,11 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
+local SoundService = game:GetService("SoundService")
 
 local messiVFX = require(rep.client.replication.otherReplication.messiVFX)
 local mainreplication = require(rep.client.replication.mainreplication)
+local soundUtil = require(rep.util.soundUtil)
 
 local anims = messiFolder.Animations
 local sounds = messiFolder.Sounds
@@ -68,6 +70,13 @@ local function DoCD(name, duration)
     end
 end
 
+local function PlaySFX(sound, parent)
+    if not sound then return end
+    pcall(function()
+        soundUtil:play(sound, parent)
+    end)
+end
+
 local function BlockBaseAnimations(humanoid, ourAnimId)
     for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
     local animBlock = humanoid.AnimationPlayed:Connect(function(track)
@@ -85,9 +94,16 @@ local function Dribble()
     CancelMove()
     DoCD("skill1", 3)
     local humanoid = char.Humanoid
+    local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.Dribble.AnimationId)
-    pcall(function() messiVFX.messiDribbleVFX(char, true) end)
-    humanoid:LoadAnimation(anims.Dribble):Play()
+    local track = humanoid:LoadAnimation(anims.Dribble)
+    track.Priority = Enum.AnimationPriority.Action4
+    track:Play()
+    -- Sonido Superstar
+    PlaySFX(sounds.Superstar, root)
+    task.spawn(function()
+        pcall(function() messiVFX.messiDribbleVFX(char, true) end)
+    end)
     task.delay(4.25, function() animBlock:Disconnect() end)
 end
 
@@ -100,7 +116,9 @@ local function TrapShot()
     CancelMove()
     DoCD("skill2", 3)
     local humanoid = char.Humanoid
+    local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.InterceptShot.AnimationId)
+    if sounds:FindFirstChild("TrapShot") then PlaySFX(sounds.TrapShot, root) end
     pcall(function() messiVFX.messiShootVFX(char) end)
     humanoid:LoadAnimation(anims.InterceptShot):Play()
     task.delay(1, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill2"}}) end)
@@ -118,9 +136,7 @@ local function Riptide()
     local humanoid = char.Humanoid
     local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.Riptide.AnimationId)
-    if sounds:FindFirstChild("Riptide") then
-        local s = sounds.Riptide:Clone(); s.Parent = root; s:Play(); Debris:AddItem(s, 3)
-    end
+    if sounds:FindFirstChild("Riptide") then PlaySFX(sounds.Riptide, root) end
     pcall(function() messiVFX.messiShootVFX(char) end)
     humanoid:LoadAnimation(anims.Riptide):Play()
     task.delay(0.5, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill2"}}) end)
@@ -156,6 +172,7 @@ local function Intercept()
     end
     if not HasBall() then return end
     DoCD("skill4", 3.5)
+    if sounds:FindFirstChild("TrapCutscene") then PlaySFX(sounds.TrapCutscene, root) end
     pcall(function() messiVFX.messiInterceptCutscene(char) end)
     local animBlock = BlockBaseAnimations(humanoid, anims.Intercept.AnimationId)
     humanoid:LoadAnimation(anims.Intercept):Play()
@@ -163,14 +180,26 @@ local function Intercept()
 end
 
 -- ======================
--- FLOW (SOLO CON PELOTA)
+-- FLOW - MESSI AWAKENING
 -- ======================
 local function MessiFlow()
     local char = plr.Character
     if not char or Stunned() then return end
     if not HasBall() then return end
+
+    -- Tema
+    pcall(function()
+        if sounds:FindFirstChild("Themes") and sounds.Themes:FindFirstChild("Normal") then
+            soundUtil:play(sounds.Themes.Normal, SoundService)
+        end
+    end)
+
     pcall(function() messiVFX.messiFlow(char) end)
-    if anims:FindFirstChild("Flow") then char.Humanoid:LoadAnimation(anims.Flow):Play() end
+
+    if anims:FindFirstChild("Flow") then
+        for _, track in pairs(char.Humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
+        char.Humanoid:LoadAnimation(anims.Flow):Play()
+    end
 end
 
 -- ======================
@@ -182,33 +211,41 @@ local function Setup(char)
     task.wait(0.1)
     local hotbar = plr.PlayerGui:WaitForChild("Hotbar")
     local buttons = hotbar.Backpack.Hotbar
-    
+
     buttons.skill1.Base.MouseButton1Down:Connect(Dribble)
     buttons.skill2.Base.MouseButton1Down:Connect(TrapShot)
     buttons.skill3.Base.MouseButton1Down:Connect(Riptide)
     buttons.skill4.Base.MouseButton1Down:Connect(Intercept)
-    
+
     buttons.skill1.Base.ToolName.Text = "Dribble"
     buttons.skill2.Base.ToolName.Text = "Trap Shot"
     buttons.skill3.Base.ToolName.Text = "Riptide"
     buttons.skill4.Base.ToolName.Text = "Intercept"
-    
+
     buttons.skill1.Base.Reuse.Text = "Ball"
     buttons.skill2.Base.Reuse.Text = "Shot"
     buttons.skill3.Base.Reuse.Text = "Shot"
     buttons.skill4.Base.Reuse.Text = "Steal"
-    
+
     for i = 1, 4 do buttons["skill"..i].Base.Reuse.Visible = true end
     buttons.skill5.Visible = false
     buttons.skill3.Visible = true
-    
+
     char:GetAttributeChangedSignal("FlowActive"):Connect(function()
-        if char:GetAttribute("FlowActive") == true and not stopped then MessiFlow() end
+        if char:GetAttribute("FlowActive") == true and not stopped then
+            MessiFlow()
+        end
     end)
 end
 
+-- ======================
+-- BOOT
+-- ======================
 Setup(plr.Character)
-plr.CharacterAdded:Connect(function(char) task.wait(1); Setup(char) end)
+plr.CharacterAdded:Connect(function(char)
+    task.wait(1)
+    Setup(char)
+end)
 
 UserInputService.InputBegan:Connect(function(input, bg)
     if bg or stopped then return end
@@ -220,11 +257,11 @@ UserInputService.InputBegan:Connect(function(input, bg)
     elseif input.KeyCode == Enum.KeyCode.F4 then stopped = true; print("stopped") end
 end)
 
-print("Messi Moveset loaded!")
-
 game.StarterGui:SetCore("SendNotification", {
-	Title = "Moveset",
-	Text = "messi moveset has been loaded",
-	Duration = 5,
-	Button1 = "Ok",
+    Title = "Moveset",
+    Text = "Messi Moveset loaded!",
+    Duration = 5,
+    Button1 = "Ok",
 })
+
+print("Messi Moveset loaded!")
