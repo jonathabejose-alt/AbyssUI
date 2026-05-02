@@ -248,6 +248,12 @@ local function Setup(char)
     buttons.skill5.Visible = false
     buttons.skill3.Visible = true
 
+    hotbar.MagicHealth.Awakening.Text = "Argentina's Best"
+    hotbar.MagicHealth.Health.Frame.UIGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 215, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(168, 141, 0))
+    }
+
     char:GetAttributeChangedSignal("FlowActive"):Connect(function()
         if char:GetAttribute("FlowActive") == true and not stopped then
             MessiFlow()
