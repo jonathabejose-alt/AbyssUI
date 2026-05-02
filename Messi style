@@ -220,4 +220,11 @@ UserInputService.InputBegan:Connect(function(input, bg)
     elseif input.KeyCode == Enum.KeyCode.F4 then stopped = true; print("stopped") end
 end)
 
-print("Messi Moveset cargado!")
+print("Messi Moveset loaded!")
+
+game.StarterGui:SetCore("SendNotification", {
+	Title = "Moveset",
+	Text = "messi moveset has been loaded",
+	Duration = 5,
+	Button1 = "Ok",
+})
