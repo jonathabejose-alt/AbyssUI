@@ -2319,6 +2319,15 @@ tzeMoveTab:Button({
 })
 
 tzeMoveTab:Button({
+    Title = "KJ Moveset (Req. shidou)",
+    Desc  = "Unlimited Flexworks, Handball, Dropkick + 20 series. F4 to disable.",
+    Icon  = "star",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/kj.lua", true))()
+    end,
+})
+
+tzeMoveTab:Button({
     Title = "Messi Moveset (Req. Kunigami)",
     Desc  = "Dribble, Trap Shot, Riptide, Intercept + Flow. F4 to disable.",
     Icon  = "star",
