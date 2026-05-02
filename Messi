@@ -250,12 +250,14 @@ local function Setup(char)
 
     hotbar.MagicHealth.Awakening.Text = "Argentina's Best"
     hotbar.MagicHealth.Health.Frame.UIGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 157, 255),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 157, 255)
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 157, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 157, 255))
     }
 
+    -- Bloquear Flow del juego y usar el nuestro
     char:GetAttributeChangedSignal("FlowActive"):Connect(function()
         if char:GetAttribute("FlowActive") == true and not stopped then
+            char:SetAttribute("FlowActive", false)
             MessiFlow()
         end
     end)
