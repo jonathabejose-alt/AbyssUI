@@ -114,7 +114,7 @@ local function TrapShot()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill2") then return end
     CancelMove()
-    DoCD("skill2", 3)
+    DoCD("skill2", 20)
     local humanoid = char.Humanoid
     local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.InterceptShot.AnimationId)
@@ -122,7 +122,7 @@ local function TrapShot()
     pcall(function() messiVFX.messiShootVFX(char) end)
     humanoid:LoadAnimation(anims.InterceptShot):Play()
     task.delay(1, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill2"}}) end)
-    task.delay(3, function() animBlock:Disconnect() end)
+    task.delay(1.6, function() animBlock:Disconnect() end)
 end
 
 -- ======================
@@ -132,7 +132,7 @@ local function Riptide()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill3") then return end
     CancelMove()
-    DoCD("skill3", 5)
+    DoCD("skill3", 20)
     local humanoid = char.Humanoid
     local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.Riptide.AnimationId)
@@ -140,11 +140,11 @@ local function Riptide()
     pcall(function() messiVFX.messiShootVFX(char) end)
     humanoid:LoadAnimation(anims.Riptide):Play()
     task.delay(0.5, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill2"}}) end)
-    task.delay(3, function() animBlock:Disconnect() end)
+    task.delay(1.2, function() animBlock:Disconnect() end)
 end
 
 -- ======================
--- SKILL 4 - INTERCEPT
+-- SKILL 4 - INTERCEPT (CINEMÁTICA DURANTE SUSPENSIÓN)
 -- ======================
 local function Intercept()
     local char = plr.Character
@@ -172,11 +172,28 @@ local function Intercept()
     end
     if not HasBall() then return end
     DoCD("skill4", 3.5)
+
+    -- SUSPENDER + CINEMÁTICA AL MISMO TIEMPO
+    root.Anchored = true
+    root.AssemblyLinearVelocity = Vector3.zero
+    humanoid.AutoRotate = false
+
+    -- Cinemática y animación DURANTE la suspensión
     if sounds:FindFirstChild("TrapCutscene") then PlaySFX(sounds.TrapCutscene, root) end
     pcall(function() messiVFX.messiInterceptCutscene(char) end)
     local animBlock = BlockBaseAnimations(humanoid, anims.Intercept.AnimationId)
     humanoid:LoadAnimation(anims.Intercept):Play()
-    task.delay(3.5, function() animBlock:Disconnect(); mainreplication.sceneEnabled(false) end)
+
+    -- Tiempo suspendido
+    local tiempoSuspendido = 1
+    task.wait(tiempoSuspendido)
+
+    -- Caer
+    root.Anchored = false
+    root.AssemblyLinearVelocity = Vector3.new(0, -100, 0)
+    humanoid.AutoRotate = true
+
+    task.delay(1.6, function() animBlock:Disconnect(); mainreplication.sceneEnabled(false) end)
 end
 
 -- ======================
