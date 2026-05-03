@@ -1,4 +1,3 @@
-
 local plr = game.Players.LocalPlayer
 local cam = game.Workspace.CurrentCamera
 local rep = game:GetService("ReplicatedStorage")
@@ -80,7 +79,6 @@ local function BlockBaseAnimations(humanoid, ourAnimId)
     return animBlock
 end
 
-
 local function Dribble()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill1") then return end
@@ -111,7 +109,6 @@ local function TrapShot()
     task.delay(1.6, function() animBlock:Disconnect() end)
 end
 
-
 local function Riptide()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill3") then return end
@@ -126,7 +123,6 @@ local function Riptide()
     task.delay(0.8, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill3"}}) end)
     task.delay(1.2, function() animBlock:Disconnect() end)
 end
-
 
 local function Intercept()
     local char = plr.Character
@@ -187,17 +183,14 @@ local function NutmegSteal()
         end
     end)
     
-    
     humanoid:LoadAnimation(anims.NutmegStart):Play()
     PlaySFX(sounds.NutmegUse, root)
     
     task.wait(0.5)
     
-  
     remote:FireServer(buffer.fromstring(buffers["base"]), {{"tackle"}})
     
     task.wait(0.3)
-    
     
     animBlock:Disconnect()
     
@@ -233,7 +226,6 @@ local function MessiFlow()
         char.Humanoid:LoadAnimation(anims.Flow):Play()
     end
 end
-
 
 local function Setup(char)
     if stopped then return end
@@ -278,7 +270,6 @@ local function Setup(char)
         end
     end)
 end
-
 
 Setup(plr.Character)
 plr.CharacterAdded:Connect(function(char)
