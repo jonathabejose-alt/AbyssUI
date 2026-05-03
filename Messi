@@ -1,6 +1,3 @@
--- ============================================
--- MESSI MOVESET
--- ============================================
 
 local plr = game.Players.LocalPlayer
 local cam = game.Workspace.CurrentCamera
@@ -72,9 +69,7 @@ end
 
 local function PlaySFX(sound, parent)
     if not sound then return end
-    pcall(function()
-        soundUtil:play(sound, parent)
-    end)
+    pcall(function() soundUtil:play(sound, parent) end)
 end
 
 local function BlockBaseAnimations(humanoid, ourAnimId)
@@ -85,9 +80,7 @@ local function BlockBaseAnimations(humanoid, ourAnimId)
     return animBlock
 end
 
--- ======================
--- SKILL 1 - DRIBBLE
--- ======================
+
 local function Dribble()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill1") then return end
@@ -96,20 +89,13 @@ local function Dribble()
     local humanoid = char.Humanoid
     local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.Dribble.AnimationId)
-    local track = humanoid:LoadAnimation(anims.Dribble)
-    track.Priority = Enum.AnimationPriority.Action4
-    track:Play()
-    -- Sonido Superstar
+    humanoid:LoadAnimation(anims.Dribble):Play()
     PlaySFX(sounds.Superstar, root)
-    task.spawn(function()
-        pcall(function() messiVFX.messiDribbleVFX(char, true) end)
-    end)
+    pcall(function() messiVFX.messiDribbleVFX(char, true) end)
     task.delay(4.25, function() animBlock:Disconnect() end)
 end
 
--- ======================
--- SKILL 2 - TRAP SHOT
--- ======================
+
 local function TrapShot()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill2") then return end
@@ -118,16 +104,14 @@ local function TrapShot()
     local humanoid = char.Humanoid
     local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.InterceptShot.AnimationId)
-    if sounds:FindFirstChild("TrapShot") then PlaySFX(sounds.TrapShot, root) end
+    PlaySFX(sounds.TrapShot, root)
     pcall(function() messiVFX.messiShootVFX(char) end)
     humanoid:LoadAnimation(anims.InterceptShot):Play()
-    task.delay(1, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill2"}}) end)
+    task.delay(1.5, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill3"}}) end)
     task.delay(1.6, function() animBlock:Disconnect() end)
 end
 
--- ======================
--- SKILL 3 - RIPTIDE
--- ======================
+
 local function Riptide()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill3") then return end
@@ -136,16 +120,14 @@ local function Riptide()
     local humanoid = char.Humanoid
     local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.Riptide.AnimationId)
-    if sounds:FindFirstChild("Riptide") then PlaySFX(sounds.Riptide, root) end
+    PlaySFX(sounds.Riptide, root)
     pcall(function() messiVFX.messiShootVFX(char) end)
     humanoid:LoadAnimation(anims.Riptide):Play()
-    task.delay(0.5, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill2"}}) end)
+    task.delay(0.8, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill3"}}) end)
     task.delay(1.2, function() animBlock:Disconnect() end)
 end
 
--- ======================
--- SKILL 4 - INTERCEPT (CINEMÁTICA DURANTE SUSPENSIÓN)
--- ======================
+
 local function Intercept()
     local char = plr.Character
     if not char or IsOnCD("skill4") or Stunned() then return end
@@ -172,56 +154,87 @@ local function Intercept()
     end
     if not HasBall() then return end
     DoCD("skill4", 3.5)
-
-    -- SUSPENDER + CINEMÁTICA AL MISMO TIEMPO
     root.Anchored = true
     root.AssemblyLinearVelocity = Vector3.zero
     humanoid.AutoRotate = false
-
-    -- Cinemática y animación DURANTE la suspensión
-    if sounds:FindFirstChild("TrapCutscene") then PlaySFX(sounds.TrapCutscene, root) end
+    PlaySFX(sounds.TrapCutscene, root)
     pcall(function() messiVFX.messiInterceptCutscene(char) end)
     local animBlock = BlockBaseAnimations(humanoid, anims.Intercept.AnimationId)
     humanoid:LoadAnimation(anims.Intercept):Play()
-
-    -- Tiempo suspendido
-    local tiempoSuspendido = 1
-    task.wait(tiempoSuspendido)
-
-    -- Caer
+    task.wait(1)
     root.Anchored = false
     root.AssemblyLinearVelocity = Vector3.new(0, -100, 0)
     humanoid.AutoRotate = true
-
     task.delay(1.6, function() animBlock:Disconnect(); mainreplication.sceneEnabled(false) end)
 end
 
--- ======================
--- FLOW - MESSI AWAKENING
--- ======================
+local function NutmegSteal()
+    local char = plr.Character
+    if not char or Stunned() or IsOnCD("skill5") then return end
+    if HasBall() then return end
+    
+    CancelMove()
+    DoCD("skill5", 5)
+    
+    local humanoid = char.Humanoid
+    local root = char.HumanoidRootPart
+    
+    
+    for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
+    local animBlock = humanoid.AnimationPlayed:Connect(function(track)
+        if track.Animation.AnimationId == "rbxassetid://109744655458082" then
+            track:Stop(0)
+        end
+    end)
+    
+    
+    humanoid:LoadAnimation(anims.NutmegStart):Play()
+    PlaySFX(sounds.NutmegUse, root)
+    
+    task.wait(0.5)
+    
+  
+    remote:FireServer(buffer.fromstring(buffers["base"]), {{"tackle"}})
+    
+    task.wait(0.3)
+    
+    
+    animBlock:Disconnect()
+    
+    if HasBall() then
+        for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
+        humanoid:LoadAnimation(anims.NutmegHitUser):Play()
+        PlaySFX(sounds.NutmegHit, root)
+        pcall(function() messiVFX.messiNutmeg(char) end)
+        
+        local bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(math.huge, 0, math.huge)
+        bv.Velocity = root.CFrame.LookVector * 150
+        bv.Parent = root
+        Debris:AddItem(bv, 0.5)
+    else
+        char.state.stun.Value = true
+        task.delay(0.5, function() char.state.stun.Value = false end)
+    end
+end
+
 local function MessiFlow()
     local char = plr.Character
     if not char or Stunned() then return end
     if not HasBall() then return end
-
-    -- Tema
     pcall(function()
-        if sounds:FindFirstChild("Themes") and sounds.Themes:FindFirstChild("Normal") then
+        if sounds.Themes and sounds.Themes:FindFirstChild("Normal") then
             soundUtil:play(sounds.Themes.Normal, SoundService)
         end
     end)
-
     pcall(function() messiVFX.messiFlow(char) end)
-
     if anims:FindFirstChild("Flow") then
         for _, track in pairs(char.Humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
         char.Humanoid:LoadAnimation(anims.Flow):Play()
     end
 end
 
--- ======================
--- SETUP
--- ======================
+
 local function Setup(char)
     if stopped then return end
     repeat task.wait() until plr.Team ~= game.Teams.lobby
@@ -233,20 +246,24 @@ local function Setup(char)
     buttons.skill2.Base.MouseButton1Down:Connect(TrapShot)
     buttons.skill3.Base.MouseButton1Down:Connect(Riptide)
     buttons.skill4.Base.MouseButton1Down:Connect(Intercept)
+    buttons.skill5.Base.MouseButton1Down:Connect(NutmegSteal)
 
     buttons.skill1.Base.ToolName.Text = "Dribble"
     buttons.skill2.Base.ToolName.Text = "Trap Shot"
     buttons.skill3.Base.ToolName.Text = "Riptide"
     buttons.skill4.Base.ToolName.Text = "Intercept"
+    buttons.skill5.Base.ToolName.Text = "Nutmeg Steal"
 
     buttons.skill1.Base.Reuse.Text = "Ball"
     buttons.skill2.Base.Reuse.Text = "Shot"
     buttons.skill3.Base.Reuse.Text = "Shot"
     buttons.skill4.Base.Reuse.Text = "Steal"
+    buttons.skill5.Base.Reuse.Text = "steal"
 
-    for i = 1, 4 do buttons["skill"..i].Base.Reuse.Visible = true end
-    buttons.skill5.Visible = false
-    buttons.skill3.Visible = true
+    for i = 1, 5 do 
+        buttons["skill"..i].Base.Reuse.Visible = true
+        buttons["skill"..i].Visible = true
+    end
 
     hotbar.MagicHealth.Awakening.Text = "Argentina's Best"
     hotbar.MagicHealth.Health.Frame.UIGradient.Color = ColorSequence.new{
@@ -254,7 +271,6 @@ local function Setup(char)
         ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 157, 255))
     }
 
-    -- Bloquear Flow del juego y usar el nuestro
     char:GetAttributeChangedSignal("FlowActive"):Connect(function()
         if char:GetAttribute("FlowActive") == true and not stopped then
             char:SetAttribute("FlowActive", false)
@@ -263,9 +279,7 @@ local function Setup(char)
     end)
 end
 
--- ======================
--- BOOT
--- ======================
+
 Setup(plr.Character)
 plr.CharacterAdded:Connect(function(char)
     task.wait(1)
@@ -278,6 +292,7 @@ UserInputService.InputBegan:Connect(function(input, bg)
     elseif input.KeyCode == Enum.KeyCode.Two then TrapShot()
     elseif input.KeyCode == Enum.KeyCode.Three then Riptide()
     elseif input.KeyCode == Enum.KeyCode.Four then Intercept()
+    elseif input.KeyCode == Enum.KeyCode.Five then NutmegSteal()
     elseif input.KeyCode == Enum.KeyCode.G then MessiFlow()
     elseif input.KeyCode == Enum.KeyCode.F4 then stopped = true; print("stopped") end
 end)
