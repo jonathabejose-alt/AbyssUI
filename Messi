@@ -104,7 +104,6 @@ local function TrapShot()
     local animBlock = BlockBaseAnimations(humanoid, anims.InterceptShot.AnimationId)
     PlaySFX(sounds.TrapShot, root)
     pcall(function() messiVFX.messiShootVFX(char) end)
-    -- Solo la cinemática del Trap Shot
 task.delay(0.1, function()
     pcall(function() messiVFX.messiInterceptShot(char) end)
 end)
