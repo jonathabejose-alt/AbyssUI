@@ -274,7 +274,7 @@ local function MessiFlow()
         char.Humanoid:LoadAnimation(anims.Flow):Play()
     end
     
-    task.delay(110, function() flowOnCD = false end)
+    task.delay(60, function() flowOnCD = false end)
 end
 
 local function Setup(char)
