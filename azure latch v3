@@ -1,4 +1,3 @@
--- Azure Latch (WindUI Boreal Port) by Tze
 local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/x7dJJ9vnFH23/WindUI-Boreal/refs/heads/main/WindUI%20Boreal"))()
 
 local Window = WindUI:CreateWindow({
@@ -78,7 +77,6 @@ Window:SetBackgroundImage("rbxassetid://132996641534150")
 
 Window:ToggleTransparency(true)
 
--- ── Sidebar ───────────────────────────────────────────────────────────────
 Window:SideBarLabel({ Title = "Quick Actions", Icon = "zap" })
 
 Window:SideBarButton({
@@ -103,7 +101,6 @@ Window:SideBarButton({
 
 Window:SideBarDivider({})
 
--- ── Services ──────────────────────────────────────────────────────────────
 local Players           = game:GetService("Players")
 local RunService        = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -133,9 +130,6 @@ end
 
 local BNR = ReplicatedStorage:WaitForChild("ByteNetReliable")
 
--- ══════════════════════════════════════════════════════════════════════════
---  TABS
--- ══════════════════════════════════════════════════════════════════════════
 local HomeTab     = Window:Tab({ Title = "Home",      Icon = "house",        ShowTabTitle = true, Border = true })
 local BlatantTab  = Window:Tab({ Title = "Blatant",   Icon = "zap",          ShowTabTitle = true, Border = true })
 local SilentTab   = Window:Tab({ Title = "Silent",    Icon = "eye-off",      ShowTabTitle = true, Border = true })
@@ -147,9 +141,6 @@ local InfoTab     = Window:Tab({ Title = "Info",      Icon = "info",         Sho
 
 Window:SelectTab(HomeTab)
 
--- ══════════════════════════════════════════════════════════════════════════
---  HOME TAB
--- ══════════════════════════════════════════════════════════════════════════
 HomeTab:Paragraph({
     Title = "Welcome to AbyssUI",
     Desc  = "Join the Discord server in Info for updates / suggestions.",
@@ -186,9 +177,6 @@ HomeTab:Code({
     end,
 })
 
--- ══════════════════════════════════════════════════════════════════════════
---  INFO TAB
--- ══════════════════════════════════════════════════════════════════════════
 InfoTab:Paragraph({
     Title = "Keybinds",
     Desc  = "Show/Hide GUI: L\nZ=Auto-Dribble | X=Move1 | C=Move2\nV=Move3 | N=Move4 | M=Move5",
@@ -216,9 +204,6 @@ infoGroup:Button({
     end,
 })
 
--- ══════════════════════════════════════════════════════════════════════════
---  TELEPORTS TAB
--- ══════════════════════════════════════════════════════════════════════════
 TeleportTab:Paragraph({
     Title = "Map Teleports",
     Desc  = "No prerequisites needed.",
@@ -275,9 +260,6 @@ for _, v in ipairs(teleportLocations) do
     })
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  SILENT TAB
--- ══════════════════════════════════════════════════════════════════════════
 -- Notification Suppression
 local suppressSection = SilentTab:Section({
     Title  = "Notification Suppression",
@@ -445,7 +427,6 @@ bmSection:Toggle({
     end,
 })
 
--- Auto Dribble / Counter
 local autoSection = SilentTab:Section({
     Title  = "Auto Dribble / Counter",
     Desc   = "Z=Auto-Dribble | X=Move1 | C=Move2 | V=Move3 | N=Move4 | M=Move5",
@@ -507,7 +488,6 @@ autoSection:Toggle({
     Callback = function(v) askState.keybindsEnabled = v; notifySkill("Keybinds", v and "Enabled." or "Disabled.", 3) end,
 })
 
--- Toggles simples — NO usan ToggleKeybind para evitar que la tecla dispare sola
 local dribbleUIToggles = {}
 
 local dribbleToggles = {
@@ -532,7 +512,6 @@ for _, d in ipairs(dribbleToggles) do
     dribbleUIToggles[d.key] = tog
 end
 
--- Keybinds manuales: SOLO actuan si keybindsEnabled=true, y sincronizan el toggle visual
 if not askState.keybindSetup then
     askState.keybindSetup = true
     UserInputService.InputBegan:Connect(function(inp, gp)
@@ -556,7 +535,6 @@ if not askState.keybindSetup then
     end)
 end
 
--- Auto Activate
 local aaSection = SilentTab:Section({
     Title  = "Auto Activate",
     Desc   = "Activates move when ball is within range. Hold M2 to trigger.",
@@ -606,7 +584,6 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Auto Line Up
 local lineSection = SilentTab:Section({
     Title  = "Auto Line Up",
     Desc   = "Stand on a pad, hold M2 to lock camera to the target.",
@@ -776,7 +753,6 @@ lineSection:Button({
     Callback = function() clearLineUps(); notify("Line Ups", "Cleared.", 2) end,
 })
 
--- Auto Position
 local apSection = SilentTab:Section({
     Title  = "Auto Position",
     Desc   = "Automatically picks your position on respawn.",
@@ -830,7 +806,6 @@ local posSegmented = apSection:Segmented({
     end,
 })
 
--- Auto GK
 local gkSection = SilentTab:Section({
     Title  = "Auto Goalkeeper",
     Desc   = "Celeron's: V to toggle. Daffy's: F4 to disable.",
@@ -1012,7 +987,6 @@ gkSection:Button({
     Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/Hr1HnK38"))() end,
 })
 
--- Air Dribble
 local airSection = SilentTab:Section({
     Title  = "Air Dribble",
     Desc   = "Kicks the ball forward and up.",
@@ -1061,7 +1035,6 @@ UserInputService.InputBegan:Connect(function(inp, gp)
     ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring(buffers["base"]), {{ "kick", 28, false, vector.create(dir.X*0.75, 0.65, dir.Z*0.75) }})
 end)
 
--- Other Silent Features
 local otherSilentSection = SilentTab:Section({
     Title  = "Other Silent Features",
     Icon   = "settings-2",
@@ -1209,7 +1182,6 @@ otherSilentSection:Button({
     end,
 })
 
--- Mobile Silent
 local mobileSection = SilentTab:Section({
     Title  = "Mobile Silent Features",
     Desc   = "Silent features ported to mobile.",
@@ -1307,9 +1279,6 @@ mobileGroup:Button({
     end,
 })
 
--- ══════════════════════════════════════════════════════════════════════════
---  BLATANT TAB
--- ══════════════════════════════════════════════════════════════════════════
 local metaSection = BlatantTab:Section({
     Title  = "Metavision Features",
     Icon   = "eye",
@@ -1332,7 +1301,6 @@ metaGroup:Button({
     Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/HfpQBAsF"))() end,
 })
 
--- Ball Features
 local ballSection = BlatantTab:Section({
     Title  = "Ball Features",
     Icon   = "circle",
@@ -1479,7 +1447,6 @@ ballSection:Button({
     end,
 })
 
--- No Cooldown
 local cooldownSection = BlatantTab:Section({
     Title  = "No Cooldown Features (PC Only)",
     Icon   = "clock",
@@ -1552,7 +1519,6 @@ if not dashState.dashBindsSetup then dashState.dashBindsSetup = true
     end)
 end
 
--- Break Ball
 local breakSection = BlatantTab:Section({
     Title  = "Break Ball Features",
     Icon   = "alert-triangle",
@@ -1597,7 +1563,6 @@ breakSection:Button({
     end,
 })
 
--- Auto Goal Features
 local autoGoalSection = BlatantTab:Section({
     Title  = "Auto Goal Features",
     Icon   = "goal",
@@ -1660,7 +1625,6 @@ autoGoalSection:Button({
     end,
 })
 
--- Fun Features
 local funSection = BlatantTab:Section({
     Title  = "Fun Features",
     Icon   = "smile",
@@ -1812,7 +1776,6 @@ funSection:Button({
     end,
 })
 
--- Other Blatant
 local otherBlatantSection = BlatantTab:Section({
     Title  = "Other Blatant Features",
     Icon   = "settings",
@@ -1879,7 +1842,6 @@ otherBlatantSection:Toggle({
     end,
 })
 
--- Trap Helper
 local trapHelperSection = BlatantTab:Section({
     Title  = "Trap Helper",
     Desc   = "Automatically moves toward ball during trap moves.",
@@ -1977,7 +1939,6 @@ trapHelperSection:Slider({
     Callback = function(v) trapSpeed = v end,
 })
 
--- Distance Move Buffs (MultiSection)
 local distMultiSection = BlatantTab:MultiSection({
     Title  = "Distance Move Buffs",
     Desc   = "Buffs movement based moves by adding extra distance.",
@@ -2104,9 +2065,6 @@ trapTab:Slider({ Title="Trap Distance", Step=1, Value={Min=0,Max=500,Default=0},
 trapTab:Slider({ Title="Trap Speed",    Step=1, Value={Min=0,Max=1000,Default=0},   IsTextbox=true, Callback=function(v) Distances.trapSpeedBuff=v end })
 trapTab:Slider({ Title="Trap Vertical", Step=1, Value={Min=-100,Max=100,Default=0}, IsTextbox=true, Callback=function(v) Distances.trapVertical=v end })
 
--- ══════════════════════════════════════════════════════════════════════════
---  EXPLOITS TAB
--- ══════════════════════════════════════════════════════════════════════════
 local spsSection = ExploitsTab:Section({
     Title  = "Semi-Private Server",
     Desc   = "If you end up with another player, block someone. Then re-run to create a new server.",
@@ -2267,9 +2225,6 @@ gfSection:Toggle({
     end,
 })
 
--- ══════════════════════════════════════════════════════════════════════════
---  MOVESETS TAB
--- ══════════════════════════════════════════════════════════════════════════
 local movesetMulti = MovesetsTab:MultiSection({
     Title  = "Movesets",
     Desc   = "Recommend using in normal servers.",
@@ -2305,7 +2260,7 @@ tzeMoveTab:Button({
     Desc  = "Greatest High, Time Skip, Za Warudo timestop (flow). F4 to disable.",
     Icon  = "moon",
     Callback = function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/FZc7Fway", true))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Celeron/refs/heads/main/dio", true))()
     end,
 })
 
@@ -2328,7 +2283,7 @@ tzeMoveTab:Button({
 })
 
 tzeMoveTab:Button({
-    Title = "Messi Moveset (Req. Kunigami)",
+    Title = "Messi Moveset (Req. Bachira)",
     Desc  = "Dribble, Trap Shot, Riptide, Intercept + Flow. F4 to disable.",
     Icon  = "star",
     Callback = function()
@@ -2354,9 +2309,6 @@ tzeMoveTab:Button({
     end,
 })
 
--- ══════════════════════════════════════════════════════════════════════════
---  OTHERS TAB
--- ══════════════════════════════════════════════════════════════════════════
 local miscSection = OthersTab:Section({
     Title  = "Miscellaneous",
     Desc   = "These features give no in-game advantages.",
@@ -2378,7 +2330,6 @@ miscGroup:Button({
     Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/QDNYsgxQ"))() end,
 })
 
--- Emotes
 local emoteSection = OthersTab:Section({
     Title  = "Emotes",
     Icon   = "smile",
@@ -2471,9 +2422,6 @@ quickEmoteGroup:Button({
     end,
 })
 
--- ══════════════════════════════════════════════════════════════════════════
---  NOTIFY & LOAD EXTRAS
--- ══════════════════════════════════════════════════════════════════════════
 WindUI:Notify({
     Title   = "AbyssUI",
     Content = "Azure Latch loaded successfully.",
