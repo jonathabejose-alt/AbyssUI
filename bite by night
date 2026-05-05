@@ -1,5 +1,5 @@
 -- Abyss UI (Bite By Night) | By tze
-local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/orialdev/WindUI-Boreal/main/WindUI%20Boreal"))()
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/x7dJJ9vnFH23/WindUI-Boreal/refs/heads/main/WindUI%20Boreal"))()
 
 local Window = WindUI:CreateWindow({
     Title = "Abyss UI (bite by night)",
@@ -614,7 +614,7 @@ survivorSection:Dropdown({
     end,
 })
 
-survivorSection:Textbox({
+survivorSection:Input({
     Title       = "Custom Delay",
     Desc        = "Delay in seconds for Custom mode.",
     Placeholder = "3",
