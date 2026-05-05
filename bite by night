@@ -601,18 +601,24 @@ local genConn      = nil
 local firingConn   = nil
 local lastFireTime = 0
 local genMode      = "Blatant"
+local customDelay  = 3
 
 survivorSection:Dropdown({
     Title    = "Generator Mode",
-    Desc     = "Blatant = instant. Silent = 5s cooldown to avoid bans.",
-    Values   = { "Blatant", "Silent" },
+    Desc     = "Blatant = instant. Silent = 5s. Custom = your delay.",
+    Values   = { "Blatant", "Silent", "Custom" },
     Value    = "Blatant",
     Callback = function(selected)
         genMode = selected
-        if AutoGen then
-            notify("Generator Mode", "Mode: " .. selected, "zap")
-        end
+        if AutoGen then notify("Generator Mode", "Mode: " .. selected, "zap") end
     end,
+})
+
+survivorSection:Textbox({
+    Title       = "Custom Delay",
+    Desc        = "Delay in seconds for Custom mode.",
+    Placeholder = "3",
+    Callback    = function(v) customDelay = tonumber(v) or 3; if customDelay < 0 then customDelay = 0 end end,
 })
 
 survivorSection:Toggle({
@@ -632,20 +638,14 @@ survivorSection:Toggle({
                     if genMode == "Silent" then task.wait(5) end
                     if genGui and genGui.Parent and AutoGen then
                         firingConn = RunService.Heartbeat:Connect(function()
-                            if genMode == "Blatant" then
-                                if plr.PlayerGui:FindFirstChild("Gen") then
-                                    plr.PlayerGui.Gen.GeneratorMain.Event:FireServer(true)
-                                else
-                                    if firingConn then firingConn:Disconnect(); firingConn = nil end
-                                end
-                            else
-                                local currentTime = tick()
-                                if plr.PlayerGui:FindFirstChild("Gen") and (currentTime - lastFireTime >= 5) then
-                                    plr.PlayerGui.Gen.GeneratorMain.Event:FireServer(true)
-                                    lastFireTime = currentTime
-                                elseif not plr.PlayerGui:FindFirstChild("Gen") then
-                                    if firingConn then firingConn:Disconnect(); firingConn = nil end
-                                end
+                            local currentTime = tick()
+                            local delay = (genMode == "Blatant") and 0 or (genMode == "Silent") and 5 or customDelay
+                            if plr.PlayerGui:FindFirstChild("Gen") and (currentTime - lastFireTime >= delay) then
+                                local args = {{ Wires = true, Switches = true, Lever = true }}
+                                plr.PlayerGui.Gen.GeneratorMain.Event:FireServer(unpack(args))
+                                lastFireTime = currentTime
+                            elseif not plr.PlayerGui:FindFirstChild("Gen") then
+                                if firingConn then firingConn:Disconnect(); firingConn = nil end
                             end
                         end)
                     end
@@ -789,6 +789,62 @@ survivorSection:Toggle({
     end
 })
 
+-- ── Instant Interact ──────────────────────────────────────────────────────────
+local instantInteract = false
+local promptConns = {}
+local function applyInstant(obj)
+    for _, prompt in ipairs(obj:GetDescendants()) do
+        if prompt:IsA("ProximityPrompt") then
+            if obj.Name == "FuseBox" then prompt.HoldDuration = 0.75
+            else prompt.HoldDuration = 0 end
+        end
+    end
+end
+survivorSection:Toggle({
+    Title = "Instant Interact",
+    Desc  = "Instantly interact with Generators, Batteries and Fuse Boxes.",
+    Icon  = "hand",
+    Type  = "Toggle",
+    Value = false,
+    Callback = function(s)
+        instantInteract = s
+        if s then
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if (obj.Name == "Generator" and obj:IsA("Model")) or (obj.Name == "Battery" and obj:IsA("MeshPart")) or (obj.Name == "FuseBox" and obj:IsA("Model")) then
+                    applyInstant(obj)
+                end
+            end
+            promptConns[#promptConns+1] = workspace.DescendantAdded:Connect(function(desc)
+                if not instantInteract then return end
+                if desc:IsA("ProximityPrompt") then
+                    local anc = desc:FindFirstAncestor("Generator") or desc:FindFirstAncestor("Battery") or desc:FindFirstAncestor("FuseBox")
+                    if anc then
+                        if anc.Name == "FuseBox" then desc.HoldDuration = 0.75
+                        else desc.HoldDuration = 0 end
+                    end
+                end
+            end)
+            local lastCheck = 0
+            promptConns[#promptConns+1] = RunService.Heartbeat:Connect(function()
+                if not instantInteract then return end
+                if tick() - lastCheck < 0.8 then return end
+                lastCheck = tick()
+                local mapsFolder = workspace:FindFirstChild("MAPS")
+                if not mapsFolder then return end
+                local gameMap = mapsFolder:FindFirstChild("GAME MAP")
+                if not gameMap then return end
+                local tasks = gameMap:FindFirstChild("Tasks")
+                if not tasks then return end
+                local fuseBoxes = tasks:FindFirstChild("FuseBoxes")
+                if fuseBoxes then for _, fb in ipairs(fuseBoxes:GetChildren()) do if fb.Name == "FuseBox" then applyInstant(fb) end end end
+            end)
+        else
+            for _, c in ipairs(promptConns) do if c then c:Disconnect() end end
+            promptConns = {}
+        end
+    end
+})
+
 -- ── Auto Parry ────────────────────────────────────────────────────────────────
 SurvivorTab:Divider({})
 
@@ -805,13 +861,10 @@ local parryEnabled = false
 local parryConn    = nil
 
 local attackAnimIds = {
-    "rbxassetid://70869035406359",
     "rbxassetid://106673226682917",
     "rbxassetid://112503015929213",
     "rbxassetid://120428956410756",
-    "rbxassetid://102810363618918",
     "rbxassetid://133752270724243",
-    "rbxassetid://71147082224885",
 }
 
 local function isAttackAnimation(track)
@@ -824,16 +877,16 @@ local function isAttackAnimation(track)
 end
 
 local function getParryRange(track)
-    if not track or not track.Animation then return 30 end
+    if not track or not track.Animation then return getgenv().BasicAttackRange or 25 end
     if track.Animation.AnimationId == "rbxassetid://133752270724243" then
         return getgenv().PullAttackRange or 50
     end
-    return getgenv().BasicAttackRange or 30
+    return getgenv().BasicAttackRange or 25
 end
 
 parrySection:Toggle({
     Title = "Auto Parry",
-    Desc  = "Works best on good ping. Cannot parry Springtrap M1s.",
+    Desc  = "Uses VirtualInputManager for real key presses.",
     Icon  = "shield",
     Type  = "Toggle",
     Value = false,
@@ -858,14 +911,16 @@ parrySection:Toggle({
                     for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
                         if track.IsPlaying and isAttackAnimation(track) then
                             local range = getParryRange(track)
-                            if (pchar.HumanoidRootPart.Position - root.Position).Magnitude > range then continue end
-                            local args = {
-                                buffer.fromstring("\a"),
-                                buffer.fromstring("\254\001\000\254\002\000\006\aAbility\001\002")
-                            }
-                            game:GetService("ReplicatedStorage"):WaitForChild("Modules")
-                                :WaitForChild("Warp"):WaitForChild("Index")
-                                :WaitForChild("Event"):WaitForChild("Reliable"):FireServer(unpack(args))
+                            local diff = pchar.HumanoidRootPart.Position - root.Position
+                            if diff:Dot(diff) > range * range then continue end
+                            local killerLook = pchar.HumanoidRootPart.CFrame.LookVector
+                            local toMe = (root.Position - pchar.HumanoidRootPart.Position).Unit
+                            local dot = killerLook:Dot(toMe)
+                            if dot < -0.3 and range < 40 then continue end
+                            local vim = game:GetService("VirtualInputManager")
+                            vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                            task.wait()
+                            vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
                             break
                         end
                     end
@@ -880,7 +935,6 @@ parrySection:Toggle({
 
 parrySection:Slider({
     Title     = "Main Attack Range",
-    Desc      = "Detection range for standard killer attacks.",
     Value     = { Min = 10, Max = 50, Default = 25 },
     Step      = 1,
     Suffix    = " studs",
@@ -891,7 +945,6 @@ parrySection:Slider({
 
 parrySection:Slider({
     Title     = "Ennard Pull Range",
-    Desc      = "Detection range for Ennard's pull attack.",
     Value     = { Min = 10, Max = 75, Default = 50 },
     Step      = 1,
     Suffix    = " studs",
@@ -1139,34 +1192,72 @@ end
 -- ── Health Labels ─────────────────────────────────────────────────────────────
 local healthLabels = {}
 
-local function createHealthLabel(char)
+local function createHealthLabel(char, isKiller)
     if not char or healthLabels[char] then return end
     local humanoid = char:FindFirstChild("Humanoid")
     if not humanoid then return end
     local labelGui = Instance.new("BillboardGui")
-    labelGui.Adornee      = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
-    labelGui.Size         = UDim2.new(3, 0, 1, 0)
-    labelGui.StudsOffset  = Vector3.new(0, 3, 0)
-    labelGui.AlwaysOnTop  = true
+    labelGui.Adornee = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
+    labelGui.Size = UDim2.new(3, 0, isKiller and 2 or 1, 0)
+    labelGui.StudsOffset = Vector3.new(0, 3, 0)
+    labelGui.AlwaysOnTop = true
     labelGui.LightInfluence = 0
-    labelGui.Parent       = char
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size                   = UDim2.new(1, 0, 1, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.TextColor3             = Color3.fromRGB(255, 255, 255)
-    textLabel.TextStrokeTransparency = 0
-    textLabel.TextStrokeColor3       = Color3.fromRGB(0, 0, 0)
-    textLabel.Font                   = Enum.Font.GothamBold
-    textLabel.TextSize               = 16
-    textLabel.Text                   = "100 / 100"
-    textLabel.Parent                 = labelGui
-    healthLabels[char] = { gui = labelGui, text = textLabel, humanoid = humanoid, connection = nil }
-    local conn = humanoid.HealthChanged:Connect(function()
-        if not healthLabels[char] then conn:Disconnect(); return end
-        healthLabels[char].text.Text = math.floor(humanoid.Health) .. " / " .. math.floor(humanoid.MaxHealth)
+    labelGui.Parent = char
+    
+    local hpLabel = Instance.new("TextLabel")
+    hpLabel.Size = UDim2.new(1, 0, isKiller and 0.5 or 1, 0)
+    hpLabel.BackgroundTransparency = 1
+    hpLabel.TextStrokeTransparency = 0
+    hpLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    hpLabel.Font = Enum.Font.GothamBold
+    hpLabel.TextSize = 14
+    hpLabel.Text = math.floor(humanoid.Health) .. " / " .. math.floor(humanoid.MaxHealth)
+    hpLabel.Parent = labelGui
+    
+    local function updateHPColor()
+        local hp = math.floor(humanoid.Health)
+        local maxHp = math.floor(humanoid.MaxHealth)
+        local ratio = hp / maxHp
+        if ratio >= 0.75 then hpLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+        elseif ratio >= 0.41 then hpLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+        else hpLabel.TextColor3 = Color3.fromRGB(255, 0, 0) end
+    end
+    updateHPColor()
+    
+    local data = { gui = labelGui, hpText = hpLabel, humanoid = humanoid, connection = nil, staminaText = nil, staminaConn = nil }
+    
+    local hpConn = humanoid.HealthChanged:Connect(function()
+        if not healthLabels[char] then hpConn:Disconnect(); return end
+        hpLabel.Text = math.floor(humanoid.Health) .. " / " .. math.floor(humanoid.MaxHealth)
+        updateHPColor()
     end)
-    healthLabels[char].connection = conn
-    textLabel.Text = math.floor(humanoid.Health) .. " / " .. math.floor(humanoid.MaxHealth)
+    data.connection = hpConn
+    
+    if isKiller then
+        local stamLabel = Instance.new("TextLabel")
+        stamLabel.Size = UDim2.new(1, 0, 0.5, 0)
+        stamLabel.Position = UDim2.new(0, 0, 0.5, 0)
+        stamLabel.BackgroundTransparency = 1
+        stamLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        stamLabel.TextStrokeTransparency = 0
+        stamLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        stamLabel.Font = Enum.Font.GothamBold
+        stamLabel.TextSize = 12
+        stamLabel.Parent = labelGui
+        local stamVal = math.floor(char:GetAttribute("Stamina") or 100)
+        local maxStam = math.floor(char:GetAttribute("MaxStamina") or 100)
+        stamLabel.Text = stamVal .. " / " .. maxStam
+        data.staminaText = stamLabel
+        local stamConn = char:GetAttributeChangedSignal("Stamina"):Connect(function()
+            if not healthLabels[char] then stamConn:Disconnect(); return end
+            local s = math.floor(char:GetAttribute("Stamina") or 0)
+            local ms = math.floor(char:GetAttribute("MaxStamina") or 100)
+            stamLabel.Text = s .. " / " .. ms
+        end)
+        data.staminaConn = stamConn
+    end
+    
+    healthLabels[char] = data
 end
 
 local function removeHealthLabel(char)
@@ -1189,7 +1280,10 @@ local function addESP(tbl, obj, color)
         tbl[obj] = createDrawingBox(color)
     end
     if tbl == esp.survivors then
-        createHealthLabel(obj)
+        createHealthLabel(obj, false)
+    end
+    if tbl == esp.killers then
+        createHealthLabel(obj, true)
     end
 end
 
@@ -1497,7 +1591,7 @@ espSection:Toggle({
             local ignore = workspace:FindFirstChild("IGNORE")
             if ignore then
                 for _, obj in ipairs(ignore:GetChildren()) do
-                    if obj:IsA("Model") and obj.Name == "Trap" then
+                    if obj:IsA("Model") and obj.Name:lower():find("trap") then
                         createTrapHighlight(obj)
                         for _, part in ipairs(obj:GetDescendants()) do
                             if part:IsA("BasePart") then createTrapHighlight(part) end
@@ -1649,7 +1743,7 @@ local tpSection = TPTab:Section({
     BoxBorder = true,
 })
 
-local tpSpeed       = 10
+local tpSpeed       = 20
 local lerping       = false
 local currentTarget = nil
 
