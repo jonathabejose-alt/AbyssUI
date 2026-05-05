@@ -663,22 +663,45 @@ survivorSection:Toggle({
 -- ── Auto Escape ───────────────────────────────────────────────────────────────
 local autoEscape     = false
 local autoEscapeConn = nil
+local escapeSpeed    = 25
+
+local function getEscapeRoot()
+    local char = player.Character or player.CharacterAdded:Wait()
+    return char:WaitForChild("HumanoidRootPart")
+end
+
+local function escapeLerp(targetCF)
+    local root = getEscapeRoot()
+    if not root then return end
+    local startCF = root.CFrame
+    local dist = (startCF.Position - targetCF.Position).Magnitude
+    if dist < 1 then root.CFrame = targetCF; return end
+    local duration = dist / escapeSpeed
+    local t = 0
+    while t < duration do
+        t += RunService.Heartbeat:Wait()
+        root.CFrame = startCF:Lerp(targetCF, math.clamp(t / duration, 0, 1))
+    end
+    root.CFrame = targetCF
+end
 
 survivorSection:Toggle({
     Title = "Auto Escape",
-    Desc  = "Automatically Escapes The Map.",
+    Desc  = "Automatically Escapes The Map with smooth movement.",
     Icon  = "door-open",
     Type  = "Toggle",
     Value = false,
     Callback = function(state)
         autoEscape = state
         if state then
-            notify("Auto Escape", "Enabled.", "door-open")
+            notify("Auto Escape", "Enabled (Smooth Movement)", "door-open")
             local teleported = false
             autoEscapeConn = RunService.RenderStepped:Connect(function()
                 if teleported or not autoEscape then return end
                 local char = player.Character
                 if not char then return end
+                local root = getEscapeRoot()
+                if not root then return end
                 if not workspace.GAME.CAN_ESCAPE.Value then return end
                 local playersFolder = workspace:FindFirstChild("PLAYERS")
                 if not playersFolder or char.Parent ~= playersFolder:FindFirstChild("ALIVE") then return end
@@ -690,20 +713,18 @@ survivorSection:Toggle({
                     if part:IsA("BasePart") and part:GetAttribute("Enabled") then
                         local highlight = part:FindFirstChildOfClass("Highlight")
                         if highlight and highlight.Enabled then
-                            local root = char:FindFirstChild("HumanoidRootPart")
-                            if root then
-                                teleported = true
-                                root.Anchored = true
-                                char.PrimaryPart.CFrame = part.CFrame
-                                task.delay(1.5, function() if root then root.Anchored = false end end)
-                                task.delay(10,  function() teleported = false end)
-                            end
+                            teleported = true
+                            root.Anchored = true
+                            escapeLerp(part.CFrame)
+                            task.delay(0.5, function() if root then root.Anchored = false end end)
+                            task.delay(10, function() teleported = false end)
+                            return
                         end
                     end
                 end
             end)
         else
-            if autoEscapeConn then autoEscapeConn:Disconnect() end
+            if autoEscapeConn then autoEscapeConn:Disconnect(); autoEscapeConn = nil end
             notify("Auto Escape", "Disabled.", "door-open")
         end
     end
@@ -1537,18 +1558,19 @@ espSection:Toggle({
             if mapsFolder then
                 local gameMap = mapsFolder:FindFirstChild("GAME MAP")
                 if gameMap then
-                    local fuseBoxes = gameMap:FindFirstChild("FuseBoxes")
+                    local tasks = gameMap:FindFirstChild("Tasks")
+                    local fuseBoxes = tasks and tasks:FindFirstChild("FuseBoxes") or gameMap:FindFirstChild("FuseBoxes")
                     if fuseBoxes then
                         for _, fuseBox in ipairs(fuseBoxes:GetChildren()) do
-                            local battery = fuseBox:FindFirstChild("Battery")
-                            if battery then createFuseHighlight(battery) end
+                            if fuseBox:IsA("Model") and fuseBox.Name == "FuseBox" then
+                                createFuseHighlight(fuseBox)
+                            end
                         end
                     end
                 end
             end
             fuseEspConn = workspace.DescendantAdded:Connect(function(v)
-                if v:IsA("BasePart") and v.Name == "Battery"
-                   and v.Parent and v.Parent.Name == "FuseBox" then
+                if v:IsA("Model") and v.Name == "FuseBox" then
                     task.wait(0.1)
                     createFuseHighlight(v)
                 end
@@ -1784,7 +1806,7 @@ local function getOrderedGenerators()
     if not mapsFolder then return {} end
     local gameMap = mapsFolder:FindFirstChild("GAME MAP")
     if not gameMap then return {} end
-    local generators = gameMap:FindFirstChild("Generators")
+    local generators = gameMap:FindFirstChild("Tasks") and gameMap.Tasks:FindFirstChild("Generators") or gameMap:FindFirstChild("Generators")
     if not generators then return {} end
     local models = {}
     for _, v in ipairs(generators:GetChildren()) do
@@ -1874,7 +1896,7 @@ tpSection:Button({
             notify("Error", "Wait for match to start.", "alert-triangle")
             return
         end
-        local fuseBoxes = gameMap:FindFirstChild("FuseBoxes")
+        local fuseBoxes = gameMap:FindFirstChild("Tasks") and gameMap.Tasks:FindFirstChild("FuseBoxes") or gameMap:FindFirstChild("FuseBoxes")
         if not fuseBoxes then
             notify("Error", "No fuse boxes found.", "alert-triangle")
             return
