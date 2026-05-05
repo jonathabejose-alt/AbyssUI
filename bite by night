@@ -1,5 +1,5 @@
 -- Abyss UI (Bite By Night) | By tze
-local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/x7dJJ9vnFH23/WindUI-Boreal/refs/heads/main/WindUI%20Boreal"))()
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/orialdev/WindUI-Boreal/main/WindUI%20Boreal"))()
 
 local Window = WindUI:CreateWindow({
     Title = "Abyss UI (bite by night)",
@@ -247,6 +247,12 @@ mainSection:Toggle({
                 if not infiniteSprint then return end
                 local char = player.Character
                 if not char then return end
+                if workspace:FindFirstChild("PLAYERS") and workspace.PLAYERS:FindFirstChild("LOBBY") then
+                    if char.Parent == workspace.PLAYERS.LOBBY then
+                        char:SetAttribute("WalkSpeed", 12)
+                        return
+                    end
+                end
                 if isMobile then
                     local hum = char:FindFirstChildOfClass("Humanoid")
                     if hum and hum.MoveDirection.Magnitude > 0 then
