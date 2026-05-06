@@ -1,100 +1,449 @@
--- AbyssUI Final Loader
+-- Abyss Loader - By Tze
 local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
 
+local player = Players.LocalPlayer
+
+-- ==================== CONFIGURACIÓN ====================
+local ICONO_URL = "rbxassetid://103402395157353"
+local GAME_ID = game.PlaceId
+
+-- ==================== JUEGOS SOPORTADOS ====================
+local GAMES = {
+    [94647229517154] = {name = "Azure Latch", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"},
+    [70845479499574] = {name = "Bite by Night", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/BBNN"},
+    [94101948530988] = {name = "Uma Racing", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/umareacing.lua"},
+    [9391468976] = {name = "Jujutsu Shenanigans", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/JJSS.lua"},
+}
+
+local gameInfo = GAMES[GAME_ID]
+local isSupported = gameInfo ~= nil
+local scriptURL = isSupported and gameInfo.url or ""
+local gameName = isSupported and gameInfo.name or "Unknown"
+
+-- ==================== CREAR GUI ====================
 if CoreGui:FindFirstChild("AbyssLoader") then
     CoreGui.AbyssLoader:Destroy()
 end
 
-local LoadingGui = Instance.new("ScreenGui")
-LoadingGui.Name = "AbyssLoader"
-LoadingGui.Parent = CoreGui
-LoadingGui.DisplayOrder = 100
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AbyssLoader"
+ScreenGui.Parent = CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+ScreenGui.IgnoreGuiInset = true
 
--- Ventana Central
+-- ==================== FONDO NEGRO SÓLIDO ====================
+local Background = Instance.new("Frame")
+Background.Size = UDim2.new(1, 0, 1, 0)
+Background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Background.BackgroundTransparency = 0  -- ← Sólido, sin transparencia
+Background.Parent = ScreenGui
+
+-- Gradiente morado sobre el fondo negro
+local GradientOverlay = Instance.new("Frame")
+GradientOverlay.Size = UDim2.new(1, 0, 1, 0)
+GradientOverlay.BackgroundTransparency = 1
+GradientOverlay.Parent = Background
+
+local Gradient = Instance.new("UIGradient")
+Gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 0, 80)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(15, 0, 30)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 0, 80))
+})
+Gradient.Rotation = 45
+Gradient.Parent = GradientOverlay
+
+-- ==================== ONDAS ANIMADAS ====================
+local waveContainer = Instance.new("Frame")
+waveContainer.Size = UDim2.new(1, 0, 0, 400)
+waveContainer.Position = UDim2.new(0, 0, 1, -400)
+waveContainer.BackgroundTransparency = 1
+waveContainer.Parent = ScreenGui
+
+for i = 1, 4 do
+    local wave = Instance.new("Frame")
+    wave.Size = UDim2.new(1.5, 0, 0, 40)
+    wave.Position = UDim2.new(-0.25, 0, 0, 50 * i)
+    wave.BackgroundColor3 = Color3.fromRGB(80, 0, 130)
+    wave.BackgroundTransparency = 0.9
+    wave.BorderSizePixel = 0
+    wave.Parent = waveContainer
+    Instance.new("UICorner", wave).CornerRadius = UDim.new(0, 20)
+    
+    task.spawn(function()
+        while wave.Parent do
+            TweenService:Create(wave, TweenInfo.new(4 + i, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+                Position = UDim2.new(-0.25, 0, wave.Position.Y.Offset + 25, 0),
+                BackgroundTransparency = 0.85
+            }):Play()
+            task.wait(4 + i)
+            TweenService:Create(wave, TweenInfo.new(4 + i, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+                Position = UDim2.new(-0.25, 0, wave.Position.Y.Offset - 25, 0),
+                BackgroundTransparency = 0.9
+            }):Play()
+            task.wait(4 + i)
+        end
+    end)
+end
+
+-- ==================== BRILLO CENTRAL ====================
+local BackGlow = Instance.new("Frame")
+BackGlow.Size = UDim2.new(0, 300, 0, 300)
+BackGlow.Position = UDim2.new(0.5, -150, 0.5, -150)
+BackGlow.BackgroundColor3 = Color3.fromRGB(80, 0, 130)
+BackGlow.BackgroundTransparency = 0.85
+BackGlow.BorderSizePixel = 0
+BackGlow.Parent = ScreenGui
+Instance.new("UICorner", BackGlow).CornerRadius = UDim.new(1, 0)
+
+task.spawn(function()
+    while BackGlow.Parent do
+        TweenService:Create(BackGlow, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            BackgroundTransparency = 0.75,
+            Size = UDim2.new(0, 350, 0, 350),
+            Position = UDim2.new(0.5, -175, 0.5, -175)
+        }):Play()
+        task.wait(1.5)
+        TweenService:Create(BackGlow, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            BackgroundTransparency = 0.85,
+            Size = UDim2.new(0, 300, 0, 300),
+            Position = UDim2.new(0.5, -150, 0.5, -150)
+        }):Play()
+        task.wait(1.5)
+    end
+end)
+
+-- ==================== PARTÍCULAS ====================
+local particles = {}
+for i = 1, 70 do
+    local particle = Instance.new("Frame")
+    local size = math.random(2, 5)
+    particle.Size = UDim2.new(0, size, 0, size)
+    particle.Position = UDim2.new(math.random(), 0, math.random(), 0)
+    local colors = {
+        Color3.fromRGB(130, 0, 255),
+        Color3.fromRGB(90, 0, 200),
+        Color3.fromRGB(170, 0, 255),
+        Color3.fromRGB(70, 0, 180)
+    }
+    particle.BackgroundColor3 = colors[math.random(1, #colors)]
+    particle.BackgroundTransparency = math.random(50, 85) / 100
+    particle.BorderSizePixel = 0
+    particle.Parent = ScreenGui
+    Instance.new("UICorner", particle).CornerRadius = UDim.new(1, 0)
+    
+    task.spawn(function()
+        local speed = math.random(5, 12)
+        local startPos = particle.Position
+        local endPos = UDim2.new(math.random(), 0, math.random(), 0)
+        
+        while particle.Parent do
+            TweenService:Create(particle, TweenInfo.new(speed, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+                Position = endPos,
+                BackgroundTransparency = math.random(30, 70) / 100
+            }):Play()
+            task.wait(speed)
+            TweenService:Create(particle, TweenInfo.new(speed, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+                Position = startPos,
+                BackgroundTransparency = math.random(60, 90) / 100
+            }):Play()
+            task.wait(speed)
+        end
+    end)
+    
+    table.insert(particles, particle)
+end
+
+-- ==================== MARCO PRINCIPAL ====================
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 300, 0, 100)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -50)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.Size = UDim2.new(0, 520, 0, 380)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -190)
+MainFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 16)
+MainFrame.BackgroundTransparency = 0.05
 MainFrame.BorderSizePixel = 0
-MainFrame.ZIndex = 1
-MainFrame.Parent = LoadingGui
+MainFrame.Parent = ScreenGui
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 28)
 
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
-local Stroke = Instance.new("UIStroke", MainFrame)
-Stroke.Thickness = 2
-Stroke.Color = Color3.fromRGB(0, 170, 255)
+-- Borde brillante
+local Border = Instance.new("UIStroke", MainFrame)
+Border.Thickness = 1.5
+Border.Color = Color3.fromRGB(100, 0, 180)
+Border.Transparency = 0.5
 
--- Texto de Estado
-local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Size = UDim2.new(1, 0, 0.5, 0)
-StatusLabel.Position = UDim2.new(0, 0, 0.15, 0)
-StatusLabel.BackgroundTransparency = 1
-StatusLabel.ZIndex = 2
-StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-StatusLabel.Font = Enum.Font.GothamBold
-StatusLabel.TextSize = 16
-StatusLabel.Text = "Checking Game ID..."
-StatusLabel.Parent = MainFrame
+-- Sombra
+local Shadow = Instance.new("Frame")
+Shadow.Size = UDim2.new(1, 0, 1, 0)
+Shadow.Position = UDim2.new(0, 0, 0, 10)
+Shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Shadow.BackgroundTransparency = 0.7
+Shadow.BorderSizePixel = 0
+Shadow.ZIndex = -1
+Shadow.Parent = MainFrame
+Instance.new("UICorner", Shadow).CornerRadius = UDim.new(0, 28)
 
--- Barra de carga
-local BarBackground = Instance.new("Frame")
-BarBackground.Size = UDim2.new(0, 220, 0, 4)
-BarBackground.Position = UDim2.new(0.5, -110, 0.75, 0)
-BarBackground.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-BarBackground.BorderSizePixel = 0
-BarBackground.ZIndex = 2
-BarBackground.Parent = MainFrame
+-- ==================== BOTÓN CERRAR (X) ====================
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 38, 0, 38)
+CloseButton.Position = UDim2.new(1, -48, 0, 12)
+CloseButton.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+CloseButton.BackgroundTransparency = 0.2
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(220, 220, 255)
+CloseButton.TextSize = 22
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Parent = MainFrame
+Instance.new("UICorner", CloseButton).CornerRadius = UDim.new(0, 19)
+
+local CloseGlow = Instance.new("Frame")
+CloseGlow.Size = UDim2.new(1, 0, 1, 0)
+CloseGlow.Position = UDim2.new(0, 0, 0, 0)
+CloseGlow.BackgroundColor3 = Color3.fromRGB(180, 0, 255)
+CloseGlow.BackgroundTransparency = 0.7
+CloseGlow.BorderSizePixel = 0
+CloseGlow.ZIndex = -1
+CloseGlow.Parent = CloseButton
+Instance.new("UICorner", CloseGlow).CornerRadius = UDim.new(0, 19)
+
+CloseButton.MouseEnter:Connect(function()
+    TweenService:Create(CloseButton, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255, 100, 100)}):Play()
+    TweenService:Create(CloseGlow, TweenInfo.new(0.15), {BackgroundTransparency = 0.4}):Play()
+end)
+
+CloseButton.MouseLeave:Connect(function()
+    TweenService:Create(CloseButton, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(220, 220, 255)}):Play()
+    TweenService:Create(CloseGlow, TweenInfo.new(0.15), {BackgroundTransparency = 0.7}):Play()
+end)
+
+local cancelado = false
+CloseButton.MouseButton1Click:Connect(function()
+    cancelado = true
+    for _, v in ipairs(particles) do v:Destroy() end
+    if waveContainer then waveContainer:Destroy() end
+    if BackGlow then BackGlow:Destroy() end
+    ScreenGui:Destroy()
+end)
+
+-- ==================== ICONO (ImageLabel directo) ====================
+local IconImage = Instance.new("ImageLabel")
+IconImage.Size = UDim2.new(0, 90, 0, 90)
+IconImage.Position = UDim2.new(0.5, -45, 0, 45)
+IconImage.BackgroundTransparency = 1
+IconImage.Image = ICONO_URL
+IconImage.ScaleType = Enum.ScaleType.Fit
+IconImage.Parent = MainFrame
+
+-- Glow del icono
+local IconGlow = Instance.new("Frame")
+IconGlow.Size = UDim2.new(1.3, 0, 1.3, 0)
+IconGlow.Position = UDim2.new(0.5, -58, 0.5, -58)
+IconGlow.BackgroundColor3 = Color3.fromRGB(80, 0, 180)
+IconGlow.BackgroundTransparency = 0.75
+IconGlow.BorderSizePixel = 0
+IconGlow.ZIndex = -1
+IconGlow.Parent = IconImage
+Instance.new("UICorner", IconGlow).CornerRadius = UDim.new(1, 0)
+
+-- ==================== TEXTO ABYSS ====================
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 55)
+Title.Position = UDim2.new(0, 0, 0, 150)
+Title.BackgroundTransparency = 1
+Title.Text = "ABYSS"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBlack
+Title.TextSize = 38
+Title.TextScaled = true
+Title.Parent = MainFrame
+
+local TitleGradient = Instance.new("UIGradient")
+TitleGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(160, 0, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 0, 200)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 0, 255))
+})
+TitleGradient.Parent = Title
+
+-- ==================== TEXTO DE ESTADO ====================
+local StatusText = Instance.new("TextLabel")
+StatusText.Size = UDim2.new(1, -40, 0, 28)
+StatusText.Position = UDim2.new(0, 20, 0, 210)
+StatusText.BackgroundTransparency = 1
+StatusText.Text = isSupported and ("Loading " .. gameName .. "...") or "Game not supported"
+StatusText.TextColor3 = isSupported and Color3.fromRGB(180, 180, 220) or Color3.fromRGB(255, 80, 80)
+StatusText.Font = Enum.Font.GothamMedium
+StatusText.TextSize = 15
+StatusText.TextWrapped = true
+StatusText.Parent = MainFrame
+
+-- ==================== BARRA DE PROGRESO ====================
+local BarBg = Instance.new("Frame")
+BarBg.Size = UDim2.new(0.7, 0, 0, 10)
+BarBg.Position = UDim2.new(0.15, 0, 0, 260)
+BarBg.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+BarBg.BorderSizePixel = 0
+BarBg.Parent = MainFrame
+Instance.new("UICorner", BarBg).CornerRadius = UDim.new(0, 5)
 
 local ProgressBar = Instance.new("Frame")
 ProgressBar.Size = UDim2.new(0, 0, 1, 0)
-ProgressBar.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+ProgressBar.BackgroundColor3 = isSupported and Color3.fromRGB(130, 0, 255) or Color3.fromRGB(255, 50, 50)
 ProgressBar.BorderSizePixel = 0
-ProgressBar.ZIndex = 3
-ProgressBar.Parent = BarBackground
+ProgressBar.Parent = BarBg
+Instance.new("UICorner", ProgressBar).CornerRadius = UDim.new(0, 5)
 
-Instance.new("UICorner", BarBackground)
-Instance.new("UICorner", ProgressBar)
+local ProgressGlow = Instance.new("Frame")
+ProgressGlow.Size = UDim2.new(1, 0, 1, 3)
+ProgressGlow.Position = UDim2.new(0, 0, 0, -2)
+ProgressGlow.BackgroundColor3 = isSupported and Color3.fromRGB(180, 0, 255) or Color3.fromRGB(255, 80, 80)
+ProgressGlow.BackgroundTransparency = 0.5
+ProgressGlow.BorderSizePixel = 0
+ProgressGlow.Parent = ProgressBar
+Instance.new("UICorner", ProgressGlow).CornerRadius = UDim.new(0, 5)
 
--- Lógica de Carga
+-- ==================== PORCENTAJE ====================
+local PercentText = Instance.new("TextLabel")
+PercentText.Size = UDim2.new(1, 0, 0, 22)
+PercentText.Position = UDim2.new(0, 0, 0, 280)
+PercentText.BackgroundTransparency = 1
+PercentText.Text = isSupported and "0%" or "Error"
+PercentText.TextColor3 = isSupported and Color3.fromRGB(180, 180, 220) or Color3.fromRGB(255, 80, 80)
+PercentText.Font = Enum.Font.GothamBold
+PercentText.TextSize = 13
+PercentText.TextXAlignment = Enum.TextXAlignment.Center
+PercentText.Parent = MainFrame
+
+-- ==================== ANIMACIÓN DE ENTRADA ====================
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -250)
+MainFrame.BackgroundTransparency = 1
+MainFrame.Size = UDim2.new(0, 0, 0, 380)
+Border.Transparency = 1
+Title.TextTransparency = 1
+StatusText.TextTransparency = 1
+PercentText.TextTransparency = 1
+IconImage.ImageTransparency = 1
+IconGlow.BackgroundTransparency = 1
+
+TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+    Position = UDim2.new(0.5, -260, 0.5, -190),
+    Size = UDim2.new(0, 520, 0, 380),
+    BackgroundTransparency = 0.05
+}):Play()
+
+TweenService:Create(Border, TweenInfo.new(0.4), {Transparency = 0.5}):Play()
+
+task.delay(0.15, function()
+    TweenService:Create(IconImage, TweenInfo.new(0.3), {ImageTransparency = 0}):Play()
+    TweenService:Create(IconGlow, TweenInfo.new(0.3), {BackgroundTransparency = 0.75}):Play()
+end)
+
+task.delay(0.25, function()
+    TweenService:Create(Title, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+end)
+
+task.delay(0.4, function()
+    TweenService:Create(StatusText, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+end)
+
+task.delay(0.5, function()
+    TweenService:Create(PercentText, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+end)
+
+-- ==================== PULSO DEL ICONO ====================
 task.spawn(function()
-    -- Paso 1: Buscando
-    ProgressBar:TweenSize(UDim2.new(0.4, 0, 1, 0), "Out", "Quad", 1)
-    StatusLabel.Text = "Checking Game ID..."
-    task.wait(1.5)
-    
-    local idJuego = game.PlaceId
-    local scriptURL = ""
-    local nombreJuego = ""
-
-    -- Paso 2: Identificando
-    if idJuego == 94647229517154 then
-        nombreJuego = "Azure Latch"
-        scriptURL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"
-    elseif idJuego == 70845479499574 then
-        nombreJuego = "Bite by Night"
-        scriptURL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/BBNN"
-    elseif idJuego == 94101948530988 then
-        nombreJuego = "Uma Racing"
-        scriptURL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/umareacing.lua"
-    elseif idJuego == 9391468976 then
-        nombreJuego = "Jujutsu Shenanigans"
-        scriptURL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/JJSS.lua"
-    end
-
-    if scriptURL ~= "" then
-        -- Animación de éxito
-        StatusLabel.Text = nombreJuego .. " Found!"
-        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
-        ProgressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 1)
-        task.wait(1.2)
-        LoadingGui:Destroy()
-        loadstring(game:HttpGet(scriptURL))()
-    else
-        -- Animación de error
-        StatusLabel.Text = "Game Not Supported"
-        StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
-        ProgressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.5)
-        task.wait(2.5)
-        LoadingGui:Destroy()
+    while IconImage.Parent and not cancelado do
+        TweenService:Create(IconGlow, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            BackgroundTransparency = 0.55,
+            Size = UDim2.new(1.5, 0, 1.5, 0),
+            Position = UDim2.new(0.5, -67, 0.5, -67)
+        }):Play()
+        task.wait(0.7)
+        TweenService:Create(IconGlow, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+            BackgroundTransparency = 0.75,
+            Size = UDim2.new(1.3, 0, 1.3, 0),
+            Position = UDim2.new(0.5, -58, 0.5, -58)
+        }):Play()
+        task.wait(0.7)
     end
 end)
+
+-- ==================== CARGA ====================
+if not isSupported then
+    StatusText.Text = "Game not supported"
+    StatusText.TextColor3 = Color3.fromRGB(255, 80, 80)
+    PercentText.Text = "Error"
+    ProgressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.8)
+    
+    task.delay(2.5, function()
+        TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Position = UDim2.new(0.5, -260, 1.5, 0),
+            BackgroundTransparency = 1
+        }):Play()
+        task.delay(0.5, function()
+            for _, v in ipairs(particles) do v:Destroy() end
+            if waveContainer then waveContainer:Destroy() end
+            if BackGlow then BackGlow:Destroy() end
+            ScreenGui:Destroy()
+        end)
+    end)
+else
+    local porcentaje = 0
+    local cargando = true
+    
+    task.spawn(function()
+        while cargando and porcentaje < 100 and not cancelado do
+            porcentaje = porcentaje + math.random(3, 8)
+            if porcentaje > 100 then porcentaje = 100 end
+            
+            local width = porcentaje / 100
+            ProgressBar:TweenSize(UDim2.new(width, 0, 1, 0), "Out", "Quad", 0.3)
+            PercentText.Text = math.floor(porcentaje) .. "%"
+            
+            if porcentaje >= 90 then
+                StatusText.Text = "Almost ready..."
+            elseif porcentaje >= 60 then
+                StatusText.Text = "Loading " .. gameName .. " scripts..."
+            elseif porcentaje >= 30 then
+                StatusText.Text = "Initializing modules..."
+            else
+                StatusText.Text = "Starting Abyss UI..."
+            end
+            
+            task.wait(math.random(3, 6) / 10)
+        end
+        
+        if cancelado then return end
+        
+        StatusText.Text = "Complete! Launching..."
+        PercentText.TextColor3 = Color3.fromRGB(100, 255, 150)
+        
+        task.wait(0.6)
+        
+        TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Position = UDim2.new(0.5, -260, 1.5, 0),
+            BackgroundTransparency = 1
+        }):Play()
+        
+        for _, v in ipairs(particles) do
+            TweenService:Create(v, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
+        end
+        
+        TweenService:Create(Background, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(BackGlow, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+        
+        task.wait(0.6)
+        
+        for _, v in ipairs(particles) do v:Destroy() end
+        if waveContainer then waveContainer:Destroy() end
+        if BackGlow then BackGlow:Destroy() end
+        ScreenGui:Destroy()
+        
+        if scriptURL ~= "" then
+            loadstring(game:HttpGet(scriptURL))()
+        end
+    end)
+end
