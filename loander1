@@ -1,12 +1,15 @@
+-- ABYSS UI LOADER - By tze
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 
 local player = Players.LocalPlayer
 
+-- ==================== CONFIGURACIÓN ====================
 local ICONO_URL = "rbxassetid://103402395157353"
 local GAME_ID = game.PlaceId
 
+-- ==================== JUEGOS SOPORTADOS ====================
 local GAMES = {
     [94647229517154] = {name = "Azure Latch", display = "Azure Latch (ID: 94647229517154)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"},
     [70845479499574] = {name = "Bite by Night", display = "Bite by Night (ID: 70845479499574)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/BBNN"},
@@ -14,11 +17,15 @@ local GAMES = {
     [9391468976] = {name = "Jujutsu Shenanigans", display = "Jujutsu Shenanigans (ID: 9391468976)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/JJSS.lua"},
 }
 
+-- Script universal (si no hay juego específico)
+local UNIVERSAL_URL = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/Universal.lua"
+
 local gameInfo = GAMES[GAME_ID]
 local isSupported = gameInfo ~= nil
-local scriptURL = isSupported and gameInfo.url or ""
-local gameDisplay = isSupported and gameInfo.display or ("Unknown Game (ID: " .. GAME_ID .. ")")
+local scriptURL = isSupported and gameInfo.url or UNIVERSAL_URL
+local gameDisplay = isSupported and gameInfo.display or ("Universal Mode (ID: " .. GAME_ID .. ")")
 
+-- ==================== CREAR GUI ====================
 if CoreGui:FindFirstChild("AbyssLoader") then
     CoreGui.AbyssLoader:Destroy()
 end
@@ -28,6 +35,7 @@ ScreenGui.Name = "AbyssLoader"
 ScreenGui.Parent = CoreGui
 ScreenGui.IgnoreGuiInset = true
 
+-- ==================== FONDO ====================
 local Background = Instance.new("Frame")
 Background.Size = UDim2.new(1, 0, 1, 0)
 Background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -43,6 +51,7 @@ Gradient.Color = ColorSequence.new({
 Gradient.Rotation = 45
 Gradient.Parent = Background
 
+-- ==================== CÍRCULOS PULSANTES ====================
 local rings = {}
 for i = 1, 4 do
     local ring = Instance.new("Frame")
@@ -74,6 +83,7 @@ for i = 1, 4 do
     end)
 end
 
+-- ==================== BRILLO CENTRAL ====================
 local BackGlow = Instance.new("Frame")
 BackGlow.Size = UDim2.new(0, 350, 0, 350)
 BackGlow.Position = UDim2.new(0.5, -175, 0.5, -175)
@@ -100,6 +110,7 @@ task.spawn(function()
     end
 end)
 
+-- ==================== PARTÍCULAS ====================
 local particles = {}
 for i = 1, 100 do
     local particle = Instance.new("Frame")
@@ -141,6 +152,7 @@ for i = 1, 100 do
     table.insert(particles, particle)
 end
 
+-- ==================== MARCO PRINCIPAL ====================
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 520, 0, 400)
 MainFrame.Position = UDim2.new(0.5, -260, 0.5, -200)
@@ -155,6 +167,7 @@ Border.Thickness = 1.5
 Border.Color = Color3.fromRGB(150, 0, 220)
 Border.Transparency = 1
 
+-- ==================== ICONO ====================
 local IconContainer = Instance.new("Frame")
 IconContainer.Size = UDim2.new(0, 95, 0, 95)
 IconContainer.Position = UDim2.new(0.5, -47.5, 0, 42)
@@ -179,6 +192,7 @@ IconGlow.ZIndex = -1
 IconGlow.Parent = IconContainer
 Instance.new("UICorner", IconGlow).CornerRadius = UDim.new(1, 0)
 
+-- ==================== TEXTO ====================
 local TitleShadow = Instance.new("TextLabel")
 TitleShadow.Size = UDim2.new(1, 0, 0, 55)
 TitleShadow.Position = UDim2.new(0, 2, 0, 154)
@@ -212,18 +226,20 @@ TitleGradient.Color = ColorSequence.new({
 })
 TitleGradient.Parent = Title
 
+-- ==================== TEXTO DE ESTADO ====================
 local Status = Instance.new("TextLabel")
 Status.Size = UDim2.new(1, -40, 0, 30)
 Status.Position = UDim2.new(0, 20, 0, 218)
 Status.BackgroundTransparency = 1
-Status.Text = isSupported and gameDisplay or ("Game not supported (ID: " .. GAME_ID .. ")")
-Status.TextColor3 = isSupported and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 80, 80)
+Status.Text = isSupported and gameDisplay or ("Universal Mode - Loading...")
+Status.TextColor3 = isSupported and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(100, 200, 255)
 Status.Font = Enum.Font.GothamMedium
 Status.TextSize = 13
 Status.TextWrapped = true
 Status.Parent = MainFrame
 Status.Visible = false
 
+-- ==================== BARRA DE PROGRESO ====================
 local BarBg = Instance.new("Frame")
 BarBg.Size = UDim2.new(0.7, 0, 0, 10)
 BarBg.Position = UDim2.new(0.15, 0, 0, 268)
@@ -235,7 +251,7 @@ Instance.new("UICorner", BarBg).CornerRadius = UDim.new(0, 5)
 
 local Progress = Instance.new("Frame")
 Progress.Size = UDim2.new(0, 0, 1, 0)
-Progress.BackgroundColor3 = isSupported and Color3.fromRGB(180, 0, 255) or Color3.fromRGB(255, 50, 50)
+Progress.BackgroundColor3 = isSupported and Color3.fromRGB(180, 0, 255) or Color3.fromRGB(100, 100, 255)
 Progress.BorderSizePixel = 0
 Progress.Parent = BarBg
 Instance.new("UICorner", Progress).CornerRadius = UDim.new(0, 5)
@@ -244,14 +260,15 @@ local Percent = Instance.new("TextLabel")
 Percent.Size = UDim2.new(1, 0, 0, 22)
 Percent.Position = UDim2.new(0, 0, 0, 292)
 Percent.BackgroundTransparency = 1
-Percent.Text = isSupported and "0%" or "Error"
-Percent.TextColor3 = isSupported and Color3.fromRGB(200, 200, 255) or Color3.fromRGB(255, 80, 80)
+Percent.Text = "0%"
+Percent.TextColor3 = Color3.fromRGB(200, 200, 255)
 Percent.Font = Enum.Font.GothamBold
 Percent.TextSize = 13
 Percent.TextXAlignment = Enum.TextXAlignment.Center
 Percent.Parent = MainFrame
 Percent.Visible = false
 
+-- ==================== ANIMACIÓN DE SALIDA (DEFINIDA ANTES DEL BOTÓN) ====================
 local function animacionSalida()
     TweenService:Create(Border, TweenInfo.new(0.2), {Transparency = 1}):Play()
     
@@ -294,6 +311,7 @@ local function animacionSalida()
     TweenService:Create(Background, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
 end
 
+-- ==================== BOTÓN CERRAR (AHORA SÍ FUNCIONA) ====================
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 40, 0, 40)
 CloseBtn.Position = UDim2.new(1, -50, 0, 12)
@@ -309,6 +327,7 @@ CloseBtn.ZIndex = 10
 CloseBtn.MouseEnter:Connect(function()
     CloseBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
 end)
+
 CloseBtn.MouseLeave:Connect(function()
     CloseBtn.TextColor3 = Color3.fromRGB(200, 200, 220)
 end)
@@ -323,6 +342,7 @@ CloseBtn.MouseButton1Click:Connect(function()
     end)
 end)
 
+-- ==================== ANIMACIÓN DE ENTRADA ====================
 TweenService:Create(Background, TweenInfo.new(0.8, Enum.EasingStyle.Sine), {
     BackgroundTransparency = 0
 }):Play()
@@ -384,6 +404,7 @@ task.delay(1.4, function()
     TweenService:Create(BarBg, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
 end)
 
+-- ==================== PULSO DEL ICONO ====================
 task.spawn(function()
     while IconContainer.Parent and not cancelado do
         TweenService:Create(IconGlow, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
@@ -401,57 +422,48 @@ task.spawn(function()
     end
 end)
 
-if not isSupported then
-    task.delay(1.8, function()
-        Percent.Text = "Error"
-        Progress:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.8)
+-- ==================== CARGA ====================
+local progress = 0
+
+task.delay(1.6, function()
+    while progress < 100 and not cancelado do
+        progress = progress + 20
+        if progress > 100 then progress = 100 end
         
-        task.delay(1.5, function()
-            animacionSalida()
-            task.delay(0.6, function()
-                ScreenGui:Destroy()
-            end)
-        end)
-    end)
-else
-    local progress = 0
-    
-    task.delay(1.6, function()
-        while progress < 100 and not cancelado do
-            progress = progress + 20
-            if progress > 100 then progress = 100 end
-            
-            local width = progress / 100
-            Progress:TweenSize(UDim2.new(width, 0, 1, 0), "Out", "Quad", 0.3)
-            Percent.Text = math.floor(progress) .. "%"
-            
-            if progress >= 80 then
-                Status.Text = "✓ Launching " .. gameInfo.name .. "..."
-            elseif progress >= 60 then
-                Status.Text = "✓ Loading scripts..."
-            elseif progress >= 40 then
-                Status.Text = "✓ Initializing modules..."
-            elseif progress >= 20 then
-                Status.Text = "✓ " .. gameInfo.name .. " detected!"
-            end
-            
-            task.wait(0.6)
+        local width = progress / 100
+        Progress:TweenSize(UDim2.new(width, 0, 1, 0), "Out", "Quad", 0.3)
+        Percent.Text = math.floor(progress) .. "%"
+        
+        if progress >= 80 then
+            Status.Text = isSupported and "✓ Launching " .. gameInfo.name .. "..." or "✓ Loading Universal Mode..."
+        elseif progress >= 60 then
+            Status.Text = isSupported and "✓ Loading scripts..." or "✓ Loading Universal UI..."
+        elseif progress >= 40 then
+            Status.Text = isSupported and "✓ Initializing modules..." or "✓ Preparing UI..."
+        elseif progress >= 20 then
+            Status.Text = isSupported and "✓ " .. gameInfo.name .. " detected!" or "✓ Universal Mode detected"
         end
         
-        if cancelado then return end
+        task.wait(0.6)
+    end
+    
+    if cancelado then return end
+    
+    Status.Text = "✓ Complete!"
+    Percent.TextColor3 = Color3.fromRGB(100, 255, 150)
+    
+    task.wait(0.5)
+    
+    animacionSalida()
+    
+    task.delay(0.6, function()
+        ScreenGui:Destroy()
         
-        Status.Text = "✓ Complete!"
-        Percent.TextColor3 = Color3.fromRGB(100, 255, 150)
-        
-        task.wait(0.5)
-        
-        animacionSalida()
-        
-        task.delay(0.6, function()
-            ScreenGui:Destroy()
-            if scriptURL ~= "" then
-                loadstring(game:HttpGet(scriptURL))()
-            end
-        end)
+        -- Cargar el script correspondiente (específico o universal)
+        if scriptURL and scriptURL ~= "" then
+            loadstring(game:HttpGet(scriptURL))()
+        else
+            warn("[Abyss UI] No script URL found for game ID: " .. GAME_ID)
+        end
     end)
-end
+end)
