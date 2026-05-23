@@ -8,7 +8,13 @@ local ICONO_URL = "rbxassetid://103402395157353"
 local GAME_ID = game.PlaceId
 
 local GAMES = {
-    [94647229517154] = {name = "Azure Latch", display = "Azure Latch (ID: 94647229517154)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"},
+    -- Azure Latch (todos los modos)
+    [94647229517154] = {name = "Azure Latch", display = "Azure Latch (Default)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"},
+    [139609232261520] = {name = "Azure Latch", display = "Azure Latch (Legacy)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"},
+    [107756419246502] = {name = "Azure Latch", display = "Azure Latch (Modifiers)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"},
+    [85946466968831] = {name = "Azure Latch", display = "Azure Latch (11v11)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v3"},
+    
+    -- Otros juegos
     [70845479499574] = {name = "Bite by Night", display = "Bite by Night (ID: 70845479499574)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/BBNN"},
     [94101948530988] = {name = "Uma Racing", display = "Uma Racing (ID: 94101948530988)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/umareacing.lua"},
     [9391468976] = {name = "Jujutsu Shenanigans", display = "Jujutsu Shenanigans (ID: 9391468976)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/JJSS.lua"},
