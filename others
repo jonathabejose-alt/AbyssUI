@@ -1,0 +1,251 @@
+local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
+local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+
+local looping = false
+local mahitoLoop = false
+local selectedPlayer = nil
+local spectating = false
+
+local freecam = false
+local camPart = nil
+local antiStunEnabled = false
+
+local function getPlayer(plr)
+	if typeof(plr) == "Instance" then
+		return plr
+	end
+	if typeof(plr) == "string" then
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name == plr or p.DisplayName == plr then
+				return p
+			end
+		end
+	end
+	return nil
+end
+
+local function enableFreecam()
+	if freecam then return end
+	freecam = true
+
+	camPart = Instance.new("Part")
+	camPart.Anchored = true
+	camPart.Transparency = 1
+	camPart.CanCollide = false
+	camPart.Size = Vector3.new(1,1,1)
+	camPart.CFrame = camera.CFrame
+	camPart.Parent = workspace
+
+	camera.CameraType = Enum.CameraType.Scriptable
+	camera.CFrame = camPart.CFrame
+end
+
+local function disableFreecam()
+	freecam = false
+	camera.CameraType = Enum.CameraType.Custom
+
+	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	if hum then
+		camera.CameraSubject = hum
+	end
+
+	if camPart then
+		camPart:Destroy()
+		camPart = nil
+	end
+end
+
+local function stopLoop()
+	looping = false
+end
+
+local function startLoop()
+	if looping then return end
+	looping = true
+
+	task.spawn(function()
+		while looping do
+			local myHRP = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if not myHRP then 
+				task.wait(0.1)
+				continue 
+			end
+
+			-- Fresh player list every loop (new joins are instantly targeted)
+			for _, target in ipairs(Players:GetPlayers()) do
+				if not looping then break end
+				if target == player or not target.Character then continue end
+
+				local tHRP = target.Character:FindFirstChild("HumanoidRootPart")
+				if tHRP then
+					myHRP.CFrame = tHRP.CFrame * CFrame.new(0, 0, 0.8)
+					RunService.Heartbeat:Wait()
+				end
+			end
+
+			task.wait(0.02)
+		end
+	end)
+end
+
+local function stopMahito()
+	mahitoLoop = false
+end
+
+local function startMahito()
+	if mahitoLoop then return end
+	mahitoLoop = true
+
+	task.spawn(function()
+		while mahitoLoop do
+			local myHRP = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if not myHRP then 
+				task.wait(0.1)
+				continue 
+			end
+
+			for _, target in ipairs(Players:GetPlayers()) do
+				if not mahitoLoop then break end
+				if target == player or not target.Character then continue end
+
+				local tHRP = target.Character:FindFirstChild("HumanoidRootPart")
+				if tHRP then
+					myHRP.CFrame = tHRP.CFrame * CFrame.new(0, 0, 0.8)
+					RunService.Heartbeat:Wait()
+				end
+			end
+
+			task.wait(0.02)
+		end
+	end)
+end
+
+local function stopSpectate()
+	spectating = false
+	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	if hum then
+		camera.CameraSubject = hum
+	end
+end
+
+local function startSpectate(targetInput)
+	local target = getPlayer(targetInput)
+	if not target then return end
+
+	spectating = true
+	selectedPlayer = target
+
+	local function apply()
+		if not spectating or not target.Character then return end
+		local hum = target.Character:FindFirstChildOfClass("Humanoid")
+		if hum then
+			camera.CameraType = Enum.CameraType.Custom
+			camera.CameraSubject = hum
+		end
+	end
+
+	apply()
+
+	if target.CharacterAdded then
+		target.CharacterAdded:Connect(function()
+			task.wait(0.5)
+			apply()
+		end)
+	end
+end
+
+player.CharacterAdded:Connect(function()
+	task.wait(1.5)
+	if looping then startLoop() end
+	if mahitoLoop then startMahito() end
+end)
+
+local Window = Library:CreateWindow({
+	Title = "0.2 Hub",
+	Footer = "Kill All + Mahito + Misc",
+	NotifySide = "Right",
+})
+
+local Tabs = {
+	Main = Window:AddTab("Main", "user"),
+	Misc = Window:AddTab("Misc", "settings"),
+	Misc = Window:AddTab("Esp+", "user"),
+}
+
+local Main = Tabs.Main:AddLeftGroupbox("Main Controls")
+local Misc = Tabs.Misc:AddLeftGroupbox("Misc Controls")
+
+Main:AddToggle("KillAllFast", {
+	Text = "0.2 Kill All",
+	Default = false,
+	Callback = function(v)
+		if v then startLoop() else stopLoop() end
+	end
+})
+
+Main:AddToggle("InfUltMahito", {
+	Text = "Inf Ult Mahito",
+	Default = false,
+	Callback = function(v)
+		if v then
+			enableFreecam()
+			startMahito()
+		else
+			stopMahito()
+			disableFreecam()
+		end
+	end
+})
+
+Main:AddDropdown("PlayerSelect", {
+	SpecialType = "Player",
+	ExcludeLocalPlayer = true,
+	Text = "Select Player",
+	Callback = function(v)
+		selectedPlayer = getPlayer(v)
+	end
+})
+
+Main:AddToggle("SpectateToggle", {
+	Text = "Spectate Player",
+	Default = false,
+	Callback = function(v)
+		if v and selectedPlayer then
+			startSpectate(selectedPlayer)
+		else
+			stopSpectate()
+		end
+	end
+})
+
+Main:AddLabel("TO USE IT, GET KILLED BY A PLAYER ONCE")
+
+
+Misc:AddToggle("AntiStun", {
+	Text = "Anti Stun",
+	Default = false,
+	Callback = function(v)
+		if v and not antiStunEnabled then
+			antiStunEnabled = true
+			loadstring(game:HttpGet(
+				"https://raw.githubusercontent.com/megumihubstenth/Restinpeacemyrandma/refs/heads/main/Changeligs"
+			))()
+		else
+			antiStunEnabled = false
+		end
+	end
+})
+
+Library:OnUnload(function()
+	stopLoop()
+	stopMahito()
+	stopSpectate()
+	disableFreecam()
+end)
