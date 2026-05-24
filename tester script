@@ -1,4 +1,5 @@
- if game.PlaceId ~= 9391468976 then
+
+if game.PlaceId ~= 9391468976 then
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Wrong Game",
         Text  = "This script only works in Jujutsu Shenanigans.",
@@ -7,7 +8,7 @@
     return
 end
 
-local player = game.Players.LocalPlayer
+local player = game.Players.LocalPlayer  -- ← AGREGA ESTA LÍNEA
 
 local WindUI = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/jonathabejose-alt/Wind-UI-Boreal/refs/heads/main/WindUI%20Boreal"
@@ -58,7 +59,7 @@ local Window = WindUI:CreateWindow({
 Window:BindShortcut("RightAlt", function() Window:Toggle() end,
     { Description = "Toggle Abyss UI", EnabledWhenClosed = true })
 
-Window:Tag({ Title = "v1.1", Color = Color3.fromRGB(248, 155, 41), Icon = "badge-check" })
+Window:Tag({ Title = "v1", Color = Color3.fromRGB(248, 155, 41), Icon = "badge-check" })
 Window:SetBackgroundImage("rbxassetid://132996641534150")
 Window:ToggleTransparency(true)
 
@@ -110,133 +111,6 @@ local function isAlive(p)
     return hum and hrp and hum.Health > 0
 end
 
--- ============================================
--- 0.2 HUB VARIABLES & FUNCTIONS
--- ============================================
-local killAllLooping = false
-local mahitoLooping  = false
-local spectateTarget = nil
-local spectateActive = false
-local freecamActive  = false
-local freecamPart    = nil
-local antiStunActive = false
-
-local function findPlayer(plr)
-    if typeof(plr) == "Instance" then return plr end
-    if typeof(plr) == "string" then
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p.Name == plr or p.DisplayName == plr then return p end
-        end
-    end
-    return nil
-end
-
-local function enableFreecamMode()
-    if freecamActive then return end
-    freecamActive = true
-    freecamPart = Instance.new("Part")
-    freecamPart.Anchored = true
-    freecamPart.Transparency = 1
-    freecamPart.CanCollide = false
-    freecamPart.Size = Vector3.new(1, 1, 1)
-    freecamPart.CFrame = camera.CFrame
-    freecamPart.Parent = workspace
-    camera.CameraType = Enum.CameraType.Scriptable
-    camera.CFrame = freecamPart.CFrame
-end
-
-local function disableFreecamMode()
-    freecamActive = false
-    camera.CameraType = Enum.CameraType.Custom
-    local hum = getHum()
-    if hum then camera.CameraSubject = hum end
-    if freecamPart then freecamPart:Destroy(); freecamPart = nil end
-end
-
-local function stopKillAll()
-    killAllLooping = false
-end
-
-local function startKillAll()
-    if killAllLooping then return end
-    killAllLooping = true
-    task.spawn(function()
-        while killAllLooping do
-            local myHRP = getRoot()
-            if not myHRP then task.wait(0.1); continue end
-            for _, target in ipairs(Players:GetPlayers()) do
-                if not killAllLooping then break end
-                if target == player or not target.Character then continue end
-                local tHRP = target.Character:FindFirstChild("HumanoidRootPart")
-                if tHRP then
-                    myHRP.CFrame = tHRP.CFrame * CFrame.new(0, 0, 0.8)
-                    RunService.Heartbeat:Wait()
-                end
-            end
-            task.wait(0.02)
-        end
-    end)
-end
-
-local function stopMahitoLoop()
-    mahitoLooping = false
-end
-
-local function startMahitoLoop()
-    if mahitoLooping then return end
-    mahitoLooping = true
-    task.spawn(function()
-        while mahitoLooping do
-            local myHRP = getRoot()
-            if not myHRP then task.wait(0.1); continue end
-            for _, target in ipairs(Players:GetPlayers()) do
-                if not mahitoLooping then break end
-                if target == player or not target.Character then continue end
-                local tHRP = target.Character:FindFirstChild("HumanoidRootPart")
-                if tHRP then
-                    myHRP.CFrame = tHRP.CFrame * CFrame.new(0, 0, 0.8)
-                    RunService.Heartbeat:Wait()
-                end
-            end
-            task.wait(0.02)
-        end
-    end)
-end
-
-local function stopSpectateMode()
-    spectateActive = false
-    local hum = getHum()
-    if hum then camera.CameraSubject = hum end
-end
-
-local function startSpectateMode(targetInput)
-    local target = findPlayer(targetInput)
-    if not target then return end
-    spectateActive = true
-    spectateTarget = target
-    local function applySpec()
-        if not spectateActive or not target.Character then return end
-        local hum = target.Character:FindFirstChildOfClass("Humanoid")
-        if hum then
-            camera.CameraType = Enum.CameraType.Custom
-            camera.CameraSubject = hum
-        end
-    end
-    applySpec()
-    if target.CharacterAdded then
-        target.CharacterAdded:Connect(function()
-            task.wait(0.5)
-            applySpec()
-        end)
-    end
-end
-
-player.CharacterAdded:Connect(function()
-    task.wait(1.5)
-    if killAllLooping then startKillAll() end
-    if mahitoLooping then startMahitoLoop() end
-end)
-
 -- Tabs --
 local HomeTab  = Window:Tab({ Title = "Home",       Icon = "house",    ShowTabTitle = true, Border = true })
 local MainTab  = Window:Tab({ Title = "Main",       Icon = "sword",    ShowTabTitle = true, Border = true })
@@ -254,7 +128,7 @@ Window:SelectTab(HomeTab)
 -- ============================================
 HomeTab:Paragraph({
     Title = "Welcome to Abyss UI",
-    Desc  = "Jujutsu Shenanigans edition. Made by tze.\nFly: Load SuperTze v3 from Main tab (K = Transform, H = Fly).\n0.2 Features: Fun tab (Kill All, Mahito, Spectate, Anti Stun).",
+    Desc  = "Jujutsu Shenanigans edition. Made by tze.\nFly: Load SuperTze v3 from Main tab (K = Transform, H = Fly).",
     Buttons = {{ Title = "Discord", Icon = "message-circle", Callback = function()
         setclipboard("https://discord.gg/8stFYxJv4R")
         notify("Discord", "Invite copied!", "check", 3)
@@ -265,7 +139,7 @@ HomeTab:Stats({
     Title = "Session Info",
     Items = {
         { Key = "Script",  Value = "JJS" },
-        { Key = "Version", Value = "v1.1" },
+        { Key = "Version", Value = "v1"  },
         { Key = "Author",  Value = "tze" },
         { Key = "Toggle",  Value = "Right Alt" },
     },
@@ -281,7 +155,7 @@ HomeTab:Code({
 -- ============================================
 InfoTab:Paragraph({
     Title = "Keybinds",
-    Desc  = "Show/Hide GUI: Right Alt\nLock On: RMB (toggle lock/unlock)\n\nSuperTze v3 keys:\n  K = Transform  |  H = Fly\n  Q = Boost       |  V = Hyper Sonic\n  P = Settings\n\n0.2 Features: Fun tab",
+    Desc  = "Show/Hide GUI: Right Alt\nLock On: RMB (toggle lock/unlock)\n\nSuperTze v3 keys:\n  K = Transform  |  H = Fly\n  Q = Boost       |  V = Hyper Sonic\n  P = Settings",
 })
 InfoTab:Divider({})
 local ig = InfoTab:Group({})
@@ -903,119 +777,64 @@ funSection:Toggle({
     end,
 })
 
--- ── 0.2 Features (Replaces Orbit) ──────────────────────────────────────────
-local killSection = FunTab:Section({
-    Title = "0.2 Features",
-    Desc  = "Kill All, Inf Ult Mahito, Spectate, Anti Stun",
-    Icon  = "zap",
-    Opened = true,
-    Box = true,
-    BoxBorder = true,
+-- ── Orbit Target ─────────────────────────────────────────────────────────────
+local orbitDistance = 2
+local orbitSpeed    = 0.05
+local orbitEnabled  = false
+local orbitConn     = nil
+
+funSection:Slider({
+    Title    = "Orbit Distance",
+    Desc     = "Distance from target when orbiting.",
+    Step     = 0.5,
+    Value    = { Min = 1, Max = 10, Default = 2 },
+    IsTooltip = true,
+    Callback = function(v) orbitDistance = v end,
 })
 
--- 0.2 Kill All
-killSection:Toggle({
-    Title = "0.2 Kill All",
-    Desc  = "Rapidly teleports to all players in sequence.",
-    Icon  = "sword",
-    Type  = "Toggle",
-    Value = false,
-    Callback = function(v)
-        if v then
-            startKillAll()
-            notify("Kill All", "Enabled.", "sword")
-        else
-            stopKillAll()
-            notify("Kill All", "Disabled.", "sword")
-        end
-    end,
+funSection:Slider({
+    Title    = "Orbit Speed",
+    Desc     = "Time between teleports (lower = faster).",
+    Step     = 0.01,
+    Value    = { Min = 0.01, Max = 0.2, Default = 0.05 },
+    IsTooltip = true,
+    Suffix   = "s",
+    Callback = function(v) orbitSpeed = v end,
 })
 
--- Inf Ult Mahito
-killSection:Toggle({
-    Title = "Inf Ult Mahito",
-    Desc  = "Freecam + Infinite KillAll. Requires dying once.",
-    Icon  = "skull",
-    Type  = "Toggle",
-    Value = false,
-    Callback = function(v)
-        if v then
-            enableFreecamMode()
-            startMahitoLoop()
-            notify("Inf Ult Mahito", "Enabled.", "skull")
-        else
-            stopMahitoLoop()
-            disableFreecamMode()
-            notify("Inf Ult Mahito", "Disabled.", "skull")
-        end
-    end,
-})
-
-killSection:Divider({})
-
--- Select Player Dropdown
-killSection:Dropdown({
-    Title       = "Select Player",
-    Desc        = "Select a player to spectate.",
-    Icon        = "user",
-    SpecialType = "Player",
-    ExcludeLocalPlayer = true,
-    Callback    = function(v)
-        spectateTarget = findPlayer(v)
-        if spectateTarget then
-            notify("Select Player", "Selected: " .. spectateTarget.DisplayName, "user")
-        end
-    end,
-})
-
--- Spectate Player
-killSection:Toggle({
-    Title = "Spectate Player",
-    Desc  = "Spectate the player selected above.",
-    Icon  = "eye",
-    Type  = "Toggle",
-    Value = false,
-    Callback = function(v)
-        if v and spectateTarget then
-            startSpectateMode(spectateTarget)
-            notify("Spectate", "Spectating " .. spectateTarget.DisplayName, "eye")
-        else
-            stopSpectateMode()
-            notify("Spectate", "Disabled.", "eye")
-        end
-    end,
-})
-
-killSection:Label({
-    Text = "💡 Die once to a player to use these features.",
-})
-
-killSection:Divider({})
-
--- Anti Stun
-killSection:Toggle({
-    Title = "Anti Stun",
-    Desc  = "Prevents stun from enemy attacks.",
-    Icon  = "shield",
-    Type  = "Toggle",
-    Value = false,
-    Callback = function(v)
-        if v and not antiStunActive then
-            antiStunActive = true
-            local ok, err = pcall(function()
-                loadstring(game:HttpGet(
-                    "https://raw.githubusercontent.com/megumihubstenth/Restinpeacemyrandma/refs/heads/main/Changeligs"
-                ))()
+funSection:Toggle({
+    Title = "Orbit Target",
+    Desc  = "Teleports around all players randomly. Depends on your region, ping & internet.",
+    Icon  = "rotate-cw", Type = "Toggle", Value = false,
+    Callback = function(s)
+        orbitEnabled = s
+        if s then
+            task.spawn(function()
+                while orbitEnabled do
+                    for _, p in ipairs(Players:GetPlayers()) do
+                        if not orbitEnabled then break end
+                        if p ~= player then
+                            local targetChar = p.Character
+                            local myChar     = getChar()
+                            local targetHRP  = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+                            local myHRP      = getRoot()
+                            if targetHRP and myHRP then
+                                local offset = Vector3.new(
+                                    math.random(-orbitDistance, orbitDistance),
+                                    0,
+                                    math.random(-orbitDistance, orbitDistance)
+                                )
+                                myHRP.CFrame = targetHRP.CFrame + offset
+                            end
+                            task.wait(orbitSpeed)
+                        end
+                    end
+                    task.wait(0.01)
+                end
             end)
-            if ok then
-                notify("Anti Stun", "Enabled.", "shield")
-            else
-                notify("Anti Stun", "Error: " .. tostring(err), "alert-triangle", 5)
-                antiStunActive = false
-            end
+            notify("Orbit Target", "Enabled.", "rotate-cw")
         else
-            antiStunActive = false
-            notify("Anti Stun", "Disabled.", "shield")
+            notify("Orbit Target", "Disabled.", "rotate-cw")
         end
     end,
 })
@@ -1132,16 +951,6 @@ miscGroup:Button({ Title = "Copy Server Invite", Icon = "link",
         notify("Discord", "Invite copied.", "check", 3)
     end,
 })
-
--- ============================================
--- UNLOAD CLEANUP
--- ============================================
-Window:OnUnload(function()
-    stopKillAll()
-    stopMahitoLoop()
-    stopSpectateMode()
-    disableFreecamMode()
-end)
 
 -- ============================================
 -- LOAD NOTIFICATION
