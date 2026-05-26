@@ -47,7 +47,7 @@ local Window = WindUI:CreateWindow({
 
     Watermark = {
         Enabled = true,
-        Text = "AbyssUI v3 — Azure Latch",
+        Text = "AbyssUI v4 — Azure Latch",
         Position = "bottom-right",
         Opacity = 0.45,
         Size = 13,
@@ -163,7 +163,7 @@ local homeStats = HomeTab:Stats({
     Desc  = "Live stats for your session.",
     Items = {
         { Key = "Script",   Value = "Azure Latch" },
-        { Key = "Version",  Value = "v3" },
+        { Key = "Version",  Value = "v4" },
         { Key = "Author",   Value = "Tze" },
         { Key = "Toggle",   Value = "L key" },
     },
@@ -237,11 +237,15 @@ TeleportTab:Button({
     Desc  = "Teleport to selected location.",
     Icon  = "map-pin",
     Callback = function()
-        local sel = teleportDropdown:Get()
+        local sel = teleportDropdown.Value
         local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
         if hrp then
             for _, v in ipairs(teleportLocations) do
-                if v[1] == sel then hrp.CFrame = v[2]; notify("Teleport", "Teleported to " .. v[1], 2); break end
+                if v[1] == sel then 
+                    hrp.CFrame = v[2]
+                    notify("Teleport", "Teleported to " .. v[1], 2)
+                    break
+                end
             end
         end
     end,
@@ -708,15 +712,15 @@ local lineupSegmented = lineSection:Segmented({
         elseif value == "Yukimiya Line Ups" then
             local colsY = { Color3.fromRGB(255,0,0),Color3.fromRGB(255,255,0),Color3.fromRGB(0,0,255),Color3.fromRGB(0,255,0),Color3.fromRGB(255,0,0),Color3.fromRGB(0,255,0),Color3.fromRGB(255,255,0),Color3.fromRGB(0,0,255) }
             local entries = {
-                {pad=Vector3.new(-1,-9,222),target=Vector3.new(-57,58,13)},
-                {pad=Vector3.new(-82,-9,182),target=Vector3.new(-51,74,14)},
-                {pad=Vector3.new(130,-9,136),target=Vector3.new(-114,95,13)},
-                {pad=Vector3.new(63,-9,192),target=Vector3.new(-104,128,13)},
-                {pad=Vector3.new(6,-10,-206),target=Vector3.new(65,124,-12)},
-                {pad=Vector3.new(-59,-10,-201),target=Vector3.new(123,148,-12)},
-                {pad=Vector3.new(68,-10,-198),target=Vector3.new(61,105,-12)},
-                {pad=Vector3.new(-134,-10,-113),target=Vector3.new(4,55,-53)},
-            }
+			{pad = Vector3.new(-1, -9, 222), target = Vector3.new(-57, 58, 13)},
+			{pad = Vector3.new(-82, -9, 182), target = Vector3.new(-51, 74, 14)},
+			{pad = Vector3.new(130, -9, 136), target = Vector3.new(-114, 95, 13)},
+			{pad = Vector3.new(63, -9, 192), target = Vector3.new(-104, 128, 13)},
+			{pad = Vector3.new(6, -10, -206), target = Vector3.new(65, 95, -12)},
+			{pad = Vector3.new(-59, -10, -201), target = Vector3.new(123, 148, -12)},
+			{pad = Vector3.new(68, -10, -198), target = Vector3.new(61, 105, -12)},
+			{pad = Vector3.new(-134, -10, -113), target = Vector3.new(4, 48, -53)},
+		}
             buildLineUps(entries, colsY, bPos, aPos, 4)
 
         elseif value == "Rin Line Ups" then
@@ -1964,6 +1968,10 @@ local DashConfigs = {
     CutIn={animIds={["rbxassetid://133384553147918"]=true,["rbxassetid://128936529440509"]=true},sliderVar="cutDist",duration=1.0,cooldown=0.15,wait=0.2},
     HeroInstinct={animId="rbxassetid://82417661349987",sliderVar="instinctDist",duration=1.25,cooldown=0.15,wait=0.33},
     CloseQuarterDribble={animId="rbxassetid://94171465685487",sliderVar="quarterDist",duration=2.25,cooldown=0.15,wait=0.18},
+    SpeedyTurn={animId="rbxassetid://109145068926350",sliderVar="speedyDist",duration=0.7,cooldown=0.15,wait=0.05},
+    Fetch={animId="rbxassetid://110734304480469",sliderVar="fetchDist",duration=0.525,cooldown=0.15,wait=0.125},
+    NutmegReflex={animId="rbxassetid://73266865968554",sliderVar="reflexNutmegDist",duration=0.25,cooldown=0.15,wait=0.05},
+    TwinSteps={animId="rbxassetid://106299517516303",sliderVar="twinStepsDist",duration=0.15,cooldown=0.15,wait=1.75},
     ZombieDribble={animId="rbxassetid://102294508090597",sliderVar="zombDist",duration=1.7,cooldown=0.15,wait=0.15},
     KingsPath={animId="rbxassetid://73560885704292",sliderVar="kingsDist",duration=1.175,cooldown=0.15,wait=0.4},
     MachCutIn={animIds={["rbxassetid://133945265328817"]=true,["rbxassetid://88448030655006"]=true},sliderVar="machDist",duration=0.15,cooldown=0.15,wait=0.625},
@@ -2049,6 +2057,10 @@ local charSliders = {
     {title="Speed Dribble (Yukimiya)",        var="speedDist",    max=200},
     {title="Cut In (Yukimiya)",               var="cutDist",      max=200},
     {title="Hero's Instinct (Kunigami)",      var="instinctDist", max=300},
+    {title="Speedy Turn (Sae)",               var="speedyDist",   max=250},
+    {title="Fetch (Sae)",                     var="fetchDist",    max=100},
+    {title="Nutmeg Reflex (Sae)",             var="reflexNutmegDist",max=100},
+    {title="Twin Steps (Reo)",                var="twinStepsDist",max=75},
     {title="Close Quarter Dribble (Kurona)",  var="quarterDist",  max=250},
     {title="Zombie Dribble (Don Lorenzo)",    var="zombDist",     max=250},
     {title="King's Path (Barou)",             var="kingsDist",    max=750},
