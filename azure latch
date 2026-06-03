@@ -1502,8 +1502,8 @@ end
 local function gfFirePackets()
     local c=player.Character; if not c then return end; local r=c:FindFirstChild("HumanoidRootPart"); if not r then return end
     if (r.Position-Vector3.new(-371,13,-1599)).Magnitude<=15 or (r.Position-Vector3.new(-196,13,-1599)).Magnitude<=15 then
-        ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring("\006\001\001\000A"))
-        ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring("\006\001\001\000B"))
+        game:GetService("ReplicatedStorage"):WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring(pick .. "\001\001\000A"))
+        game:GetService("ReplicatedStorage"):WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring(pick .. "\001\001\000B"))
     end
 end
 local function stopGoalFarm()
