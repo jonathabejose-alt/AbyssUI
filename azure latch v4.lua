@@ -451,7 +451,7 @@ local askState = {
     cooldowns = {},
 }
 local TACKLE_ANIM = "rbxassetid://109744655458082"
-local function notifySkill(t, tx, d) if not askState.suppressNotifs then notify(t, tx, d) end end
+local function notifySkill(t, tx, d) notify(t, tx, d) end
 
 RunService.Stepped:Connect(function()
     local char = player.Character; local root = char and char:FindFirstChild("HumanoidRootPart"); if not root then return end
@@ -1975,6 +1975,11 @@ local DashConfigs = {
     ZombieDribble={animId="rbxassetid://102294508090597",sliderVar="zombDist",duration=1.7,cooldown=0.15,wait=0.15},
     KingsPath={animId="rbxassetid://73560885704292",sliderVar="kingsDist",duration=1.175,cooldown=0.15,wait=0.4},
     MachCutIn={animIds={["rbxassetid://133945265328817"]=true,["rbxassetid://88448030655006"]=true},sliderVar="machDist",duration=0.15,cooldown=0.15,wait=0.625},
+	GoGo={animId="rbxassetid://111297568709238",sliderVar="gogoDist",duration=0.35,cooldown=0.15,wait=0.55},
+    GuardDog={animId="rbxassetid://111439544531399",sliderVar="guardDist",duration=0.35,cooldown=0.15,wait=0.1},
+    Beautiful={animIds={["rbxassetid://132788854309681"]=true,["rbxassetid://138985718053619"]=true},sliderVar="beautifulDist",duration=0.3,cooldown=0.15,wait=0},
+    CreativeBeautiful={animId="rbxassetid://77926234700416",sliderVar="creativeDist",duration=0.2,cooldown=0.15,wait=0.85},
+    GlacialCut={animId="rbxassetid://116769918041530",sliderVar="glacialDist",duration=0.5,cooldown=0.15,wait=0.425},
     GoldenZone={animId="rbxassetid://132426354821688",sliderVar="goldenDist",duration=2.0,cooldown=0.15,requiresBall=true,wait=0.15},
     Devour={animId="rbxassetid://117921992582675",sliderVar="devourMaxDist",speed=150,cooldown=0.15,isUnlimited=true,wait=0.2},
     TrapAnim1={animId="rbxassetid://73387016994281",sliderVar="trapDistBuff",speedVar="trapSpeedBuff",isTrap=true,duration=0.8,cooldown=0.15,wait=0.05},
@@ -2066,6 +2071,11 @@ local charSliders = {
     {title="King's Path (Barou)",             var="kingsDist",    max=750},
     {title="DEVOUR. (Barou)",                 var="devourMaxDist",max=500},
     {title="Mach Cut-In (Chigiri)",           var="machDist",     max=200},
+	{title="Go-Go! (Kurona)",                 var="gogoDist",     max=100},
+    {title="Guard Dog (Kurona)",              var="guardDist",    max=100},
+    {title="Beautiful Destruction (Sae)",     var="beautifulDist",max=33},
+    {title="Beautiful Side Variant (Sae)",    var="creativeDist", max=25},
+    {title="Glacial Cut (Hiori)",             var="glacialDist",  max=175},
     {title="Golden Zone (Chigiri, Req.Ball)", var="goldenDist",   max=400},
 }
 for _, s in ipairs(charSliders) do
@@ -2148,8 +2158,8 @@ end
 local function gfFirePackets()
     local c = player.Character; if not c then return end; local r = c:FindFirstChild("HumanoidRootPart"); if not r then return end
     if (r.Position-Vector3.new(-371,13,-1599)).Magnitude<=15 or (r.Position-Vector3.new(-196,13,-1599)).Magnitude<=15 then
-        ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring("\006\001\001\000A"))
-        ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring("\006\001\001\000B"))
+        game:GetService("ReplicatedStorage"):WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring(pick .. "\001\001\000A"))
+        game:GetService("ReplicatedStorage"):WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring(pick .. "\001\001\000B"))
     end
 end
 local function stopGoalFarm()
@@ -2392,6 +2402,145 @@ local emoteSegmented = emoteSection:Segmented({
             for _, e in ipairs(emoteChoices) do
                 if e.key == value then doEmote(e.key, e.animId, e.soundId, e.vol, e.speed, e.eq); break end
             end
+        end
+    end,
+})
+
+local pingSection = OthersTab:Section({
+    Title  = "Ping Display",
+    Icon   = "wifi",
+    Opened = true,
+    Box    = true,
+    BoxBorder = true,
+})
+
+local pingState = { enabled = false, gui = nil }
+
+pingSection:Toggle({
+    Title = "Ping Display",
+    Desc  = "Shows your ping on screen. Draggable.",
+    Type  = "Toggle",
+    Value = false,
+    Icon  = "wifi",
+    Callback = function(v)
+        pingState.enabled = v
+        notify("Ping Display", v and "Enabled." or "Disabled.")
+        if v then
+            local sg = Instance.new("ScreenGui")
+            sg.Name = "PingDisplay"
+            sg.ResetOnSpawn = false
+            sg.Parent = player:WaitForChild("PlayerGui")
+            pingState.gui = sg
+
+            local frame = Instance.new("Frame")
+            frame.Size = UDim2.new(0, 110, 0, 30)
+            frame.Position = UDim2.new(0, 10, 0, 10)
+            frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+            frame.BackgroundTransparency = 0.3
+            frame.BorderSizePixel = 0
+            frame.Parent = sg
+
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 6)
+            corner.Parent = frame
+
+            local label = Instance.new("TextLabel")
+            label.Size = UDim2.new(1, 0, 1, 0)
+            label.BackgroundTransparency = 1
+            label.TextColor3 = Color3.fromRGB(255, 255, 255)
+            label.Font = Enum.Font.GothamBold
+            label.TextSize = 14
+            label.Text = "Ping: --"
+            label.Parent = frame
+
+            -- Draggable
+            local dragging, dragStart, startPos
+            frame.InputBegan:Connect(function(inp)
+                if inp.UserInputType == Enum.UserInputType.MouseButton1 or inp.UserInputType == Enum.UserInputType.Touch then
+                    dragging = true
+                    dragStart = inp.Position
+                    startPos = frame.Position
+                    inp.Changed:Connect(function()
+                        if inp.UserInputState == Enum.UserInputState.End then
+                            dragging = false
+                        end
+                    end)
+                end
+            end)
+            game:GetService("UserInputService").InputChanged:Connect(function(inp)
+                if dragging and (inp.UserInputType == Enum.UserInputType.MouseMovement or inp.UserInputType == Enum.UserInputType.Touch) then
+                    local delta = inp.Position - dragStart
+                    frame.Position = UDim2.new(
+                        startPos.X.Scale,
+                        startPos.X.Offset + delta.X,
+                        startPos.Y.Scale,
+                        startPos.Y.Offset + delta.Y
+                    )
+                end
+            end)
+
+            -- Ping loop
+            task.spawn(function()
+                while pingState.enabled do
+                    local ok, ping = pcall(function()
+                        return game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+                    end)
+                    if ok then
+                        local color
+                        if ping < 80 then
+                            color = Color3.fromRGB(0, 255, 100)
+                        elseif ping < 150 then
+                            color = Color3.fromRGB(255, 200, 0)
+                        else
+                            color = Color3.fromRGB(255, 50, 50)
+                        end
+                        label.TextColor3 = color
+                        label.Text = "Ping: " .. math.floor(ping) .. "ms"
+                    else
+                        label.Text = "Ping: N/A"
+                    end
+                    task.wait(1)
+                end
+            end)
+        else
+            if pingState.gui then
+                pingState.gui:Destroy()
+                pingState.gui = nil
+            end
+        end
+    end,
+})
+
+local afkSection = OthersTab:Section({
+    Title  = "Anti AFK",
+    Icon   = "clock",
+    Opened = true,
+    Box    = true,
+    BoxBorder = true,
+})
+
+local afkState = { enabled = false }
+
+afkSection:Toggle({
+    Title = "Anti AFK",
+    Desc  = "Prevents you from being kicked for inactivity.",
+    Type  = "Toggle",
+    Value = false,
+    Icon  = "clock",
+    Callback = function(v)
+        afkState.enabled = v
+        notify("Anti AFK", v and "Enabled." or "Disabled.")
+        if v then
+            task.spawn(function()
+                local VIM = game:GetService("VirtualInputManager")
+                while afkState.enabled do
+                    task.wait(60)
+                    if not afkState.enabled then break end
+                    VIM:SendKeyEvent(true, Enum.KeyCode.W, false, game)
+                    task.wait(0.1)
+                    VIM:SendKeyEvent(false, Enum.KeyCode.W, false, game)
+                end
+            end)
         end
     end,
 })
