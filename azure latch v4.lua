@@ -2591,4 +2591,4 @@ WindUI:Notify({
 })
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/oldthingyep", true))()
-loadstring(game:HttpGet("https://pastebin.com/raw/rQMS2B9R", true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/Moveset-Hub/refs/heads/main/ignored%20is%20lol.lua", true))()
