@@ -1780,6 +1780,135 @@ funSection:Button({
     end,
 })
 
+local gkAdminState = {
+    enabled = false,
+    isRunning = false,
+    originalCF = nil,
+    inputConnection = nil,
+    vim = nil
+}
+
+local function getVIM()
+    if not gkAdminState.vim then
+        gkAdminState.vim = game:GetService("VirtualInputManager")
+    end
+    return gkAdminState.vim
+end
+
+local function pressT()
+    local vim = getVIM()
+    vim:SendKeyEvent(true, Enum.KeyCode.T, false, game)
+    task.wait()
+    vim:SendKeyEvent(false, Enum.KeyCode.T, false, game)
+end
+
+local function getGoalPosition()
+    local team = player.Team
+    if not team then return nil end
+    if team.Name == "A" then
+        return CFrame.new(-538, 3, 1642)
+    elseif team.Name == "B" then
+        return CFrame.new(-536, 3, 914)
+    end
+    return nil
+end
+
+local function startGKAdmin()
+    if not gkAdminState.enabled then return end
+    if gkAdminState.isRunning then return end
+    
+    local char = player.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    
+    local hasBall = char:FindFirstChild("Ball") ~= nil
+    if not hasBall then
+        WindUI:Notify({ Title = "GK Admin", Content = "You need the ball!", Icon = "circle", Duration = 2 })
+        return
+    end
+    
+    local isGK = false
+    local stateChar = char:FindFirstChild("state")
+    if stateChar then
+        local role = stateChar:FindFirstChild("role")
+        if role and role.Value == "GK" then isGK = true end
+    end
+    
+    if not isGK then
+        WindUI:Notify({ Title = "GK Admin", Content = "You need to be GK!", Icon = "shield", Duration = 2 })
+        return
+    end
+    
+    local goalPos = getGoalPosition()
+    if not goalPos then
+        WindUI:Notify({ Title = "GK Admin", Content = "Could not find goal!", Icon = "alert-triangle", Duration = 2 })
+        return
+    end
+    
+    
+    gkAdminState.originalCF = hrp.CFrame
+    gkAdminState.isRunning = true
+    
+    
+    hrp.CFrame = goalPos
+    
+	task.wait(0.10)
+   
+    for i = 1, 15 do
+        pressT()
+    end
+
+   task.wait(0.02)
+   
+    if gkAdminState.originalCF then
+        hrp.CFrame = gkAdminState.originalCF
+    end
+    
+    WindUI:Notify({ Title = "GK", Content = "Done! (T pressed 10 times)", Icon = "check", Duration = 2 })
+    
+    gkAdminState.isRunning = false
+    gkAdminState.originalCF = nil
+end
+
+-- Toggle
+funSection:Toggle({
+    Title = "GK (Y)",
+    Desc = "Press Y: teleport to goal, instantly, return",
+    Type = "Toggle",
+    Value = false,
+    Icon = "shield",
+    Callback = function(v)
+        gkAdminState.enabled = v
+        WindUI:Notify({ 
+            Title = "GK Admin", 
+            Content = v and "Enabled. Press Y for instant GK ." or "Disabled.", 
+            Icon = "info", 
+            Duration = 3 
+        })
+        
+        if v and not gkAdminState.inputConnection then
+            gkAdminState.inputConnection = UserInputService.InputBegan:Connect(function(inp, gp)
+                if gp then return end
+                if inp.KeyCode == Enum.KeyCode.Y then
+                    startGKAdmin()
+                end
+            end)
+        elseif not v and gkAdminState.inputConnection then
+            gkAdminState.inputConnection:Disconnect()
+            gkAdminState.inputConnection = nil
+        end
+    end,
+})
+
+local otherBlatantSection = BlatantTab:Section({
+    Title  = "Other Blatant Features",
+    Icon   = "settings",
+    Opened = true,
+    Box    = true,
+    BoxBorder = true,
+})
+
 local otherBlatantSection = BlatantTab:Section({
     Title  = "Other Blatant Features",
     Icon   = "settings",
