@@ -6,13 +6,12 @@ local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
 
--- Load custom icons
+-- Load custom icons from Footagesus/Icons
 local Icons = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"))()
-Icons.SetIconsType("lucide") -- Use Lucide icons (modern, clean)
+Icons.SetIconsType("lucide")
 
 -- Detect executor functions
 local hasRequest = request or http_request or (syn and syn.request) or (http and http.request)
@@ -27,8 +26,6 @@ local compatible = hasRequest and hasWriteFile and hasGetCustomAsset
 local CONFIG = {
     title = "ABYSS_UI.exe",
     gameName = "Unknown Game",
-    warningTitle = "UNSUPPORTED EXECUTOR",
-    warningBody = "Your executor does not support the required functions",
     missingFeatures = {},
     siteUrl = "https://weao.xyz/",
     discordInvite = "weaoxyz",
@@ -65,12 +62,16 @@ Background.BorderSizePixel = 0
 Background.Parent = ScreenGui
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 560, 0, 420)
-MainFrame.Position = UDim2.new(0.5, -280, 0.5, -210)
+MainFrame.Size = UDim2.new(0, 560, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -280, 0.5, -200)
 MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 MainFrame.BackgroundTransparency = 1
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
+
+local Scale = Instance.new("UIScale")
+Scale.Scale = 0.85
+Scale.Parent = MainFrame
 
 local Border = Instance.new("UIStroke", MainFrame)
 Border.Thickness = 1
@@ -85,7 +86,7 @@ TopBar.BackgroundTransparency = 1
 TopBar.BorderSizePixel = 0
 TopBar.Parent = MainFrame
 
--- Icon in top bar
+-- Top bar icon (terminal)
 local TopIcon = Icons.Image({
     Icon = "terminal",
     Size = UDim2.new(0, 14, 0, 14),
@@ -112,13 +113,19 @@ CloseBtn.Position = UDim2.new(1, -28, 0, 0)
 CloseBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 50)
 CloseBtn.BackgroundTransparency = 1
 CloseBtn.BorderSizePixel = 0
-CloseBtn.Text = "×"
-CloseBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-CloseBtn.TextSize = 18
-CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Text = ""
 CloseBtn.Visible = false
 CloseBtn.ZIndex = 10
 CloseBtn.Parent = MainFrame
+
+-- Close button icon
+local CloseIcon = Icons.Image({
+    Icon = "x",
+    Size = UDim2.new(0, 16, 0, 16),
+    Color = Color3.fromRGB(0, 0, 0),
+})
+CloseIcon.IconFrame.Position = UDim2.new(0.5, -8, 0.5, -8)
+CloseIcon.IconFrame.Parent = CloseBtn
 
 local Content = Instance.new("Frame")
 Content.Size = UDim2.new(1, 0, 1, -28)
@@ -132,12 +139,14 @@ local logLines = {}
 local logY = 16
 local userChoice = nil
 local closed = false
+local animationComplete = false
 
 local function createLogLine(text, iconName, color, delay)
     local lineContainer = Instance.new("Frame")
     lineContainer.Size = UDim2.new(1, -24, 0, 18)
     lineContainer.Position = UDim2.new(0, 12, 0, logY)
     lineContainer.BackgroundTransparency = 1
+    lineContainer.Visible = false
     lineContainer.Parent = Content
     
     local icon = nil
@@ -164,42 +173,16 @@ local function createLogLine(text, iconName, color, delay)
     label.Parent = lineContainer
     
     logY = logY + 22
-    table.insert(logLines, {label = label, text = text, delay = delay, container = lineContainer})
+    table.insert(logLines, {label = label, text = text, delay = delay, container = lineContainer, icon = icon})
     return label
 end
-
--- Progress bar
-local BarBg = Instance.new("Frame")
-BarBg.Size = UDim2.new(1, -24, 0, 2)
-BarBg.Position = UDim2.new(0, 12, 1, -75)
-BarBg.BackgroundColor3 = Color3.fromRGB(0, 80, 20)
-BarBg.BackgroundTransparency = 1
-BarBg.BorderSizePixel = 0
-BarBg.Parent = Content
-
-local ProgressBar = Instance.new("Frame")
-ProgressBar.Size = UDim2.new(0, 0, 1, 0)
-ProgressBar.BackgroundColor3 = Color3.fromRGB(0, 255, 70)
-ProgressBar.BorderSizePixel = 0
-ProgressBar.Parent = BarBg
-
-local Percent = Instance.new("TextLabel")
-Percent.Size = UDim2.new(1, -24, 0, 18)
-Percent.Position = UDim2.new(0, 12, 1, -55)
-Percent.BackgroundTransparency = 1
-Percent.Text = ""
-Percent.TextColor3 = Color3.fromRGB(0, 180, 50)
-Percent.Font = Enum.Font.Code
-Percent.TextSize = 11
-Percent.TextXAlignment = Enum.TextXAlignment.Left
-Percent.TextTransparency = 1
-Percent.Parent = Content
 
 -- Buttons row
 local ButtonRow = Instance.new("Frame")
 ButtonRow.Size = UDim2.new(1, -24, 0, 35)
 ButtonRow.Position = UDim2.new(0, 12, 1, -35)
 ButtonRow.BackgroundTransparency = 1
+ButtonRow.Visible = false
 ButtonRow.Parent = Content
 
 -- Helper function to create button with icon
@@ -210,7 +193,7 @@ local function createButton(text, iconName, bgColor, textColor, hoverColor)
     btn.BackgroundTransparency = 1
     btn.BorderSizePixel = 0
     btn.Text = ""
-    btn.Visible = false
+    btn.Visible = true
     btn.Parent = ButtonRow
     
     local btnCorner = Instance.new("UICorner")
@@ -269,11 +252,16 @@ TertiaryBtn.Position = UDim2.new(0.33, 5, 0, 0)
 PrimaryBtn.Size = UDim2.new(0.34, 0, 1, 0)
 PrimaryBtn.Position = UDim2.new(0.66, 5, 0, 0)
 
+-- Initially hide buttons
+SecondaryBtn.Visible = false
+TertiaryBtn.Visible = false
+PrimaryBtn.Visible = false
+
 -- Cursor animation
 local Cursor = Instance.new("TextLabel")
 Cursor.Size = UDim2.new(0, 10, 0, 18)
 Cursor.BackgroundTransparency = 1
-Cursor.Text = "█"
+Cursor.Text = "_"
 Cursor.TextColor3 = Color3.fromRGB(0, 255, 70)
 Cursor.Font = Enum.Font.Code
 Cursor.TextSize = 13
@@ -282,9 +270,9 @@ Cursor.Parent = Content
 
 -- Create log entries with icons
 if not compatible then
-    createLogLine("initializing compatibility check...", "loader-circle", Color3.fromRGB(0, 255, 70), 0.8)
+    createLogLine("initializing compatibility check", "loader-circle", Color3.fromRGB(0, 255, 70), 0.8)
     createLogLine("game detected: " .. CONFIG.gameName, "gamepad-2", Color3.fromRGB(0, 200, 50), 1.2)
-    createLogLine("checking executor functions...", "search", Color3.fromRGB(0, 200, 50), 1.6)
+    createLogLine("checking executor functions", "search", Color3.fromRGB(0, 200, 50), 1.6)
     createLogLine("INCOMPATIBLE EXECUTOR DETECTED", "alert-triangle", Color3.fromRGB(255, 100, 50), 2.0)
     createLogLine("missing features:", "list", Color3.fromRGB(255, 200, 50), 2.4)
     
@@ -294,23 +282,23 @@ if not compatible then
     
     createLogLine("recommended: use a compatible executor", "thumbs-up", Color3.fromRGB(0, 200, 50), 3.0)
     createLogLine("website: " .. CONFIG.siteUrl, "globe", Color3.fromRGB(0, 150, 200), 3.4)
-    createLogLine("waiting for user input...", "clock", Color3.fromRGB(0, 200, 50), 3.8)
+    createLogLine("waiting for user input", "clock", Color3.fromRGB(0, 200, 50), 3.8)
 else
-    createLogLine("initializing AbyssUI...", "loader-circle", Color3.fromRGB(0, 255, 70), 0.8)
+    createLogLine("initializing AbyssUI", "loader-circle", Color3.fromRGB(0, 255, 70), 0.8)
     createLogLine("checking game ID: " .. GAME_ID, "hash", Color3.fromRGB(0, 200, 50), 1.2)
     createLogLine("game detected: " .. CONFIG.gameName, "gamepad-2", Color3.fromRGB(0, 255, 70), 1.6)
-    createLogLine("executor is compatible!", "check-circle", Color3.fromRGB(0, 255, 70), 2.0)
-    createLogLine("loading modules...", "package", Color3.fromRGB(0, 200, 50), 2.4)
-    createLogLine("fetching scripts...", "download", Color3.fromRGB(0, 200, 50), 2.8)
-    createLogLine("preparing environment...", "settings", Color3.fromRGB(0, 200, 50), 3.2)
-    createLogLine("ready. launching...", "rocket", Color3.fromRGB(0, 255, 70), 3.6)
+    createLogLine("executor is compatible", "check-circle", Color3.fromRGB(0, 255, 70), 2.0)
+    createLogLine("loading modules", "package", Color3.fromRGB(0, 200, 50), 2.4)
+    createLogLine("fetching scripts", "download", Color3.fromRGB(0, 200, 50), 2.8)
+    createLogLine("preparing environment", "settings", Color3.fromRGB(0, 200, 50), 3.2)
+    createLogLine("ready. launching", "rocket", Color3.fromRGB(0, 255, 70), 3.6)
 end
 
 -- Functions
 local function copyToClipboard(text)
     if hasSetClipboard then
         setclipboard(text)
-        -- Show toast with icon
+        
         local toast = Instance.new("Frame")
         toast.Size = UDim2.new(0, 120, 0, 24)
         toast.Position = UDim2.new(0.5, -60, 0.8, 0)
@@ -334,7 +322,7 @@ local function copyToClipboard(text)
         toastText.Size = UDim2.new(1, -28, 1, 0)
         toastText.Position = UDim2.new(0, 28, 0, 0)
         toastText.BackgroundTransparency = 1
-        toastText.Text = "Copied: " .. text
+        toastText.Text = "copied: " .. text
         toastText.TextColor3 = Color3.fromRGB(0, 255, 70)
         toastText.Font = Enum.Font.Code
         toastText.TextSize = 11
@@ -358,7 +346,7 @@ local function openDiscordInvite()
             Url = "http://127.0.0.1:" .. port .. "/rpc?v=1",
             Method = "POST",
             Headers = {
-                ["Content-Type"] = "application/json",
+                ["Content-Type"] = application/json",
                 ["Origin"] = "https://discord.com",
             },
             Body = body,
@@ -371,25 +359,41 @@ local function openDiscordInvite()
     return false
 end
 
+-- Entry animation
+local function animateEntry()
+    TweenService:Create(Background, TweenInfo.new(0.4), {BackgroundTransparency = 0.08}):Play()
+    TweenService:Create(MainFrame, TweenInfo.new(0.4), {BackgroundTransparency = 0}):Play()
+    TweenService:Create(Scale, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+    TweenService:Create(Border, TweenInfo.new(0.4), {Transparency = 0}):Play()
+    
+    task.delay(0.2, function()
+        TweenService:Create(TopBar, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(TopTitle, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
+        CloseBtn.Visible = true
+        TweenService:Create(CloseBtn, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
+    end)
+end
+
+-- Exit animation
 local function animateExit()
     for _, entry in ipairs(logLines) do
-        TweenService:Create(entry.label, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+        TweenService:Create(entry.label, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
         if entry.container then
-            TweenService:Create(entry.container, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+            TweenService:Create(entry.container, TweenInfo.new(0.15), {BackgroundTransparency = 1}):Play()
         end
     end
-    TweenService:Create(Percent, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
-    TweenService:Create(BarBg, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+    
     TweenService:Create(TopBar, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
     TweenService:Create(TopTitle, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
-    TweenService:Create(Border, TweenInfo.new(0.3), {Transparency = 1}):Play()
-    TweenService:Create(MainFrame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Background, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Cursor, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+    TweenService:Create(Border, TweenInfo.new(0.2), {Transparency = 1}):Play()
+    TweenService:Create(Scale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0.85}):Play()
+    TweenService:Create(MainFrame, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(Background, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(Cursor, TweenInfo.new(0.15), {TextTransparency = 1}):Play()
     
-    if SecondaryStroke then TweenService:Create(SecondaryStroke, TweenInfo.new(0.2), {Transparency = 1}):Play() end
-    if TertiaryStroke then TweenService:Create(TertiaryStroke, TweenInfo.new(0.2), {Transparency = 1}):Play() end
-    if PrimaryStroke then TweenService:Create(PrimaryStroke, TweenInfo.new(0.2), {Transparency = 1}):Play() end
+    if SecondaryStroke then TweenService:Create(SecondaryStroke, TweenInfo.new(0.15), {Transparency = 1}):Play() end
+    if TertiaryStroke then TweenService:Create(TertiaryStroke, TweenInfo.new(0.15), {Transparency = 1}):Play() end
+    if PrimaryStroke then TweenService:Create(PrimaryStroke, TweenInfo.new(0.15), {Transparency = 1}):Play() end
 end
 
 local function closeWarning(choice)
@@ -397,7 +401,7 @@ local function closeWarning(choice)
     closed = true
     userChoice = choice
     animateExit()
-    task.delay(0.6, function() ScreenGui:Destroy() end)
+    task.delay(0.5, function() ScreenGui:Destroy() end)
 end
 
 -- Button actions
@@ -440,27 +444,15 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 CloseBtn.MouseEnter:Connect(function()
-    TweenService:Create(CloseBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255, 50, 50)}):Play()
+    TweenService:Create(CloseIcon.IconFrame, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(255, 50, 50)}):Play()
 end)
 CloseBtn.MouseLeave:Connect(function()
-    TweenService:Create(CloseBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(0, 0, 0)}):Play()
+    TweenService:Create(CloseIcon.IconFrame, TweenInfo.new(0.15), {ImageColor3 = Color3.fromRGB(0, 0, 0)}):Play()
 end)
 CloseBtn.MouseButton1Click:Connect(function() closeWarning("close") end)
 
--- Animation sequence
-TweenService:Create(Background, TweenInfo.new(0.5), {BackgroundTransparency = 0.08}):Play()
-
-task.delay(0.3, function()
-    TweenService:Create(MainFrame, TweenInfo.new(0.4), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Border, TweenInfo.new(0.4), {Transparency = 0}):Play()
-end)
-
-task.delay(0.5, function()
-    TweenService:Create(TopBar, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(TopTitle, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
-    CloseBtn.Visible = true
-    TweenService:Create(CloseBtn, TweenInfo.new(0.3), {BackgroundTransparency = 0, TextTransparency = 0}):Play()
-end)
+-- Start entry animation
+animateEntry()
 
 -- Cursor blink animation
 task.spawn(function()
@@ -474,80 +466,70 @@ end)
 
 -- Typewriter animation for log lines
 task.spawn(function()
-    for _, entry in ipairs(logLines) do
-        task.wait(entry.delay - (logLines[1] and logLines[1].delay or 0))
+    for index, entry in ipairs(logLines) do
+        local prevDelay = index > 1 and logLines[index - 1].delay or 0
+        task.wait(entry.delay - prevDelay)
         if closed then break end
+        
+        -- Fade in the container
+        entry.container.Visible = true
+        TweenService:Create(entry.container, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+        
+        if entry.icon then
+            TweenService:Create(entry.icon.IconFrame, TweenInfo.new(0.2), {ImageTransparency = 0}):Play()
+        end
         
         local label = entry.label
         local fullText = entry.text
-        label.TextTransparency = 0
+        TweenService:Create(label, TweenInfo.new(0.1), {TextTransparency = 0}):Play()
         label.Text = ""
         
+        -- Typewriter effect
         for i = 1, #fullText do
             if closed then break end
             label.Text = string.sub(fullText, 1, i)
-            Cursor.Position = UDim2.new(0, 12 + label.TextBounds.X, 0, label.Position.Y.Offset)
+            if label.TextBounds then
+                Cursor.Position = UDim2.new(0, 12 + label.TextBounds.X, 0, label.Position.Y.Offset)
+            end
             task.wait(0.018)
         end
     end
     
     if closed then return end
     
-    -- Show buttons based on compatibility
+    animationComplete = true
+    
+    -- Show button row with animation
+    ButtonRow.Visible = true
+    ButtonRow.BackgroundTransparency = 1
+    TweenService:Create(ButtonRow, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
+    
     if not compatible then
-        task.wait(0.5)
+        task.wait(0.3)
         
+        -- Animate buttons appearing
         SecondaryBtn.Visible = true
-        TertiaryBtn.Visible = CONFIG.forceRunAnyway
-        PrimaryBtn.Visible = true
-        
-        TweenService:Create(SecondaryBtn, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-        TweenService:Create(SecondaryStroke, TweenInfo.new(0.3), {Transparency = 0}):Play()
+        TweenService:Create(SecondaryBtn, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(SecondaryStroke, TweenInfo.new(0.25), {Transparency = 0}):Play()
         
         if CONFIG.forceRunAnyway then
-            TweenService:Create(TertiaryBtn, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(TertiaryStroke, TweenInfo.new(0.3), {Transparency = 0}):Play()
+            task.wait(0.08)
+            TertiaryBtn.Visible = true
+            TweenService:Create(TertiaryBtn, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+            TweenService:Create(TertiaryStroke, TweenInfo.new(0.25), {Transparency = 0}):Play()
         end
         
-        TweenService:Create(PrimaryBtn, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-        TweenService:Create(PrimaryStroke, TweenInfo.new(0.3), {Transparency = 0}):Play()
+        task.wait(0.08)
+        PrimaryBtn.Visible = true
+        TweenService:Create(PrimaryBtn, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+        TweenService:Create(PrimaryStroke, TweenInfo.new(0.25), {Transparency = 0}):Play()
         
-        TweenService:Create(BarBg, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-        TweenService:Create(Percent, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
-        
-        local progress = 0
-        Percent.Text = "> waiting for user input... 0%"
-        
-        while progress < 100 and not closed and userChoice == nil do
-            progress = progress + 2
-            TweenService:Create(ProgressBar, TweenInfo.new(0.05), {
-                Size = UDim2.new(progress / 100, 0, 1, 0)
-            }):Play()
-            Percent.Text = "> waiting for user input... " .. progress .. "%"
-            task.wait(0.05)
-        end
-        
-        if not closed and userChoice == nil then
-            repeat task.wait() until closed or userChoice ~= nil
-        end
+        -- Wait for user choice
+        repeat task.wait() until closed or userChoice ~= nil
     else
-        task.wait(0.3)
-        TweenService:Create(BarBg, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-        TweenService:Create(Percent, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
-        
-        local progress = 0
-        while progress < 100 and not closed do
-            progress = progress + 20
-            TweenService:Create(ProgressBar, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-                Size = UDim2.new(progress / 100, 0, 1, 0)
-            }):Play()
-            Percent.Text = "> loading... " .. progress .. "%"
-            task.wait(0.35)
-        end
-        
+        -- Auto-close after animation for compatible executor
+        task.wait(1.5)
         if not closed then
-            Percent.Text = "> done. [" .. progress .. "%]"
-            task.wait(0.5)
             closeWarning("auto")
         end
     end
