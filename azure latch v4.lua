@@ -47,7 +47,7 @@ local Window = WindUI:CreateWindow({
 
     Watermark = {
         Enabled = true,
-        Text = "AbyssUI v4.0.1 — Azure Latch",
+        Text = "AbyssUI v4.0.2 — Azure Latch",
         Position = "bottom-right",
         Opacity = 0.45,
         Size = 13,
@@ -62,7 +62,7 @@ end, {
 })
 
 Window:Tag({
-    Title = "v4.0.1",
+    Title = "v4.0.2",
     Color = Color3.fromRGB(248, 155, 41),
     Icon = "github",
 })
@@ -141,67 +141,278 @@ local InfoTab     = Window:Tab({ Title = "Info",      Icon = "info",         Sho
 
 Window:SelectTab(HomeTab)
 
+
 HomeTab:Paragraph({
     Title = "Welcome to AbyssUI",
-    Desc  = "Join the Discord server in Info for updates / suggestions.",
-    Buttons = {
-        {
-            Title = "Discord",
-            Icon = "message-circle",
-            Callback = function()
-                setclipboard("https://discord.gg/qgK4zegPgb")
-                notify("Discord", "Invite copied!", 3)
-            end,
-        },
-    },
+    Desc = "Azure Latch\n\nThank you for using my script\nEnjoy your game!",
+    Color = Color3.fromRGB(255, 200, 100),
 })
 
 HomeTab:Divider({})
 
-local homeStats = HomeTab:Stats({
-    Title = "Session Info",
-    Desc  = "Live stats for your session.",
-    Items = {
-        { Key = "Script",   Value = "Azure Latch" },
-        { Key = "Version",  Value = "v4.0.1" },
-        { Key = "Author",   Value = "Tze" },
-        { Key = "Toggle",   Value = "L key" },
-    },
+HomeTab:Paragraph({
+    Title = "version",
+    Desc = [[
+    
+    Made by Tze
+    
+    Version 4.0.2
+    
+    Have fun!
+    ]],
+	Color = Color3.fromRGB(255, 200, 100),
 })
 
-HomeTab:Code({
-    Title = "Loader",
-    Code  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/loander1"))()"))()]],
-    OnCopy = function()
-        notify("Loader", "Copied loader to clipboard.", 3)
-    end,
-})
 
 InfoTab:Paragraph({
     Title = "Keybinds",
-    Desc  = "Show/Hide GUI: L\nZ=Auto-Dribble | X=Move1 | C=Move2\nV=Move3 | N=Move4 | M=Move5",
+    Desc = [[
+Show/Hide GUI: L
+Z = Auto-Dribble
+X = Counter Move 1
+C = Counter Move 2
+V = Counter Move 3
+N = Counter Move 4
+M = Counter Move 5
+F = No Rush CD
+Q + A = Side Dash Left
+Q + D = Side Dash Right
+Y = Auto Formless / GK T 
+F4 = Disable Movesets
+Hold LeftClick = Ball Magnet (M2 mode)
+Hold RightClick = Auto Activate
+]],
 })
 
 InfoTab:Divider({})
 
-local infoGroup = InfoTab:Group({})
-infoGroup:Button({
+local silentSection = InfoTab:Section({
+    Title = "Silent Features",
+    Icon = "eye-off",
+    Opened = true,
+    Box = true,
+    BoxBorder = true,
+})
+
+silentSection:Paragraph({
+    Title = "Silent / Semi-Silent",
+    Desc = [[
+- Ball Magnet: Auto grab ball from distance
+- Ball Magnet M2: Grab only when holding right click
+- Ball Magnet Hitbox: Visual feedback on ball
+- Ball Magnet Radius: Adjustable grab range
+- Auto Dribble: Automatic dribbling on Z key
+- Auto Counter: 5 different counter moves (X, C, V, N, M)
+- Auto Activate: Trigger moves when ball is near (Hold M2)
+- Line Ups: Visual pads and targets (Sae, Kaiser, Yukimiya, Rin)
+- Auto Position: Auto select CF or GK on respawn
+- Auto Goalkeeper: Celeron + Daffy versions
+- Air Dribble: Launch ball forward and up
+- Auto QTE: Automatic quick time events
+- Auto Formless: Shidou special macro (Y key)
+- No Cutscene: Skip all cutscenes
+- IFrame Indicator: See invincibility frames on players
+- Trap Helper: Auto move toward ball during trap animations
+]],
+})
+
+InfoTab:Divider({})
+
+local blatantSection = InfoTab:Section({
+    Title = "Blatant Features",
+    Icon = "zap",
+    Opened = true,
+    Box = true,
+    BoxBorder = true,
+})
+
+blatantSection:Paragraph({
+    Title = "Blatant / High Risk",
+    Desc = [[
+- Metavision V1 + V2: Isagi vision emulation
+- Auto Goal: Steal ball and score automatically
+- Always Ball: Zero gravity + always hold ball
+- No Rush CD: Remove rush cooldown (F key)
+- No Side Dash CD: Remove dash cooldown (Q + A/D)
+- Distance Move Buffs: Extend move distances for 30+ moves
+- Blatant Mode: Remove goal box collisions
+- No Stun: Move while stunned
+- Invisibility V1: Animation based
+- Invisibility V2: Clone based (Press Z to disable)
+- Goal Farming: Auto goal farmer with target counter
+- Break Ball: Various ball breaking methods
+- Steal Ball: Repeatedly attempt to steal ball
+- Bring Ball: Steal ball then teleport back
+- Get Flow: Spam kick to get flow (Req. ball)
+- GK t: Teleport to goal and press T (Y key)
+]],
+})
+
+InfoTab:Divider({})
+
+local movesetSection = InfoTab:Section({
+    Title = "Movesets",
+    Icon = "swords",
+    Opened = true,
+    Box = true,
+    BoxBorder = true,
+})
+
+movesetSection:Paragraph({
+    Title = "Celeron Movesets",
+    Desc = [[
+- Goku (Req. Isagi) - F4 to disable
+- Aizen (Req. Isagi) - F4 to disable
+- Loki V2 (Req. Isagi) - F4 to disable, rejoin to fix music
+]],
+})
+
+movesetSection:Divider({})
+
+movesetSection:Paragraph({
+    Title = "Daffy Movesets",
+    Desc = [[
+- Gojo (Req. Isagi) - F4 to disable
+- Hugo (Req. Kunigami) - F4 to disable
+- Naoya (Req. Sae) - F4 to disable
+- Lore Sae (Req. Sae) - Rejoin to disable
+]],
+})
+
+movesetSection:Divider({})
+
+movesetSection:Paragraph({
+    Title = "Tze Movesets",
+    Desc = [[
+- DIO (Req. Kunigami) - Greatest High, Time Skip, Za Warudo
+- Sonic.EXE (Req. Isagi) - Strike Shot, Exterminate, Shortcut
+- KJ (Req. Shidou) - Unlimited Flexworks, Handball, Dropkick
+- Messi (Req. Bachira) - Dribble, Trap Shot, Riptide, Intercept
+- Ronaldo V4 (Req. Shidou) - Enhanced Ronaldo moveset
+- Izayoi (Req. Kunigami or Shidou) - With cutscene and VFX
+]],
+})
+
+InfoTab:Divider({})
+
+local teleportSection = InfoTab:Section({
+    Title = "Teleport Locations",
+    Icon = "map-pin",
+    Opened = true,
+    Box = true,
+    BoxBorder = true,
+})
+
+teleportSection:Paragraph({
+    Title = "Available Teleports",
+    Desc = [[
+- Spawn Area: -283, 13, -1612
+- Middle Field: -540, 3, 1274
+- Reporter Area: -6, 2, 3237
+- Goal Box A: -537, 3, 1575
+- Goal Box B: -534, 3, 974
+]],
+})
+
+InfoTab:Divider({})
+
+local utilitySection = InfoTab:Section({
+    Title = "Utilities",
+    Icon = "wrench",
+    Opened = true,
+    Box = true,
+    BoxBorder = true,
+})
+
+utilitySection:Paragraph({
+    Title = "Extra Utilities",
+    Desc = [[
+- Semi-Private Server: Creates 11v11 farming server
+- Ping Display: Shows ping on screen (draggable)
+- Anti AFK: Prevents idle kick (W key every 50 sec)
+- Infinite Yield: Admin command hub
+- Upgrade UI: Better GUI visuals
+- Fix Duplicate Ball: Removes extra balls
+- Steal Screen Time: Take over camera (Press Z to disable)
+- Goalkeeper Anywhere: Allows GK side dashes anywhere
+- Spam Brick Sound: Blatant brick sound spam (5v5 + GK only)
+]],
+})
+
+InfoTab:Divider({})
+
+local supportSection = InfoTab:Section({
+    Title = "Support & Links",
+    Icon = "message-circle",
+    Opened = true,
+    Box = true,
+    BoxBorder = true,
+})
+
+local supportGroup = supportSection:Group({})
+
+supportGroup:Button({
     Title = "Copy Owner Discord",
-    Desc  = "Copies 'tze0638' to clipboard.",
-    Icon  = "copy",
+    Desc = "Copies 'tze0638' to clipboard",
+    Icon = "copy",
     Callback = function()
         setclipboard("tze0638")
         notify("Discord", "Copied username!", 3)
     end,
 })
-infoGroup:Button({
+
+supportGroup:Button({
     Title = "Copy Server Invite",
-    Desc  = "Copies the invite link.",
-    Icon  = "link",
+    Desc = "Join for updates and support",
+    Icon = "link",
     Callback = function()
         setclipboard("https://discord.gg/qgK4zegPgb")
         notify("Discord", "Copied invite!", 3)
     end,
+})
+
+supportGroup:Button({
+    Title = "Report Bug",
+    Desc = "Join my Discord server to report bugs",
+    Icon = "alert-triangle",
+    Callback = function()
+        setclipboard("https://discord.gg/qgK4zegPgb")
+        notify("Discord Server", "Join my server to report bugs! Invite copied.", 3)
+    end,
+})
+
+InfoTab:Divider({})
+
+local creditsSection = InfoTab:Section({
+    Title = "Credits",
+    Icon = "award",
+    Opened = false,
+    Box = true,
+    BoxBorder = true,
+})
+
+creditsSection:Paragraph({
+    Title = "Special Thanks",
+    Desc = [[
+Celeron - GK Enhanced & Movesets
+Daffy - Auto GK & Movesets
+WindUI - UI Library
+All beta testers and supporters
+
+Script: AbyssUI - Azure Latch
+Version: 4.0.1
+Author: Tze
+
+Made with love
+]],
+})
+
+InfoTab:Divider({})
+
+InfoTab:Paragraph({
+    Title = "Version Information",
+    Desc = "AbyssUI v4.0.2 - Azure Latch\nCompatible with latest Azure Latch update\nReport issues on Discord",
+    Color = Color3.fromRGB(100, 150, 255),
 })
 
 TeleportTab:Paragraph({
@@ -212,7 +423,7 @@ TeleportTab:Paragraph({
 TeleportTab:Divider({})
 
 local teleportLocations = {
-    { "Spawn Area",    CFrame.new(-269, 4, -1599) },
+    { "Spawn Area",    CFrame.new(-283, 13, -1612) },
     { "Middle Field",  CFrame.new(-540, 3, 1274)  },
     { "Reporter Area", CFrame.new(-6,   2, 3237)  },
     { "Goal Box (A)",  CFrame.new(-537, 3, 1575)  },
@@ -264,7 +475,7 @@ for _, v in ipairs(teleportLocations) do
     })
 end
 
--- Notification Suppression
+
 local suppressSection = SilentTab:Section({
     Title  = "Notification Suppression",
     Desc   = "Suppresses notifications — useful when streaming.",
@@ -285,7 +496,7 @@ suppressSection:Toggle({
     end,
 })
 
--- Ball Magnet
+
 local bmSection = SilentTab:Section({
     Title  = "Ball Magnet",
     Desc   = "Grab the ball from further away.",
@@ -1836,13 +2047,13 @@ local function startGKAdmin()
     end
     
     if not isGK then
-        WindUI:Notify({ Title = "GK Admin", Content = "You need to be GK!", Icon = "shield", Duration = 2 })
+        WindUI:Notify({ Title = "GK", Content = "You need to be GK!", Icon = "shield", Duration = 2 })
         return
     end
     
     local goalPos = getGoalPosition()
     if not goalPos then
-        WindUI:Notify({ Title = "GK Admin", Content = "Could not find goal!", Icon = "alert-triangle", Duration = 2 })
+        WindUI:Notify({ Title = "GK", Content = "Could not find goal!", Icon = "alert-triangle", Duration = 2 })
         return
     end
     
