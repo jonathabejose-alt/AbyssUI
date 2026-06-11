@@ -2082,7 +2082,6 @@ local function startGKAdmin()
     gkAdminState.originalCF = nil
 end
 
--- Toggle
 funSection:Toggle({
     Title = "GK (Y)",
     Desc = "Press Y: teleport to goal, instantly, return",
@@ -2792,7 +2791,7 @@ pingSection:Toggle({
             label.Text = "Ping: --"
             label.Parent = frame
 
-            -- Draggable
+
             local dragging, dragStart, startPos
             frame.InputBegan:Connect(function(inp)
                 if inp.UserInputType == Enum.UserInputType.MouseButton1 or inp.UserInputType == Enum.UserInputType.Touch then
@@ -2818,7 +2817,6 @@ pingSection:Toggle({
                 end
             end)
 
-            -- Ping loop
             task.spawn(function()
                 while pingState.enabled do
                     local ok, ping = pcall(function()
