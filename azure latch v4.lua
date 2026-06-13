@@ -2792,38 +2792,60 @@ funSection:Toggle({
 local demonState = { enabled = false, conn = nil }
 funSection:Toggle({
     Title = "Auto Break Server (Demon's Contract)",
-    Desc = "Auto resets when using Kunigami's Demon's Contract.",
+    Desc = "When Using Demon's Contract With Kunigami, It Will Automatically Reset.",
     Type = "Toggle",
     Value = false,
     Icon = "skull",
     Callback = function(v)
-        demonState.enabled = v
+        getgenv().AutoBreakServerEnabled = v
+
         notify("Auto Break Server", v and "Enabled." or "Disabled.", 3)
-        if demonState.conn then
-            demonState.conn:Disconnect()
-            demonState.conn = nil
+
+        if getgenv().AutoBreakServerConnection then
+            getgenv().AutoBreakServerConnection:Disconnect()
+            getgenv().AutoBreakServerConnection = nil
         end
-        if v then
-            local function onAnimPlayed(track)
+
+        getgenv().DemonContractActive = false
+
+        if not v then return end
+
+        local function hookCharacter(char)
+            local humanoid = char:WaitForChild("Humanoid")
+            local animator = humanoid:WaitForChild("Animator")
+
+            if getgenv().AutoBreakServerConnection then
+                getgenv().AutoBreakServerConnection:Disconnect()
+            end
+
+            getgenv().AutoBreakServerConnection = animator.AnimationPlayed:Connect(function(track)
+                if not getgenv().AutoBreakServerEnabled or getgenv().DemonContractActive then
+                    return
+                end
+
                 if track.Animation and track.Animation.AnimationId == "rbxassetid://91509980165830" then
+                    getgenv().DemonContractActive = true
+
                     task.delay(2, function()
-                        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-                            player.Character:FindFirstChildOfClass("Humanoid").Health = 0
+                        getgenv().DemonContractActive = false
+
+                        local charNow = Players.LocalPlayer.Character
+                        if getgenv().AutoBreakServerEnabled and charNow then
+                            local hum = charNow:FindFirstChildOfClass("Humanoid")
+                            if hum then
+                                hum.Health = 0
+                            end
                         end
                     end)
                 end
-            end
-            local function setupDemon(char)
-                local hum = char:WaitForChild("Humanoid", 5)
-                local animator = hum and hum:FindFirstChildOfClass("Animator")
-                if animator then
-                    if demonState.conn then demonState.conn:Disconnect() end
-                    demonState.conn = animator.AnimationPlayed:Connect(onAnimPlayed)
-                end
-            end
-            if player.Character then setupDemon(player.Character) end
-            player.CharacterAdded:Connect(setupDemon)
+            end)
         end
+
+        if Players.LocalPlayer.Character then
+            hookCharacter(Players.LocalPlayer.Character)
+        end
+
+        Players.LocalPlayer.CharacterAdded:Connect(hookCharacter)
     end,
 })
 
