@@ -129,7 +129,6 @@ local MovesetsTab = Window:Tab({ Title = "Movesets", Icon = "swords", ShowTabTit
 local TeleportTab = Window:Tab({ Title = "Teleports", Icon = "map-pin", ShowTabTitle = true, Border = true })
 local ExploitsTab = Window:Tab({ Title = "Exploits", Icon = "shield-alert", ShowTabTitle = true, Border = true })
 local OthersTab = Window:Tab({ Title = "Others", Icon = "star", ShowTabTitle = true, Border = true })
-local InfoTab = Window:Tab({ Title = "Info", Icon = "info", ShowTabTitle = true, Border = true })
 
 Window:SelectTab(HomeTab)
 
@@ -139,284 +138,7 @@ HomeTab:Paragraph({
     Color = Color3.fromRGB(255, 200, 100),
 })
 
-HomeTab:Divider({})
 
-InfoTab:Paragraph({
-    Title = "Keybinds",
-    Desc = [[
-Show/Hide GUI: RightAlt
-Z = Auto-Dribble
-X = Counter Move 1
-C = Counter Move 2
-V = Counter Move 3
-N = Counter Move 4
-M = Counter Move 5
-L = T Special
-F = No Rush CD
-Q + A = Side Dash Left
-Q + D = Side Dash Right
-Y = Auto Formless / GK T
-F4 = Disable Movesets
-Hold RightClick = Ball Magnet (M2 mode)
-Hold LeftClick = Auto Activate
-]],
-})
-
-InfoTab:Divider({})
-
-local silentSection = InfoTab:Section({
-    Title = "Silent Features",
-    Icon = "eye-off",
-    Opened = true,
-    Box = true,
-    BoxBorder = true,
-})
-
-silentSection:Paragraph({
-    Title = "Silent / Semi-Silent",
-    Desc = [[
-- Ball Magnet: Auto grab ball from distance
-- Ball Magnet M2: Grab only when holding right click
-- Ball Magnet Hitbox: Visual feedback on ball
-- Ball Magnet Radius: Adjustable grab range (1-25)
-- Auto Dribble: Automatic dribbling on Z key
-- Auto Counter: 5 different counter moves (X, C, V, N, M)
-- T Special: Auto trigger counter on L key
-- Closest Teammate: Counters target closest teammate (for pass moves)
-- Auto Activate: Trigger moves when ball is near (Hold M2)
-- Line Ups: Visual pads and targets (Sae, Kaiser, Yukimiya, Rin)
-- Auto Position: Auto select CF or GK on respawn
-- Auto Goalkeeper: Celeron + Daffy versions (V to toggle GK)
-- Air Dribble: Launch ball forward and up (custom keybind)
-- Auto QTE: Automatic quick time events
-- Auto Formless: Shidou special macro (Y key)
-- No Cutscene: Skip all cutscenes
-- IFrame Indicator: See invincibility frames on players (Green/Red)
-- Trap Helper: Auto move toward ball during trap animations
-- Mobile Support: Formless + Air Dribble buttons for mobile
-]],
-})
-
-InfoTab:Divider({})
-
-local blatantSection = InfoTab:Section({
-    Title = "Blatant Features",
-    Icon = "zap",
-    Opened = true,
-    Box = true,
-    BoxBorder = true,
-})
-
-blatantSection:Paragraph({
-    Title = "Blatant / High Risk",
-    Desc = [[
-- Metavision V1 + V2: Isagi vision emulation
-- Auto Goal: Steal ball and score automatically
-- Always Ball: Zero gravity + always hold ball
-- No Rush CD: Remove rush cooldown (F key)
-- No Side Dash CD: Remove dash cooldown (Q + A/D)
-- Distance Move Buffs: Extend move distances for 40+ moves
-  • Universal: Tackle, Rush, GK Dive
-  • Characters: Isagi, Shidou, Bachira, Kaiser, Rin, Gagamaru, Aiku, Yukimiya, Kunigami, Sae, Reo, Kurona, Don Lorenzo, Barou, Chigiri, Hiori, Karasu, Otoya, Nagi
-- Blatant Mode: Remove goal box collisions
-- No Stun: Move while stunned
-- Invisibility V1: Animation based
-- Invisibility V2: Clone based (Press Z to disable)
-- Goal Farming: Auto goal farmer with progress bar and target counter
-- Break Ball: Various ball breaking methods
-- Steal Ball: Repeatedly attempt to steal ball
-- Bring Ball: Steal ball then teleport back
-- Get Flow: Spam kick to get flow (Req. ball)
-- GK T (Y): Teleport to goal, press T 15 times, return
-- Auto Break Server: Demon's Contract auto reset
-]],
-})
-
-InfoTab:Divider({})
-
-local movesetSection = InfoTab:Section({
-    Title = "Movesets",
-    Icon = "swords",
-    Opened = true,
-    Box = true,
-    BoxBorder = true,
-})
-
-movesetSection:Paragraph({
-    Title = "Celeron Movesets",
-    Desc = [[
-- Goku (Req. Isagi) - F4 to disable
-- Aizen (Req. Isagi) - F4 to disable
-- Loki V2 (Req. Isagi) - F4 to disable, rejoin to fix music
-]],
-})
-
-movesetSection:Divider({})
-
-movesetSection:Paragraph({
-    Title = "Daffy Movesets",
-    Desc = [[
-- Gojo (Req. Isagi) - F4 to disable
-- Hugo (Req. Kunigami) - F4 to disable
-- Naoya (Req. Sae) - F4 to disable
-- Lore Sae (Req. Sae) - Rejoin to disable
-]],
-})
-
-movesetSection:Divider({})
-
-movesetSection:Paragraph({
-    Title = "Tze Movesets",
-    Desc = [[
-- DIO (Req. Kunigami) - Greatest High, Time Skip, Za Warudo
-- Sonic.EXE (Req. Isagi) - Strike Shot, Exterminate, Shortcut
-- KJ (Req. Shidou) - Unlimited Flexworks, Handball, Dropkick
-- Messi (Req. Bachira) - Dribble, Trap Shot, Riptide, Intercept
-- Ronaldo V4 (Req. Shidou) - Enhanced Ronaldo moveset
-- Izayoi (Req. Kunigami or Shidou) - With cutscene and VFX
-]],
-})
-
-movesetSection:Divider({})
-
-movesetSection:Paragraph({
-    Title = "Tze Movesets",
-    Desc = [[
-- DIO (Req. Kunigami) - Greatest High, Time Skip, Za Warudo
-- Sonic.EXE (Req. Isagi) - Strike Shot, Exterminate, Shortcut
-- KJ (Req. Shidou) - Unlimited Flexworks, Handball, Dropkick
-- Messi (Req. Bachira) - Dribble, Trap Shot, Riptide, Intercept
-- Ronaldo V4 (Req. Shidou) - Enhanced Ronaldo moveset
-- Izayoi (Req. Kunigami or Shidou) - With cutscene and VFX
-]],
-})
-
-InfoTab:Divider({})
-
-local teleportSection = InfoTab:Section({
-    Title = "Teleport Locations",
-    Icon = "map-pin",
-    Opened = true,
-    Box = true,
-    BoxBorder = true,
-})
-
-teleportSection:Paragraph({
-    Title = "Available Teleports",
-    Desc = [[
-- Spawn Area: -283, 13, -1612
-- Middle Field: -540, 3, 1274
-- Reporter Area: -6, 2, 3237
-- Goal Box A: -537, 3, 1575
-- Goal Box B: -534, 3, 974
-]],
-})
-
-InfoTab:Divider({})
-
-local utilitySection = InfoTab:Section({
-    Title = "Utilities",
-    Icon = "wrench",
-    Opened = true,
-    Box = true,
-    BoxBorder = true,
-})
-
-utilitySection:Paragraph({
-    Title = "Extra Utilities",
-    Desc = [[
-- Semi-Private Server: Creates 11v11 farming server
-- Ping Display: Shows ping on screen (draggable)
-- Anti AFK: Prevents idle kick (W key every 60 sec)
-- Infinite Yield: Admin command hub
-- Upgrade UI: Better GUI visuals
-- Fix Duplicate Ball: Removes extra balls
-- Steal Screen Time: Take over camera (Press Z to disable)
-- Goalkeeper Anywhere: Allows GK side dashes anywhere
-- Spam Brick Sound: Blatant brick sound spam (5v5 + GK only)
-]],
-})
-
-InfoTab:Divider({})
-
-local supportSection = InfoTab:Section({
-    Title = "Support & Links",
-    Icon = "message-circle",
-    Opened = true,
-    Box = true,
-    BoxBorder = true,
-})
-
-local supportGroup = supportSection:Group({})
-supportGroup:Button({
-    Title = "Copy Owner Discord",
-    Desc = "Copies 'tze0638' to clipboard",
-    Icon = "copy",
-    Callback = function()
-        setclipboard("tze0638")
-        notify("Discord", "Copied username!", 3)
-    end,
-})
-supportGroup:Button({
-    Title = "Copy Server Invite",
-    Desc = "Join for updates and support",
-    Icon = "link",
-    Callback = function()
-        setclipboard("https://discord.gg/qgK4zegPgb")
-        notify("Discord", "Copied invite!", 3)
-    end,
-})
-supportGroup:Button({
-    Title = "Report Bug",
-    Desc = "Join my Discord server to report bugs",
-    Icon = "alert-triangle",
-    Callback = function()
-        setclipboard("https://discord.gg/qgK4zegPgb")
-        notify("Discord Server", "Join my server to report bugs! Invite copied.", 3)
-    end,
-})
-
-InfoTab:Divider({})
-
-local creditsSection = InfoTab:Section({
-    Title = "Credits",
-    Icon = "award",
-    Opened = false,
-    Box = true,
-    BoxBorder = true,
-})
-
-creditsSection:Paragraph({
-    Title = "Special Thanks",
-    Desc = [[
-Celeron - GK Enhanced & Movesets
-Daffy - Auto GK & Movesets
-WindUI - UI Library
-All beta testers and supporters
-
-Script: AbyssUI - Azure Latch
-Version: 4.0.3
-Author: Tze
-
-Updates in v4.0.3:
-+ Added T Special (L key)
-+ Added Closest Teammate option
-+ Added Auto Break Server (Demon's Contract)
-+ Added Karasu, Otoya, Nagi moves
-+ Added GK T feature (Y key)
-+ Added Auto CF to Goal Farm
-+ Improved Auto Counter detection (AnimationPlayed)
-+ Added Trap Helper sliders
-]],
-})
-
-InfoTab:Divider({})
-
-InfoTab:Paragraph({
-    Title = "Version Information",
-    Desc = "AbyssUI v4.0.3 - Azure Latch\nCompatible with latest Azure Latch update\n\nNew in v4.0.3:\n• T Special (L key) for extra counter\n• Closest Teammate targeting\n• Auto Break Server (Demon's Contract)\n• Karasu, Otoya, Nagi movement buffs\n• GK T instant teleport (Y key)\n• Improved Auto Counter speed\n• Fixed Goal Farm Auto CF",
-    Color = Color3.fromRGB(100, 150, 255),
-})
 
 TeleportTab:Paragraph({
     Title = "Map Teleports",
@@ -766,7 +488,10 @@ local askState = {
     cooldowns = {},
 }
 
-local TACKLE_ANIM = "rbxassetid://109744655458082"
+local TACKLE_ANIM = {
+    "rbxassetid://109744655458082",
+    "rbxassetid://113088324958896"
+}
 local connections = {}
 
 local function notifySkill(title, text, dur)
@@ -807,33 +532,38 @@ end
 
 local function onCharacterAdded(plr)
     if plr == player then return end
-    local function onAnimPlayed(track)
-        if track.Animation and track.Animation.AnimationId == TACKLE_ANIM then
-            local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-            local targetHRP = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-            if root and targetHRP and (root.Position - targetHRP.Position).Magnitude <= 2500 then
-                local now = tick()
-                if now - (askState.cooldowns[plr] or 0) >= 0.5 then
-                    askState.cooldowns[plr] = now
-                    local closestTeammate = askState.useClosestTeammate and getClosestTeammate() or nil
-                    for _, tk in ipairs({ "toggleDetection", "toggleCounter1", "toggleCounter2", "toggleCounter3", "toggleCounter4", "toggleCounter5" }) do
-                        local sn = askState.autoSkills[tk]
-                        if askState[tk] and sn then
-                            fireSkill(sn, closestTeammate)
-                        end
-                    end
-                    if askState.toggleTSpecial then
-                        task.delay(0.05, function()
-                            local tsName = askState.autoSkills["toggleTSpecial"]
-                            if tsName then
-                                fireSkill(tsName, closestTeammate)
-                            end
-                        end)
-                    end
+ local function onAnimPlayed(track)
+    local isTackle = false
+    for _, animId in ipairs(TACKLE_ANIM) do
+        if track.Animation and track.Animation.AnimationId == animId then
+            isTackle = true
+            break
+        end
+    end
+    if not isTackle then return end
+    
+    local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    local targetHRP = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+    if root and targetHRP and (root.Position - targetHRP.Position).Magnitude <= 2500 then
+        local now = tick()
+        if now - (askState.cooldowns[plr] or 0) >= 0.5 then
+            askState.cooldowns[plr] = now
+            local closestTeammate = askState.useClosestTeammate and getClosestTeammate() or nil
+            for _, tk in ipairs({ "toggleDetection", "toggleCounter1", "toggleCounter2", "toggleCounter3", "toggleCounter4", "toggleCounter5" }) do
+                local sn = askState.autoSkills[tk]
+                if askState[tk] and sn then
+                    fireSkill(sn, closestTeammate)
                 end
+            end
+            if askState.toggleTSpecial then
+                task.delay(0.05, function()
+                    local tsName = askState.autoSkills["toggleTSpecial"]
+                    if tsName then fireSkill(tsName, closestTeammate) end
+                end)
             end
         end
     end
+end
     plr.CharacterAdded:Connect(function(char)
         local hum = char:WaitForChild("Humanoid", 5)
         local animator = hum and hum:FindFirstChildOfClass("Animator")
@@ -937,22 +667,39 @@ end
 
 local aaSection = SilentTab:Section({
     Title = "Auto Activate",
-    Desc = "Activates move when ball is within range. Hold M2 to trigger.",
+    Desc = "Activates move when ball is within range. M2 to trigger.",
     Icon = "crosshair",
     Opened = true,
     Box = true,
     BoxBorder = true,
 })
 
-local aaState = { distance = 10, toggleState = false, moveNumber = 1, db = true }
+local aaState = {
+    distance = 10,
+    toggleState = false,
+    moveNumber = 1,
+    db = true,
+    mode = "Hold"
+}
 
-aaSection:Stepper({
-    Title = "Auto Activate Move",
-    Desc = "Select move number (1–5).",
-    Value = { Min = 1, Max = 5, Default = 1 },
-    Step = 1,
-    Suffix = "",
-    Callback = function(v) aaState.moveNumber = math.floor(v) end,
+aaSection:Toggle({
+    Title = "Auto Activate",
+    Desc = "Toggles the feature on/off.",
+    Type = "Toggle",
+    Value = false,
+    Callback = function(v) aaState.toggleState = v end,
+})
+
+aaSection:Keybind({
+    Title = "Auto Activate Move Number",
+    Desc = "Example: 1, 2, 3, 4, 5.",
+    Placeholder = "1",
+    Callback = function(v)
+        local num = tonumber(v)
+        if num and num <= 5 and num > 0 then
+            aaState.moveNumber = num
+        end
+    end,
 })
 
 aaSection:Slider({
@@ -961,34 +708,114 @@ aaSection:Slider({
     Value = { Min = 3, Max = 70, Default = 10 },
     Step = 0.5,
     IsTextbox = true,
-    IsTooltip = true,
     Callback = function(v) aaState.distance = v end,
 })
 
-aaSection:Toggle({
-    Title = "Auto Activate (Hold M2)",
-    Desc = "Hold right-click to activate.",
-    Type = "Toggle",
-    Value = false,
-    Callback = function(v) aaState.toggleState = v end,
+aaSection:Dropdown({
+    Title = "Auto Activate Mode",
+    Desc = "Hold = hold M2 | Toggle = press M2 to toggle on/off",
+    Values = { "Hold", "Toggle" },
+    Value = "Hold",
+    Callback = function(v) aaState.mode = v end,
 })
+
+local function updateAutoActivateIndicator(active)
+    local gui = game.CoreGui:FindFirstChild("AutoActGui")
+    if not gui then
+        gui = Instance.new("ScreenGui")
+        gui.Name = "AutoActGui"
+        gui.ResetOnSpawn = false
+        gui.Parent = game.CoreGui
+        
+        local dot = Instance.new("Frame")
+        dot.Name = "IndicatorDot"
+        dot.Size = UDim2.new(0, 20, 0, 20)
+        dot.Position = UDim2.new(0, 20, 1, -40)
+        dot.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        dot.BorderSizePixel = 0
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(1, 0)
+        corner.Parent = dot
+        dot.Parent = gui
+        
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(0, 80, 0, 20)
+        label.Position = UDim2.new(0, 45, 1, -40)
+        label.BackgroundTransparency = 1
+        label.Text = "Auto Activate"
+        label.TextColor3 = Color3.fromRGB(0, 255, 0)
+        label.Font = Enum.Font.Gotham
+        label.TextSize = 12
+        label.Parent = gui
+    end
+    
+    local dot = gui:FindFirstChild("IndicatorDot")
+    local label = gui:FindFirstChild("TextLabel")
+    if active then
+        if dot then dot.BackgroundColor3 = Color3.fromRGB(0, 255, 0) end
+        if label then label.TextColor3 = Color3.fromRGB(0, 255, 0) end
+        gui.Enabled = true
+    else
+        if dot then dot.BackgroundColor3 = Color3.fromRGB(255, 0, 0) end
+        if label then label.TextColor3 = Color3.fromRGB(255, 0, 0) end
+    end
+end
 
 UserInputService.InputBegan:Connect(function(inp, bg)
     if bg then return end
-    if inp.UserInputType == Enum.UserInputType.MouseButton2 then aaState.db = false end
+    if inp.UserInputType == Enum.UserInputType.MouseButton2 then
+        if aaState.mode == "Hold" then
+            aaState.db = false
+            updateAutoActivateIndicator(true)
+        else
+            aaState.db = not aaState.db
+            updateAutoActivateIndicator(aaState.db)
+        end
+    end
 end)
+
 UserInputService.InputEnded:Connect(function(inp, bg)
     if bg then return end
-    if inp.UserInputType == Enum.UserInputType.MouseButton2 then aaState.db = true end
+    if inp.UserInputType == Enum.UserInputType.MouseButton2 then
+        if aaState.mode == "Hold" then
+            aaState.db = true
+            updateAutoActivateIndicator(false)
+        end
+    end
 end)
+
 RunService.RenderStepped:Connect(function()
-    if not aaState.toggleState then return end
+    if not aaState.toggleState then
+        if game.CoreGui:FindFirstChild("AutoActGui") then
+            game.CoreGui.AutoActGui.Enabled = false
+        end
+        return
+    end
+    
+    if aaState.mode == "Hold" and aaState.db then
+        if game.CoreGui:FindFirstChild("AutoActGui") then
+            game.CoreGui.AutoActGui.Enabled = false
+        end
+        return
+    end
+    
+    if aaState.mode == "Toggle" and not aaState.db then
+        if game.CoreGui:FindFirstChild("AutoActGui") then
+            game.CoreGui.AutoActGui.Enabled = false
+        end
+        return
+    end
+    
+    updateAutoActivateIndicator(true)
+    
     local char = player.Character
     local hrp = char and char:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
+    
     local ball = workspace.Terrain:FindFirstChild("Ball")
     if not ball then return end
-    if (hrp.Position - ball.Position).Magnitude <= aaState.distance and not aaState.db then
+    
+    if (hrp.Position - ball.Position).Magnitude <= aaState.distance then
         BNR:FireServer(buffer.fromstring(buffers["base"]), { { "skill" .. aaState.moveNumber } })
     end
 end)
@@ -1322,7 +1149,7 @@ gkSection:Button({
                 tackleArgs = { buffer.fromstring(buffers.base), { { "tackle" } } },
                 emptyBuffer = buffer.fromstring(buffers["grabball"]),
                 magnetBurstActive = false,
-                tackle_radius = 50,
+                tackle_radius = 35,
                 terrain = workspace.Terrain,
                 cachedBall = nil,
                 renderConn = nil,
@@ -1415,9 +1242,9 @@ gkSection:Button({
                         gk.magnetBurstActive = true
                         task.spawn(function()
                             local s = os.clock()
-                            while os.clock() - s < 0.86 and gk.enabled do
+                            while os.clock() - s < 0.897 and gk.enabled do
                                 gk.remote:FireServer(gk.emptyBuffer)
-                                task.wait(0.1)
+                                task.wait(0.125)
                             end
                             gk.magnetBurstActive = false
                         end)
@@ -1669,6 +1496,82 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
+
+getgenv().AutoStealState = getgenv().AutoStealState or { enabled = false, connections = {} }
+local stealState = getgenv().AutoStealState
+
+otherSilentSection:Toggle({
+    Title = "Auto Steal Ball",
+    Desc = "Automatically steals when opponent normal kicks (punishes air dribble attempts).",
+    Type = "Toggle",
+    Value = false,
+    Icon = "hand",
+    Callback = function(v)
+        stealState.enabled = v
+        
+        if not v then
+            for _, c in ipairs(stealState.connections) do
+                c:Disconnect()
+            end
+            table.clear(stealState.connections)
+            notify("Auto Steal", "Disabled.")
+            return
+        end
+        
+        notify("Auto Steal", "Enabled.")
+        
+        local function getHRP(char)
+            return char and char:FindFirstChild("HumanoidRootPart")
+        end
+        
+        local function stareAt(targetHRP)
+            local char = player.Character
+            local hrp = getHRP(char)
+            if not hrp or not targetHRP then return end
+            if (hrp.Position - targetHRP.Position).Magnitude > 20 then return end
+            
+            local start = tick()
+            local conn
+            conn = RunService.RenderStepped:Connect(function()
+                if not stealState.enabled or tick() - start > 0.5 then
+                    conn:Disconnect()
+                    return
+                end
+                local pos = hrp.Position
+                local tpos = targetHRP.Position
+                hrp.CFrame = CFrame.lookAt(pos, Vector3.new(tpos.X, pos.Y, tpos.Z))
+                BNR:FireServer(buffer.fromstring(buffers["base"]), { { "tackle" } })
+            end)
+        end
+        
+        local function hookCharacter(plr, char)
+            local hum = char:WaitForChild("Humanoid")
+            local animator = hum:WaitForChild("Animator")
+            local conn = animator.AnimationPlayed:Connect(function(track)
+                if not stealState.enabled then return end
+                if track.Animation and track.Animation.AnimationId == "rbxassetid://76587445975710" then
+                    stareAt(getHRP(char))
+                end
+            end)
+            table.insert(stealState.connections, conn)
+        end
+        
+        local function hookPlayer(plr)
+            if plr == player then return end
+            if plr.Character then
+                hookCharacter(plr, plr.Character)
+            end
+            table.insert(stealState.connections, plr.CharacterAdded:Connect(function(char)
+                hookCharacter(plr, char)
+            end))
+        end
+        
+        for _, p in ipairs(Players:GetPlayers()) do
+            hookPlayer(p)
+        end
+        table.insert(stealState.connections, Players.PlayerAdded:Connect(hookPlayer))
+    end,
+})
 
 otherSilentSection:Toggle({
     Title = "Auto QuickTimeEvent",
@@ -1978,6 +1881,127 @@ local function showAirMobile()
     btn.Activated:Connect(triggerAirMobile)
     makeDraggable(btn)
 end
+local mobileSimSection = SilentTab:Section({
+    Title = "Mobile Simulation",
+    Desc = "Create PC keyboard buttons on your mobile screen.",
+    Icon = "smartphone",
+    Opened = true,
+    Box = true,
+    BoxBorder = true,
+})
+
+getgenv().MobileKeySystem = getgenv().MobileKeySystem or {
+    key = "",
+    buttons = {}
+}
+
+local function normalizeKey(key)
+    if not key then return nil end
+    key = tostring(key):gsub("%s+", ""):lower()
+    local map = {
+        leftalt = "LeftAlt", rightalt = "RightAlt",
+        leftshift = "LeftShift", rightshift = "RightShift",
+        leftctrl = "LeftControl", rightctrl = "RightControl",
+        enter = "Return", space = "Space", backspace = "Backspace",
+        delete = "Delete", tab = "Tab", escape = "Escape",
+    }
+    if map[key] then return map[key] end
+    if #key == 1 and key:match("%a") then return key:upper() end
+    if key:match("^%d$") then return key end
+    return key:sub(1,1):upper() .. key:sub(2)
+end
+
+mobileSimSection:Input({
+    Title = "Key To Simulate",
+    Desc = "Enter key (C, Z, LeftAlt, etc.)",
+    Placeholder = "F",
+    Callback = function(v)
+        getgenv().MobileKeySystem.key = normalizeKey(v)
+        notify("Mobile Key", "Key set to: " .. getgenv().MobileKeySystem.key, 2)
+    end,
+})
+
+mobileSimSection:Button({
+    Title = "Create Mobile PC Key",
+    Desc = "Creates a draggable button on screen.",
+    Icon = "plus",
+    Callback = function()
+        local key = getgenv().MobileKeySystem.key
+        if not key then
+            notify("Mobile Key", "Please enter a key first!", 2)
+            return
+        end
+        
+        local sg = Instance.new("ScreenGui")
+        sg.Name = "MobileKey_" .. key
+        sg.ResetOnSpawn = false
+        sg.Parent = player:WaitForChild("PlayerGui")
+        
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(0, 80, 0, 80)
+        btn.Position = UDim2.new(0.5, math.random(-150, 150), 0.5, math.random(-150, 150))
+        btn.AnchorPoint = Vector2.new(0.5, 0.5)
+        btn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+        btn.BorderSizePixel = 0
+        btn.Text = key
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 18
+        btn.AutoButtonColor = true
+        btn.Parent = sg
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 12)
+        corner.Parent = btn
+        
+        local function makeDraggable(frame)
+            local dragging, dragStart, startPos
+            frame.InputBegan:Connect(function(inp)
+                if inp.UserInputType == Enum.UserInputType.MouseButton1 or inp.UserInputType == Enum.UserInputType.Touch then
+                    dragging = true
+                    dragStart = inp.Position
+                    startPos = frame.Position
+                    inp.Changed:Connect(function()
+                        if inp.UserInputState == Enum.UserInputState.End then
+                            dragging = false
+                        end
+                    end)
+                end
+            end)
+            UserInputService.InputChanged:Connect(function(inp)
+                if dragging and (inp.UserInputType == Enum.UserInputType.MouseMovement or inp.UserInputType == Enum.UserInputType.Touch) then
+                    local delta = inp.Position - dragStart
+                    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+                end
+            end)
+        end
+        
+        makeDraggable(btn)
+        
+        btn.Activated:Connect(function()
+            local vim = game:GetService("VirtualInputManager")
+            vim:SendKeyEvent(true, key, false, game)
+            task.wait()
+            vim:SendKeyEvent(false, key, false, game)
+        end)
+        
+        table.insert(getgenv().MobileKeySystem.buttons, sg)
+        notify("Mobile Key", "Created button for: " .. key, 2)
+    end,
+})
+
+mobileSimSection:Button({
+    Title = "Remove All Mobile Keys",
+    Desc = "Removes all created buttons.",
+    Icon = "trash",
+    Callback = function()
+        for _, v in ipairs(getgenv().MobileKeySystem.buttons) do
+            if v then v:Destroy() end
+        end
+        table.clear(getgenv().MobileKeySystem.buttons)
+        notify("Mobile Key", "All buttons removed.", 2)
+    end,
+})
 
 local mobileGroup = mobileSection:Group({})
 mobileGroup:Button({
