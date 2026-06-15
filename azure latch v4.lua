@@ -3391,6 +3391,18 @@ local function updateDashes(dt)
             table.remove(ActiveDashes, i)
             continue
         end
+
+        if dash.track and not dash.track.IsPlaying then
+            table.remove(ActiveDashes, i)
+            continue
+        end
+
+                local character = hrp.Parent
+        if character:FindFirstChild("Ball") then
+            table.remove(ActiveDashes, i)
+            continue
+        end
+
         local step = dash.cfg.isUnlimited and (dash.speed * dt) or math.min(dash.speed * dt, dash.remaining)
         local look = hrp.CFrame.LookVector
         local dir = Vector3.new(look.X, 0, look.Z)
@@ -3430,17 +3442,10 @@ local function startDash(hrp, cfg, track)
     if dist <= 0 then return end
     task.delay(cfg.wait or 0, function()
         if not hrp or not hrp.Parent then return end
-        local dash = { hrp = hrp, remaining = dist, cfg = cfg }
+        local dash = { hrp = hrp, remaining = dist, cfg = cfg, track = track }
         if cfg.isUnlimited then
             dash.remaining = math.huge
             dash.speed = cfg.speed
-            if track then
-                local sc
-                sc = track.Stopped:Connect(function()
-                    dash.remaining = 0
-                    if sc then sc:Disconnect() end
-                end)
-            end
         elseif cfg.speedVar then
             dash.speed = Distances[cfg.speedVar]
         else
