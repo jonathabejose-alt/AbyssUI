@@ -11,6 +11,7 @@ local GAMES = {
     [139609232261520] = {name = "Azure Latch", display = "Azure Latch (Legacy)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v4.lua"},
     [107756419246502] = {name = "Azure Latch", display = "Azure Latch (Modifiers)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v4.lua"},
     [85946466968831] = {name = "Azure Latch", display = "Azure Latch (11v11)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v4.lua"},
+    [82024535780807] = {name = "Azure Latch", display = "Azure Latch (6v6)", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/azure%20latch%20v4.lua"},
     [70845479499574] = {name = "Bite by Night", display = "Bite by Night", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/BBNN"},
     [94101948530988] = {name = "Uma Racing", display = "Uma Racing", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/umareacing.lua"},
     [9391468976] = {name = "Jujutsu Shenanigans", display = "Jujutsu Shenanigans", url = "https://raw.githubusercontent.com/jonathabejose-alt/AbyssUI/refs/heads/main/JJSS.lua"},
