@@ -138,8 +138,6 @@ HomeTab:Paragraph({
     Color = Color3.fromRGB(255, 200, 100),
 })
 
-
-
 TeleportTab:Paragraph({
     Title = "Map Teleports",
     Desc = "No prerequisites needed.",
@@ -3362,12 +3360,22 @@ local DashConfigs = {
     Kusarigama = { animId = "rbxassetid://84772583028665", sliderVar = "kusarDist", duration = 0.55, cooldown = 0.15, wait = 0 },
     ShadowStep = { animIds = { ["rbxassetid://133810381664491"] = true, ["rbxassetid://139230259021390"] = true }, sliderVar = "shadowDist", duration = 0.3, cooldown = 0.15, wait = 0 },
     ControlVar = { animId = "rbxassetid://77370115011368", sliderVar = "controlVarDist", duration = 0.3, cooldown = 0.15, wait = 0.1 },
+    TrapAnim1 = { animId = "rbxassetid://73387016994281", sliderVar = "trapDistBuff", speedVar = "trapSpeedBuff", isTrap = true, duration = 0.8, cooldown = 0.15, wait = 0.05 },
+    TrapAnim2 = { animId = "rbxassetid://101043441232233", sliderVar = "trapDistBuff", speedVar = "trapSpeedBuff", isTrap = true, duration = 0.8, cooldown = 0.15, wait = 0.05 },
+    TrapAnim3 = { animId = "rbxassetid://96593185131882", sliderVar = "trapDistBuff", speedVar = "trapSpeedBuff", isTrap = true, duration = 0.8, cooldown = 0.15, wait = 0.05 },
+    TrapAnim4 = { animId = "rbxassetid://116422938520670", sliderVar = "trapDistBuff", speedVar = "trapSpeedBuff", isTrap = true, duration = 0.8, cooldown = 0.15, wait = 0.05 },
+    TrapAnim5 = { animId = "rbxassetid://90734196141468", sliderVar = "trapDistBuff", speedVar = "trapSpeedBuff", isTrap = true, duration = 0.8, cooldown = 0.15, wait = 0.05 },
+    TrapAnim6 = { animId = "rbxassetid://85349589701503", sliderVar = "trapDistBuff", speedVar = "trapSpeedBuff", isTrap = true, duration = 0.8, cooldown = 0.15, wait = 0.05 },
+    TrapAnim7 = { animId = "rbxassetid://120351399679118", sliderVar = "trapDistBuff", speedVar = "trapSpeedBuff", isTrap = true, duration = 0.8, cooldown = 0.15, wait = 0.05 },
 }
 
 local Distances = {}
 for _, cfg in pairs(DashConfigs) do
     Distances[cfg.sliderVar] = 0
 end
+Distances.trapDistBuff = 0
+Distances.trapSpeedBuff = 100
+Distances.trapVertical = 0
 
 local ActiveDashes = {}
 local cachedHRP = nil
@@ -3391,8 +3399,15 @@ local function updateDashes(dt)
         else
             dir = dir.Unit
         end
+        
+        local newY = hrp.Position.Y
+        if dash.cfg.isTrap then
+            local vertScale = (Distances.trapVertical or 0) / 100
+            newY = newY + (vertScale * step)
+        end
+        
         local newPos = hrp.Position + dir * step
-        hrp.CFrame = CFrame.new(newPos.X, hrp.Position.Y, newPos.Z) * CFrame.new(ZERO, dir)
+        hrp.CFrame = CFrame.new(newPos.X, newY, newPos.Z) * CFrame.new(ZERO, dir)
         dash.remaining = dash.remaining - step
         if dash.remaining <= 0 then
             table.remove(ActiveDashes, i)
@@ -3426,6 +3441,8 @@ local function startDash(hrp, cfg, track)
                     if sc then sc:Disconnect() end
                 end)
             end
+        elseif cfg.speedVar then
+            dash.speed = Distances[cfg.speedVar]
         else
             dash.speed = dist / cfg.duration
         end
@@ -3504,6 +3521,11 @@ local charSliders = {
 for _, s in ipairs(charSliders) do
     characterTab:Slider({ Title = s.title, Step = 1, Value = { Min = 0, Max = s.max, Default = 0 }, IsTextbox = true, IsTooltip = true, Callback = function(v) Distances[s.var] = v end })
 end
+
+local trapTab = distMultiSection:Tab({ Title = "Trap", Icon = "move" })
+trapTab:Slider({ Title = "Trap Distance", Step = 1, Value = { Min = 0, Max = 500, Default = 0 }, IsTextbox = true, Callback = function(v) Distances.trapDistBuff = v end })
+trapTab:Slider({ Title = "Trap Speed", Step = 1, Value = { Min = 0, Max = 1000, Default = 100 }, IsTextbox = true, Callback = function(v) Distances.trapSpeedBuff = v end })
+trapTab:Slider({ Title = "Trap Vertical", Step = 1, Value = { Min = -100, Max = 100, Default = 0 }, IsTextbox = true, Callback = function(v) Distances.trapVertical = v end })
 
 local spsSection = ExploitsTab:Section({
     Title = "Semi-Private Server",
