@@ -23,6 +23,31 @@ local stopped = false
 local flowOnCD = false
 local buffers = {}
 
+if getgenv().MessiMovesetLoaded then
+    if getgenv().MessiNotifyGUI then
+        task.spawn(function()
+            local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+            noti.Parent = getgenv().MessiNotifyGUI.Frame
+            noti.Visible = true
+            noti.TextLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+            game.Debris:AddItem(noti, 5.282)
+            noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+            noti.TextLabel.TextStrokeTransparency = 1
+            noti.TextLabel.TextTransparency = 1
+            noti.TextLabel.Text = "Messi Moveset is already running!"
+            game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+            task.delay(5, function()
+                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+            end)
+        end)
+    end
+    return
+end
+getgenv().MessiMovesetLoaded = true
+
 loadstring(game:HttpGet("https://pastebin.com/raw/8XJh7dzh"))()
 repeat task.wait() until game.Lighting:FindFirstChild("BUFFERSTRINGS")
 for _, val in ipairs(game.Lighting:FindFirstChild("BUFFERSTRINGS"):GetChildren()) do
@@ -46,23 +71,130 @@ end
 local isFullExecutor, executorName = DetectExecutor()
 
 if not isFullExecutor then
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "Not Support Executor",
-        Text = string.format("%s detected. Use a better executor to run this script.", executorName),
-        Duration = 5,
-        Button1 = "Ok",
-        Icon = "rbxassetid://75337362546331"
-    })
+    if getgenv().MessiNotifyGUI then
+        task.spawn(function()
+            local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+            noti.Parent = getgenv().MessiNotifyGUI.Frame
+            noti.Visible = true
+            noti.TextLabel.TextColor3 = Color3.fromRGB(255, 132, 0)
+            game.Debris:AddItem(noti, 5.282)
+            noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+            noti.TextLabel.TextStrokeTransparency = 1
+            noti.TextLabel.TextTransparency = 1
+            noti.TextLabel.Text = string.format("%s detected. Use a better executor.", executorName)
+            game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+            task.delay(5, function()
+                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+            end)
+        end)
+    end
     print("Not support executor detected: " .. executorName)
 else
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "Full Support",
-        Text = string.format("%s detected. Fully supported!", executorName),
-        Duration = 3,
-        Button1 = "Ok",
-        Icon = "rbxassetid://75337362546331"
-    })
+    if getgenv().MessiNotifyGUI then
+        task.spawn(function()
+            local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+            noti.Parent = getgenv().MessiNotifyGUI.Frame
+            noti.Visible = true
+            noti.TextLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+            game.Debris:AddItem(noti, 3.282)
+            noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+            noti.TextLabel.TextStrokeTransparency = 1
+            noti.TextLabel.TextTransparency = 1
+            noti.TextLabel.Text = string.format("%s detected. Fully supported!", executorName)
+            game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+            task.delay(3, function()
+                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+            end)
+        end)
+    end
     print("Full executor detected: " .. executorName)
+end
+
+if not getgenv().MessiNotifyGUI then
+    getgenv().MessiNotifyGUI = game:GetService('Players').LocalPlayer.PlayerGui.Notification:Clone()
+    getgenv().MessiNotifyGUI.Name = string.gsub(tostring(math.random()), '0.', ''):sub(1, 1000) .. string.char(math.random(65, 90), math.random(97, 122), math.random(48, 57))
+    getgenv().MessiNotifyGUI.Parent = game.CoreGui
+end
+
+task.spawn(function()
+    local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+    noti.Parent = getgenv().MessiNotifyGUI.Frame
+    noti.Visible = true
+    noti.TextLabel.TextColor3 = Color3.fromRGB(0, 157, 255)
+    game.Debris:AddItem(noti, 7.282)
+    noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    noti.TextLabel.TextStrokeTransparency = 1
+    noti.TextLabel.TextTransparency = 1
+    noti.TextLabel.Text = "Messi Moveset Loaded!"
+    game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+    task.delay(7, function()
+        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+    end)
+end)
+
+task.wait(0.5)
+
+task.spawn(function()
+    local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+    noti.Parent = getgenv().MessiNotifyGUI.Frame
+    noti.Visible = true
+    noti.TextLabel.TextColor3 = Color3.fromRGB(0, 155, 255)
+    game.Debris:AddItem(noti, 7.282)
+    noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    noti.TextLabel.TextStrokeTransparency = 1
+    noti.TextLabel.TextTransparency = 1
+    noti.TextLabel.Text = "Made By tze"
+    game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+    task.delay(7, function()
+        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+    end)
+end)
+
+task.wait(1)
+task.spawn(function()
+    local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+    noti.Parent = getgenv().MessiNotifyGUI.Frame
+    noti.Visible = true
+    noti.TextLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+    game.Debris:AddItem(noti, 5.282)
+    noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    noti.TextLabel.TextStrokeTransparency = 1
+    noti.TextLabel.TextTransparency = 1
+    noti.TextLabel.Text = "You can now join a game!"
+    game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+    task.delay(5, function()
+        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+    end)
+end)
+
+local watermarkObj = nil
+if getgenv().MessiWatermarkName == nil or getgenv().MessiWatermarkName == '' then
+    getgenv().MessiWatermarkName = string.gsub(tostring(math.random()), '0.', ''):sub(1, 1000) .. string.char(math.random(65, 90), math.random(97, 122), math.random(48, 57))
+end
+if not game.CoreGui.RobloxGui:FindFirstChild(getgenv().MessiWatermarkName) then
+    watermarkObj = getgenv().MessiNotifyGUI.Frame.base.TextLabel:Clone()
+    watermarkObj.Text = ' Made By tze '
+    watermarkObj.Name = getgenv().MessiWatermarkName
+    watermarkObj.Position = UDim2.new(0, 0, -0.02, 0)
+    watermarkObj.TextStrokeTransparency = 1
+    watermarkObj.TextColor3 = Color3.fromRGB(0, 157, 255)
+    watermarkObj.TextTransparency = 0.59
+    watermarkObj.Parent = game.CoreGui.RobloxGui
 end
 
 local blockedSounds = {
@@ -533,6 +665,35 @@ plr.CharacterAdded:Connect(function(char)
     Setup(char)
 end)
 
+local function StopMoveset()
+    stopped = true
+    
+    if watermarkObj and watermarkObj.Parent then
+        watermarkObj:Destroy()
+    end
+    
+    task.spawn(function()
+        local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+        noti.Parent = getgenv().MessiNotifyGUI.Frame
+        noti.Visible = true
+        noti.TextLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+        game.Debris:AddItem(noti, 5.282)
+        noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        noti.TextLabel.TextStrokeTransparency = 1
+        noti.TextLabel.TextTransparency = 1
+        noti.TextLabel.Text = "Messi Moveset Stopped!"
+        game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+        task.delay(5, function()
+            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+        end)
+    end)
+    
+    print("stopped")
+end
+
 UserInputService.InputBegan:Connect(function(input, bg)
     if bg or stopped then return end
     if input.KeyCode == Enum.KeyCode.One then Dribble()
@@ -542,23 +703,8 @@ UserInputService.InputBegan:Connect(function(input, bg)
     elseif input.KeyCode == Enum.KeyCode.Five then NutmegSteal()
     elseif input.KeyCode == Enum.KeyCode.G then MessiFlow()
     elseif input.KeyCode == Enum.KeyCode.F4 then 
-        stopped = true
-        print("stopped")
+        StopMoveset()
     end
 end)
-
-game.StarterGui:SetCore("SendNotification", {
-    Title = "Moveset",
-    Text = "Messi Moveset loaded!",
-    Duration = 5,
-})
-
-task.wait(0.5)
-
-game.StarterGui:SetCore("SendNotification", {
-    Title = "Made By",
-    Text = "tze | daffy",
-    Duration = 5,
-})
 
 print("Messi Moveset loaded!")
