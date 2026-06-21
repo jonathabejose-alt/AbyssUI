@@ -143,6 +143,74 @@ local function BlockBaseAnimations(humanoid, ourAnimId)
     return animBlock
 end
 
+local function IsNearEnemyGoal()
+    local char = plr.Character
+    if not char then return false, nil end
+    
+    local root = char.HumanoidRootPart
+    local lookVector = root.CFrame.LookVector
+    local team = char.state.team.Value
+    local oppositeTeam = team == "A" and "B" or "A"
+    
+    local gkBarrier = workspace.map and workspace.map:FindFirstChild("gkbarriar")
+    if not gkBarrier then return false, nil end
+    
+    local barrierPart = gkBarrier:FindFirstChild(oppositeTeam == "A" and "Abarriar" or "Bbarriar")
+    if not barrierPart or not barrierPart:IsA("BasePart") then return false, nil end
+    
+    local distToBarrier = (root.Position - barrierPart.Position).Magnitude
+    if distToBarrier > 35 then return false, nil end
+    
+    local goal = workspace.map and workspace.map:FindFirstChild(oppositeTeam .. "goal")
+    if not goal then return false, nil end
+    
+    local directionToGoal = (goal.Position - root.Position).Unit
+    local dotProduct = lookVector:Dot(directionToGoal)
+    
+    if dotProduct > 0.7 then
+        return true, goal
+    end
+    
+    return false, nil
+end
+
+local function ExecuteShot(char, shootDelay)
+    local root = char.HumanoidRootPart
+    
+    task.delay(shootDelay, function()
+        if not char or not char:FindFirstChild("HumanoidRootPart") or not char:FindFirstChild("Ball") then return end
+        
+        local startPos = root.CFrame
+        local nearGoal, goal = IsNearEnemyGoal()
+        
+        if nearGoal and goal then
+            root.CFrame = goal.CFrame
+            
+            task.wait(0.185)
+            remote:FireServer(buffer.fromstring(buffers["base"]), {
+                {"kick", 100, false, vector.create(0, 0, -1)}
+            })
+        else
+            local lookVector = root.CFrame.LookVector
+            local rayParams = RaycastParams.new()
+            rayParams.FilterDescendantsInstances = {char, workspace.Effects}
+            rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+            local rayResult = workspace:Raycast(root.Position, lookVector * 1000, rayParams)
+            local tpPos = rayResult and rayResult.Position - lookVector * 2 or root.Position
+            
+            root.CFrame = CFrame.new(tpPos, tpPos + lookVector)
+            
+            task.wait(0.2)
+            remote:FireServer(buffer.fromstring(buffers["base"]), {
+                {"kick", 100, false, lookVector * 1e19}
+            })
+        end
+        
+        task.wait(0.028)
+        root.CFrame = startPos
+    end)
+end
+
 local function Dribble()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill1") then return end
@@ -157,40 +225,21 @@ local function Dribble()
     task.delay(4.25, function() animBlock:Disconnect() end)
 end
 
-local function TrapShot()
-    local char = plr.Character
-    if not char or Stunned() or not HasBall() or IsOnCD("skill2") then return end
-    CancelMove()
-    DoCD("skill2", 20)
-    local humanoid = char.Humanoid
-    local root = char.HumanoidRootPart
-    local animBlock = BlockBaseAnimations(humanoid, anims.InterceptShot.AnimationId)
-    PlaySFX(sounds.TrapShot, root)
-    pcall(function() messiVFX.messiShootVFX(char) end)
-    
-    humanoid:LoadAnimation(anims.InterceptShot):Play()
-    
-    task.delay(0.1, function() pcall(function() messiVFX.messiInterceptShot(char) end) end)
-    
-    task.delay(2.3, function() 
-        remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill3"}}) 
-    end)
-    
-    task.delay(2.9, function() animBlock:Disconnect() end)
-end
-
 local function Riptide()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill3") then return end
+    
     CancelMove()
-    DoCD("skill3", 20)
     local humanoid = char.Humanoid
     local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.Riptide.AnimationId)
     PlaySFX(sounds.Riptide, root)
     pcall(function() messiVFX.messiShootVFX(char) end)
     humanoid:LoadAnimation(anims.Riptide):Play()
-    task.delay(0.8, function() remote:FireServer(buffer.fromstring(buffers["base"]), {{"skill3"}}) end)
+    
+    ExecuteShot(char, 1)
+    DoCD("skill3", 22.4382)
+    
     task.delay(1.2, function() animBlock:Disconnect() end)
 end
 
@@ -257,6 +306,33 @@ local function Intercept()
     end
 end
 
+local function HeadsUpShot()
+    local char = plr.Character
+    if not char or Stunned() or not HasBall() or IsOnCD("skill4") then return end
+    
+    CancelMove()
+    local humanoid = char.Humanoid
+    local root = char.HumanoidRootPart
+    local animBlock = BlockBaseAnimations(humanoid, anims.InterceptShot.AnimationId)
+    PlaySFX(sounds.TrapShot, root)
+    pcall(function() messiVFX.messiShootVFX(char) end)
+    humanoid:LoadAnimation(anims.InterceptShot):Play()
+    pcall(function() messiVFX.messiInterceptShot(char) end)
+    
+    ExecuteShot(char, 2.3)
+    DoCD("skill4", 27.82)
+    
+    task.delay(2.9, function() animBlock:Disconnect() end)
+end
+
+local function Skill4()
+    if HasBall() then
+        HeadsUpShot()
+    else
+        Intercept()
+    end
+end
+
 local function NutmegSteal()
     local char = plr.Character
     if not char or Stunned() or IsOnCD("skill5") then return end
@@ -307,15 +383,24 @@ local function MessiFlow()
     flowOnCD = true
     
     task.wait(0.5)
-     
+    
+    local timer = rep.workspace.timer
+    local isOvertime = (timer.Value <= 0)
+    
     local songDuration = 60
-    pcall(function()
+    if isOvertime then
+        local song = Instance.new("Sound")
+        song.SoundId = "rbxassetid://83926637345099"
+        song.Parent = SoundService
+        song:Play()
+        songDuration = song.TimeLength > 0 and song.TimeLength or 90
+    else
         if sounds.Themes and sounds.Themes:FindFirstChild("Normal") then
             local song = sounds.Themes.Normal
             songDuration = song.TimeLength > 0 and song.TimeLength or 60
             soundUtil:play(song, SoundService)
         end
-    end)
+    end
     
     pcall(function() messiVFX.messiFlow(char) end)
     
@@ -329,7 +414,7 @@ end
 
 local function SuperPass()
     local char = plr.Character
-    if not char or Stunned() or not HasBall() then return end
+    if not char or Stunned() or not HasBall() or IsOnCD("skill2") then return end
     
     local root = char.HumanoidRootPart
     local humanoid = char.Humanoid
@@ -351,7 +436,13 @@ local function SuperPass()
         end
     end
     
-    if not closestTeammate then return end
+    if not closestTeammate then
+        CancelMove()
+        return
+    end
+    
+    CancelMove()
+    DoCD("skill2", 5)
     
     local targetRoot = closestTeammate.Character.HumanoidRootPart
     local distance = shortestDistance
@@ -392,27 +483,27 @@ local function Setup(char)
     local buttons = hotbar.Backpack.Hotbar
 
     buttons.skill1.Base.MouseButton1Down:Connect(Dribble)
-    buttons.skill2.Base.MouseButton1Down:Connect(TrapShot)
+    buttons.skill2.Base.MouseButton1Down:Connect(SuperPass)
     buttons.skill3.Base.MouseButton1Down:Connect(Riptide)
-    buttons.skill4.Base.MouseButton1Down:Connect(Intercept)
+    buttons.skill4.Base.MouseButton1Down:Connect(Skill4)
     buttons.skill5.Base.MouseButton1Down:Connect(NutmegSteal)
 
     buttons.skill1.Base.MouseButton1Click:Connect(Dribble)
-    buttons.skill2.Base.MouseButton1Click:Connect(TrapShot)
+    buttons.skill2.Base.MouseButton1Click:Connect(SuperPass)
     buttons.skill3.Base.MouseButton1Click:Connect(Riptide)
-    buttons.skill4.Base.MouseButton1Click:Connect(Intercept)
+    buttons.skill4.Base.MouseButton1Click:Connect(Skill4)
     buttons.skill5.Base.MouseButton1Click:Connect(NutmegSteal)
 
     buttons.skill1.Base.ToolName.Text = "Superstar"
-    buttons.skill2.Base.ToolName.Text = "Heads Up"
+    buttons.skill2.Base.ToolName.Text = "Super Pass"
     buttons.skill3.Base.ToolName.Text = "Riptide"
     buttons.skill4.Base.ToolName.Text = "Heads Up"
     buttons.skill5.Base.ToolName.Text = "Forced Nutmeg"
 
     buttons.skill1.Base.Reuse.Text = "Ball"
-    buttons.skill2.Base.Reuse.Text = "Shot"
-    buttons.skill3.Base.Reuse.Text = "Shot"
-    buttons.skill4.Base.Reuse.Text = "Off-ball"
+    buttons.skill2.Base.Reuse.Text = "Pass"
+    buttons.skill3.Base.Reuse.Text = ""
+    buttons.skill4.Base.Reuse.Text = ""
     buttons.skill5.Base.Reuse.Text = "Steal"
 
     for i = 1, 5 do 
@@ -420,15 +511,7 @@ local function Setup(char)
         buttons["skill"..i].Visible = true
     end
 
-    local tBtn = hotbar.Backpack.Hotbar:FindFirstChild("Tspecialer")
-    if tBtn and tBtn:FindFirstChild("Base") then
-        tBtn.Base.ToolName.Text = "Super Pass"
-        tBtn.Base.Reuse.Text = "Pass"
-        tBtn.Base.Reuse.Visible = true
-        tBtn.MouseButton1Click:Connect(SuperPass)
-    end
-
-    hotbar.MagicHealth.Awakening.Text = "I like to win."
+    hotbar.MagicHealth.Awakening.Text = "The Goat."
     hotbar.MagicHealth.TextLabel.Text = "Argentina's Best."
     hotbar.MagicHealth.Health.Frame.UIGradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 157, 255)),
@@ -441,24 +524,6 @@ local function Setup(char)
             MessiFlow()
         end
     end)
-
-    local stopBtn = Instance.new("TextButton")
-    stopBtn.Size = UDim2.new(0, 70, 0, 30)
-    stopBtn.Position = UDim2.new(1, -80, 0, 10)
-    stopBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-    stopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    stopBtn.TextScaled = true
-    stopBtn.Text = "STOP"
-    stopBtn.Parent = hotbar
-    stopBtn.ZIndex = 10
-
-    local function StopMoveset()
-        stopped = true
-        stopBtn.Visible = false
-        print("Moveset stopped")
-    end
-
-    stopBtn.MouseButton1Click:Connect(StopMoveset)
 end
 
 Setup(plr.Character)
@@ -471,11 +536,10 @@ end)
 UserInputService.InputBegan:Connect(function(input, bg)
     if bg or stopped then return end
     if input.KeyCode == Enum.KeyCode.One then Dribble()
-    elseif input.KeyCode == Enum.KeyCode.Two then TrapShot()
+    elseif input.KeyCode == Enum.KeyCode.Two then SuperPass()
     elseif input.KeyCode == Enum.KeyCode.Three then Riptide()
-    elseif input.KeyCode == Enum.KeyCode.Four then Intercept()
+    elseif input.KeyCode == Enum.KeyCode.Four then Skill4()
     elseif input.KeyCode == Enum.KeyCode.Five then NutmegSteal()
-    elseif input.KeyCode == Enum.KeyCode.T then SuperPass()
     elseif input.KeyCode == Enum.KeyCode.G then MessiFlow()
     elseif input.KeyCode == Enum.KeyCode.F4 then 
         stopped = true
