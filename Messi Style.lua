@@ -71,48 +71,22 @@ end
 local isFullExecutor, executorName = DetectExecutor()
 
 if not isFullExecutor then
-    if getgenv().MessiNotifyGUI then
-        task.spawn(function()
-            local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
-            noti.Parent = getgenv().MessiNotifyGUI.Frame
-            noti.Visible = true
-            noti.TextLabel.TextColor3 = Color3.fromRGB(255, 132, 0)
-            game.Debris:AddItem(noti, 5.282)
-            noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-            noti.TextLabel.TextStrokeTransparency = 1
-            noti.TextLabel.TextTransparency = 1
-            noti.TextLabel.Text = string.format("%s detected. Use a better executor.", executorName)
-            game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
-            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
-            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
-            task.delay(5, function()
-                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
-                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
-            end)
-        end)
-    end
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Not Support Executor",
+        Text = string.format("%s detected. Use a better executor to run this script.", executorName),
+        Duration = 5,
+        Button1 = "Ok",
+        Icon = "rbxassetid://75337362546331"
+    })
     print("Not support executor detected: " .. executorName)
 else
-    if getgenv().MessiNotifyGUI then
-        task.spawn(function()
-            local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
-            noti.Parent = getgenv().MessiNotifyGUI.Frame
-            noti.Visible = true
-            noti.TextLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
-            game.Debris:AddItem(noti, 3.282)
-            noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-            noti.TextLabel.TextStrokeTransparency = 1
-            noti.TextLabel.TextTransparency = 1
-            noti.TextLabel.Text = string.format("%s detected. Fully supported!", executorName)
-            game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
-            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
-            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
-            task.delay(3, function()
-                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
-                game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
-            end)
-        end)
-    end
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Full Support",
+        Text = string.format("%s detected. Fully supported!", executorName),
+        Duration = 3,
+        Button1 = "Ok",
+        Icon = "rbxassetid://75337362546331"
+    })
     print("Full executor detected: " .. executorName)
 end
 
