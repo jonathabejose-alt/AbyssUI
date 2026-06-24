@@ -260,7 +260,7 @@ local function ExecuteShot(char, shootDelay)
             {"kick", 100, false, root.CFrame.LookVector * 1e19}
         })
         
-        task.wait(0.028)
+        task.wait(0.001)
         root.CFrame = tu9821
     end)
 end
@@ -269,7 +269,7 @@ local function Dribble()
     local char = plr.Character
     if not char or Stunned() or not HasBall() or IsOnCD("skill1") then return end
     CancelMove()
-    DoCD("skill1", 9)
+    DoCD("skill1", 13)
     local humanoid = char.Humanoid
     local root = char.HumanoidRootPart
     local animBlock = BlockBaseAnimations(humanoid, anims.Dribble.AnimationId)
@@ -291,7 +291,7 @@ local function Riptide()
     pcall(function() messiVFX.messiShootVFX(char) end)
     humanoid:LoadAnimation(anims.Riptide):Play()
     
-    ExecuteShot(char, 1)
+    ExecuteShot(char, 1.1)
     DoCD("skill2", 8)
     
     task.delay(1.2, function() animBlock:Disconnect() end)
