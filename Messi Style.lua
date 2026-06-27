@@ -410,11 +410,6 @@ local function NutmegSteal()
     if not root then return end
     local humanoid = char.Humanoid
     if not humanoid then return end
-
-    local TELEPORT_DELAY = 0.08
-    local TACKLE_RETRIES = 5
-    local RETRY_DELAY = 0.08
-
     local closestEnemyWithBall = nil
     local shortestDistance = 35
     for _, p in ipairs(Players:GetPlayers()) do
@@ -441,13 +436,8 @@ local function NutmegSteal()
         local animBlock = humanoid.AnimationPlayed:Connect(function(track)
             if track.Animation.AnimationId == "rbxassetid://109744655458082" then track:Stop(0) end
         end)
-        for attempt = 1, TACKLE_RETRIES do
-            task.wait(RETRY_DELAY)
-            remote:FireServer(buffer.fromstring(buffers["base"]), {{"tackle"}})
-            task.wait(0.1)
-            if HasBall() then break end
-            if Stunned() then break end
-        end
+        task.wait(0.5)
+        remote:FireServer(buffer.fromstring(buffers["base"]), {{"tackle"}})
         task.wait(0.3)
         animBlock:Disconnect()
         if HasBall() then
@@ -482,13 +472,8 @@ local function NutmegSteal()
     local animBlock = humanoid.AnimationPlayed:Connect(function(track)
         if track.Animation.AnimationId == "rbxassetid://109744655458082" then track:Stop(0) end
     end)
-    for attempt = 1, TACKLE_RETRIES do
-        task.wait(RETRY_DELAY)
-        remote:FireServer(buffer.fromstring(buffers["base"]), {{"tackle"}})
-        task.wait(0.1)
-        if HasBall() then break end
-        if Stunned() then break end
-    end
+    task.wait(0.08)
+    remote:FireServer(buffer.fromstring(buffers["base"]), {{"tackle"}})
     task.wait(0.3)
     animBlock:Disconnect()
     if HasBall() then
