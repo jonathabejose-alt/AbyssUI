@@ -7,16 +7,30 @@ local CONFIG = {
     StartSound = "rbxassetid://118415112024805",
     LoopSound = "rbxassetid://127575451203432",
     StartDuration = 6.7,
-    LoopSoundInterval = 5.1,
-    Volume = 2.5
+    StartVolume = 2.5,
+    LoopVolume = 5
 }
+
+local loopSoundDuration = 7.050
 
 local emoteActive = false
 local cleanupObjects = {}
 local scriptActive = true 
+local currentSounds = {}
+local inputConnection
+local characterConnection
+local deathConnection
 
 local function cleanupEmote()
     emoteActive = false
+    
+    for _, sound in ipairs(currentSounds) do
+        pcall(function()
+            sound:Stop()
+            sound:Destroy()
+        end)
+    end
+    table.clear(currentSounds)
     
     for _, obj in ipairs(cleanupObjects) do
         pcall(function()
@@ -49,12 +63,12 @@ local function cleanupEmote()
 end
 
 local function destroyScript()
-    cleanupEmote()
     scriptActive = false
+    cleanupEmote()
     
-    if inputConnection then
-        inputConnection:Disconnect()
-        inputConnection = nil
+    if deathConnection then
+        deathConnection:Disconnect()
+        deathConnection = nil
     end
     
     if characterConnection then
@@ -62,18 +76,16 @@ local function destroyScript()
         characterConnection = nil
     end
     
-    if deathConnection then
-        deathConnection:Disconnect()
-        deathConnection = nil
+    if inputConnection then
+        inputConnection:Disconnect()
+        inputConnection = nil
     end
 
     script:Destroy()
 end
 
 local function stopEmote()
-    if emoteActive then
-        cleanupEmote()
-    end
+    cleanupEmote()
 end
 
 local function playLoopSound(character)
@@ -81,20 +93,39 @@ local function playLoopSound(character)
         return 
     end
     
-    local sound = Instance.new("Sound")
-    sound.SoundId = CONFIG.LoopSound
-    sound.Volume = CONFIG.Volume
-    sound.Parent = character
-    sound:Play()
+    local function createAndPlay()
+        if not emoteActive or not character:IsDescendantOf(workspace) then return end
+        
+        local sound = Instance.new("Sound")
+        sound.SoundId = CONFIG.LoopSound
+        sound.Volume = CONFIG.LoopVolume
+        sound.Parent = character
+        sound:Play()
+        
+        table.insert(currentSounds, sound)
+        
+        local nextThread = task.delay(loopSoundDuration - 0.05, function()
+            if emoteActive then
+                createAndPlay()
+            end
+        end)
+        table.insert(cleanupObjects, nextThread)
+        
+        local cleanupThread = task.delay(loopSoundDuration + 0.1, function()
+            for i, s in ipairs(currentSounds) do
+                if s == sound then
+                    table.remove(currentSounds, i)
+                    break
+                end
+            end
+            if sound and sound.Parent then
+                sound:Destroy()
+            end
+        end)
+        table.insert(cleanupObjects, cleanupThread)
+    end
     
-    table.insert(cleanupObjects, sound)
-    
-    local nextLoopThread = task.delay(CONFIG.LoopSoundInterval, function()
-        if emoteActive then
-            playLoopSound(character)
-        end
-    end)
-    table.insert(cleanupObjects, nextLoopThread)
+    createAndPlay()
 end
 
 local function playEmote()
@@ -121,7 +152,7 @@ local function playEmote()
     
     local startSound = Instance.new("Sound")
     startSound.SoundId = CONFIG.StartSound
-    startSound.Volume = CONFIG.Volume
+    startSound.Volume = CONFIG.StartVolume
     startSound.Parent = char
     startSound:Play()
     table.insert(cleanupObjects, startSound)
@@ -148,23 +179,16 @@ local function playEmote()
     table.insert(cleanupObjects, transitionThread)
 end
 
-local inputConnection
-local characterConnection
-local deathConnection
-
 inputConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not scriptActive then return end
     
     if input.KeyCode == Enum.KeyCode.X then
         stopEmote()
-        return
-    end
-    
-    if input.KeyCode == Enum.KeyCode.C and not gameProcessed then
-        playEmote()
-        return
-    end
-    if input.KeyCode == Enum.KeyCode.F4 then
+    elseif input.KeyCode == Enum.KeyCode.C then
+        if not gameProcessed then
+            playEmote()
+        end
+    elseif input.KeyCode == Enum.KeyCode.F4 then
         destroyScript()
     end
 end)
