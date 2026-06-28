@@ -1,7 +1,5 @@
 local plr = game.Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
-local SoundService = game:GetService("SoundService")
-local Debris = game:GetService("Debris")
 
 local CONFIG = {
     StartAnimation = "rbxassetid://74358763366120",
@@ -14,137 +12,178 @@ local CONFIG = {
 }
 
 local emoteActive = false
-local cleanupTasks = {}
+local cleanupObjects = {}
+local scriptActive = true 
 
-local function cleanup()
-    for _, task in ipairs(cleanupTasks) do
+local function cleanupEmote()
+    emoteActive = false
+    
+    for _, obj in ipairs(cleanupObjects) do
         pcall(function()
-            if typeof(task) == "thread" then
-                task:cancel()
-            elseif typeof(task) == "RBXScriptConnection" then
-                task:Disconnect()
-            elseif typeof(task) == "Instance" then
-                task:Destroy()
+            if typeof(obj) == "thread" then
+                task.cancel(obj)
+            elseif typeof(obj) == "RBXScriptConnection" then
+                obj:Disconnect()
+            elseif typeof(obj) == "Instance" then
+                if obj:IsA("Sound") or obj:IsA("AnimationTrack") then
+                    obj:Stop()
+                end
+                obj:Destroy()
             end
         end)
     end
-    cleanupTasks = {}
-    emoteActive = false
-end
+    
+    table.clear(cleanupObjects)
 
-local function safeCleanup(instance)
-    if instance and instance.Parent then
-        pcall(function() 
-            instance:Stop()
-            instance:Destroy()
-        end)
+    local char = plr.Character
+    if char then
+        local humanoid = char:FindFirstChild("Humanoid")
+        if humanoid then
+            for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+                pcall(function()
+                    track:Stop(0)
+                end)
+            end
+        end
     end
 end
 
-local function StopEmote()
-    cleanup()
+local function destroyScript()
+    cleanupEmote()
+    scriptActive = false
+    
+    if inputConnection then
+        inputConnection:Disconnect()
+        inputConnection = nil
+    end
+    
+    if characterConnection then
+        characterConnection:Disconnect()
+        characterConnection = nil
+    end
+    
+    if deathConnection then
+        deathConnection:Disconnect()
+        deathConnection = nil
+    end
+
+    script:Destroy()
 end
 
-local function PlayLoopSound(character)
-    if not emoteActive or not character or not character.Parent then return end
-    
-    local soundLoop = Instance.new("Sound")
-    soundLoop.SoundId = CONFIG.LoopSound
-    soundLoop.Parent = character
-    soundLoop.Volume = CONFIG.Volume
-    soundLoop:Play()
-    
-    table.insert(cleanupTasks, soundLoop)
-    
-    task.delay(CONFIG.LoopSoundInterval, function()
-        safeCleanup(soundLoop)
-    end)
-    
+local function stopEmote()
     if emoteActive then
-        local delayThread = task.delay(CONFIG.LoopSoundInterval, function()
-            PlayLoopSound(character)
-        end)
-        table.insert(cleanupTasks, delayThread)
+        cleanupEmote()
     end
 end
 
-local function PlayEmote()
+local function playLoopSound(character)
+    if not emoteActive or not character or not character:IsDescendantOf(workspace) then 
+        return 
+    end
+    
+    local sound = Instance.new("Sound")
+    sound.SoundId = CONFIG.LoopSound
+    sound.Volume = CONFIG.Volume
+    sound.Parent = character
+    sound:Play()
+    
+    table.insert(cleanupObjects, sound)
+    
+    local nextLoopThread = task.delay(CONFIG.LoopSoundInterval, function()
+        if emoteActive then
+            playLoopSound(character)
+        end
+    end)
+    table.insert(cleanupObjects, nextLoopThread)
+end
+
+local function playEmote()
+    if not scriptActive then return end
+    
     local char = plr.Character
     if not char then return end
     
     local humanoid = char:FindFirstChild("Humanoid")
     if not humanoid then return end
     
-    StopEmote()
+    cleanupEmote()
     emoteActive = true
+
+    local startAnim = Instance.new("Animation")
+    startAnim.AnimationId = CONFIG.StartAnimation
+    local startTrack = humanoid:LoadAnimation(startAnim)
     
-    for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
-        pcall(function() track:Stop() end)
+    if startTrack then
+        startTrack:Play()
+        table.insert(cleanupObjects, startTrack)
     end
+    startAnim:Destroy()
     
-    local animStart = Instance.new("Animation")
-    animStart.AnimationId = CONFIG.StartAnimation
-    local animTrackStart = humanoid:LoadAnimation(animStart)
-    if animTrackStart then
-        animTrackStart:Play()
-        table.insert(cleanupTasks, animTrackStart)
-    end
-    animStart:Destroy()
-    
-    local soundStart = Instance.new("Sound")
-    soundStart.SoundId = CONFIG.StartSound
-    soundStart.Parent = char
-    soundStart.Volume = CONFIG.Volume
-    soundStart:Play()
-    table.insert(cleanupTasks, soundStart)
-    
-    local soundCleanupThread = task.delay(CONFIG.StartDuration + 0.5, function()
-        safeCleanup(soundStart)
-    end)
-    table.insert(cleanupTasks, soundCleanupThread)
+    local startSound = Instance.new("Sound")
+    startSound.SoundId = CONFIG.StartSound
+    startSound.Volume = CONFIG.Volume
+    startSound.Parent = char
+    startSound:Play()
+    table.insert(cleanupObjects, startSound)
     
     local transitionThread = task.delay(CONFIG.StartDuration, function()
         if not emoteActive then return end
         
-        if animTrackStart then
-            pcall(function() animTrackStart:Stop() end)
+        if startTrack then
+            startTrack:Stop(0)
         end
         
-        local animLoop = Instance.new("Animation")
-        animLoop.AnimationId = CONFIG.LoopAnimation
-        local animTrackLoop = humanoid:LoadAnimation(animLoop)
-        if animTrackLoop then
-            animTrackLoop:Play()
-            table.insert(cleanupTasks, animTrackLoop)
-        end
-        animLoop:Destroy()
+        local loopAnim = Instance.new("Animation")
+        loopAnim.AnimationId = CONFIG.LoopAnimation
+        local loopTrack = humanoid:LoadAnimation(loopAnim)
         
-        PlayLoopSound(char)
+        if loopTrack then
+            loopTrack:Play()
+            table.insert(cleanupObjects, loopTrack)
+        end
+        loopAnim:Destroy()
+        
+        playLoopSound(char)
     end)
-    table.insert(cleanupTasks, transitionThread)
+    table.insert(cleanupObjects, transitionThread)
 end
 
-local inputConn = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
+local inputConnection
+local characterConnection
+local deathConnection
+
+inputConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not scriptActive then return end
     
-    if input.KeyCode == Enum.KeyCode.C then
-        PlayEmote()
-    elseif input.KeyCode == Enum.KeyCode.X then
-        StopEmote()
-    elseif input.KeyCode == Enum.KeyCode.F4 then
-        StopEmote()
-        inputConn:Disconnect()
-        charConn:Disconnect()
+    if input.KeyCode == Enum.KeyCode.X then
+        stopEmote()
+        return
+    end
+    
+    if input.KeyCode == Enum.KeyCode.C and not gameProcessed then
+        playEmote()
+        return
+    end
+    if input.KeyCode == Enum.KeyCode.F4 then
+        destroyScript()
     end
 end)
 
-local charConn = plr.CharacterAdded:Connect(function(character)
-    StopEmote()
+characterConnection = plr.CharacterAdded:Connect(function(character)
+    if not scriptActive then return end
+    
+    stopEmote()
     
     local humanoid = character:WaitForChild("Humanoid")
     if humanoid then
-        humanoid.Died:Connect(function()
-            StopEmote()
+        if deathConnection then
+            deathConnection:Disconnect()
+        end
+        
+        deathConnection = humanoid.Died:Connect(function()
+            if scriptActive then
+                stopEmote()
+            end
         end)
     end
 end)
