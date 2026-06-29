@@ -20,6 +20,10 @@ local sounds = messiFolder.Sounds
 local stopped = false
 local flowOnCD = false
 local buffers = {}
+local overtimeActive = false
+local overtimeSoundPlayed = false
+local overtimeSound = nil
+local timerConnection = nil
 
 loadstring(game:HttpGet("https://pastebin.com/raw/8XJh7dzh"))()
 repeat task.wait() until game.Lighting:FindFirstChild("BUFFERSTRINGS")
@@ -29,15 +33,22 @@ end
 game.Lighting:FindFirstChild("BUFFERSTRINGS"):Destroy()
 
 local function DetectExecutor()
-    local hasDebug = debug and (debug.getupvalue and debug.setupvalue)
-    local hasHook = hookmetamethod
-    if hasDebug and hasHook then
-        local execName = identifyexecutor and identifyexecutor() or "Executor"
-        return true, execName
-    else
-        local execName = identifyexecutor and identifyexecutor() or "Unknown Executor"
-        return false, execName
+    local hasRequire = pcall(function() return require ~= nil end)
+    local hasHook = hookmetamethod ~= nil
+    local hasFenv = (getfenv ~= nil and setfenv ~= nil)
+    
+    local execName = "Unknown"
+    if identifyexecutor then
+        local success, name = pcall(identifyexecutor)
+        if success and name then execName = name end
+    elseif syn and syn.name then
+        execName = syn.name
+    elseif getexecutorname then
+        execName = getexecutorname()
     end
+    
+    local isFull = hasRequire and hasHook and hasFenv
+    return isFull, execName
 end
 
 local isFullExecutor, executorName = DetectExecutor()
@@ -45,7 +56,7 @@ local isFullExecutor, executorName = DetectExecutor()
 if not isFullExecutor then
     game.StarterGui:SetCore("SendNotification", {
         Title = "Not Support Executor",
-        Text = string.format("%s detected. Use a better executor to run this script.", executorName),
+        Text = string.format("%s detected. Use a better executor.", executorName),
         Duration = 5,
         Button1 = "Ok",
         Icon = "rbxassetid://75337362546331"
@@ -56,7 +67,7 @@ else
         Text = string.format("%s detected. Fully supported!", executorName),
         Duration = 3,
         Button1 = "Ok",
-        Icon = "rbxassetid://75337362546331"
+        Icon = "rbxassetid://130521044774541"
     })
 end
 
@@ -495,6 +506,68 @@ local function NutmegSteal()
     end
 end
 
+local function PlayOvertimeSound()
+    if overtimeSoundPlayed then return end
+    if overtimeSound and overtimeSound.IsPlaying then return end
+    
+    overtimeSoundPlayed = true
+    overtimeSound = Instance.new("Sound")
+    overtimeSound.SoundId = "rbxassetid://83926637345099"
+    overtimeSound.Name = "MessiOvertime"
+    overtimeSound.Parent = SoundService
+    overtimeSound.Volume = 2
+    overtimeSound:Play()
+    print("🎵 OVERTIME SONIDO ACTIVADO!")
+    
+    task.delay(120, function()
+        if overtimeSound then
+            overtimeSound:Stop()
+            overtimeSound:Destroy()
+            overtimeSound = nil
+        end
+        overtimeSoundPlayed = false
+    end)
+end
+
+local function StopOvertimeSound()
+    if overtimeSound then
+        overtimeSound:Stop()
+        overtimeSound:Destroy()
+        overtimeSound = nil
+    end
+    overtimeSoundPlayed = false
+end
+
+local function SetupOvertimeDetector()
+    local timer = rep.workspace.timer
+    local lastValue = timer.Value
+    
+    if timerConnection then
+        timerConnection:Disconnect()
+        timerConnection = nil
+    end
+    
+    timerConnection = timer:GetPropertyChangedSignal("Value"):Connect(function()
+        local currentValue = timer.Value
+        
+        if lastValue <= 0 and currentValue > 0 then
+            print("🔄 Timer reiniciado de 0 a " .. currentValue .. " - OVERTIME!")
+            PlayOvertimeSound()
+        end
+        
+        if currentValue <= 0 and lastValue > 0 then
+            print("⏱️ Timer llegó a 0")
+        end
+        
+        lastValue = currentValue
+    end)
+    
+    if timer.Value <= 0 then
+        print("⏱️ Timer ya está en 0 - OVERTIME ACTIVO!")
+        PlayOvertimeSound()
+    end
+end
+
 local function MessiFlow()
     local char = plr.Character
     if not char or Stunned() then return end
@@ -502,15 +575,14 @@ local function MessiFlow()
     if flowOnCD then return end
     flowOnCD = true
     task.wait(0.5)
+    
     local timer = rep.workspace.timer
     local isOvertime = (timer.Value <= 0)
     local songDuration = 60
+    
     if isOvertime then
-        local song = Instance.new("Sound")
-        song.SoundId = "rbxassetid://83926637345099"
-        song.Parent = SoundService
-        song:Play()
-        songDuration = song.TimeLength > 0 and song.TimeLength or 90
+        PlayOvertimeSound()
+        songDuration = 90
     else
         if sounds.Themes and sounds.Themes:FindFirstChild("Normal") then
             local song = sounds.Themes.Normal
@@ -518,12 +590,19 @@ local function MessiFlow()
             soundUtil:play(song, SoundService)
         end
     end
+    
     pcall(function() messiVFX.messiFlow(char) end)
+    
     if anims:FindFirstChild("Flow") then
         for _, track in pairs(char.Humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
         char.Humanoid:LoadAnimation(anims.Flow):Play()
     end
-    task.delay(songDuration, function() flowOnCD = false end)
+    
+    SetupOvertimeDetector()
+    
+    task.delay(songDuration + 10, function() 
+        flowOnCD = false 
+    end)
 end
 
 local function Setup(char)
@@ -574,6 +653,12 @@ end
 Setup(plr.Character)
 plr.CharacterAdded:Connect(function(char)
     flowOnCD = false
+    overtimeSoundPlayed = false
+    StopOvertimeSound()
+    if timerConnection then
+        timerConnection:Disconnect()
+        timerConnection = nil
+    end
     task.wait(1)
     Setup(char)
 end)
@@ -582,6 +667,11 @@ local function StopMoveset()
     stopped = true
     if watermarkObj and watermarkObj.Parent then
         watermarkObj:Destroy()
+    end
+    StopOvertimeSound()
+    if timerConnection then
+        timerConnection:Disconnect()
+        timerConnection = nil
     end
     task.spawn(function()
         local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
