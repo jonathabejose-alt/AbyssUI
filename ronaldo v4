@@ -162,9 +162,6 @@ local function StartCooldownUI(slotNumber, duration)
     end)
 end
 
--- ======================
--- AWAKENING - RONALDO
--- ======================
 local function RonaldoAwk()
     local char = plr.Character
     if not char or ronaldoAwkOnCD then return end
@@ -175,7 +172,6 @@ local function RonaldoAwk()
     local humanoid = char.Humanoid
     local savedStyle = plr:GetAttribute("style")
 
-    -- Stun
     char.state.stun.Value = true
 
     plr:SetAttribute("style", "ronaldo")
@@ -215,9 +211,6 @@ local function RonaldoAwk()
     end)
 end
 
--- ======================
--- UI LOOP
--- ======================
 task.spawn(function()
     while true do
         if disabled then break end
@@ -258,9 +251,8 @@ task.spawn(function()
         task.wait(0.1)
     end
 end)
--- ======================
--- INPUT
--- ======================
+
+
 UserInputService.InputBegan:Connect(function(input, bg)
     if bg then return end
     if disabled then return end
@@ -537,9 +529,6 @@ UserInputService.InputBegan:Connect(function(input, bg)
     end
 end)
 
--- ======================
--- BOOT
--- ======================
 local function load(char)
     if initialized then return end
     initialized = true
