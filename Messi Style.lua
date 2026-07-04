@@ -20,7 +20,6 @@ local sounds = messiFolder.Sounds
 local stopped = false
 local flowOnCD = false
 local buffers = {}
-local overtimeActive = false
 local overtimeSoundPlayed = false
 local overtimeSound = nil
 local timerConnection = nil
@@ -36,17 +35,12 @@ local function DetectExecutor()
     local hasRequire = pcall(function() return require ~= nil end)
     local hasHook = hookmetamethod ~= nil
     local hasFenv = (getfenv ~= nil and setfenv ~= nil)
-    
     local execName = "Unknown"
     if identifyexecutor then
         local success, name = pcall(identifyexecutor)
         if success and name then execName = name end
-    elseif syn and syn.name then
-        execName = syn.name
-    elseif getexecutorname then
-        execName = getexecutorname()
-    end
-    
+    elseif syn and syn.name then execName = syn.name
+    elseif getexecutorname then execName = getexecutorname() end
     local isFull = hasRequire and hasHook and hasFenv
     return isFull, execName
 end
@@ -72,7 +66,7 @@ else
 end
 
 if not getgenv().MessiNotifyGUI then
-    getgenv().MessiNotifyGUI = game:GetService('Players').LocalPlayer.PlayerGui.Notification:Clone()
+    getgenv().MessiNotifyGUI = plr.PlayerGui.Notification:Clone()
     getgenv().MessiNotifyGUI.Name = string.gsub(tostring(math.random()), '0.', ''):sub(1, 1000) .. string.char(math.random(65, 90), math.random(97, 122), math.random(48, 57))
     getgenv().MessiNotifyGUI.Parent = game.CoreGui
 end
@@ -87,12 +81,12 @@ task.spawn(function()
     noti.TextLabel.TextStrokeTransparency = 1
     noti.TextLabel.TextTransparency = 1
     noti.TextLabel.Text = "Messi Moveset Loaded!"
-    game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
-    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
-    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+    TweenService:Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
     task.delay(7, function()
-        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
-        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
     end)
 end)
 
@@ -107,12 +101,12 @@ task.spawn(function()
     noti.TextLabel.TextStrokeTransparency = 1
     noti.TextLabel.TextTransparency = 1
     noti.TextLabel.Text = "Made By tze"
-    game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
-    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
-    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+    TweenService:Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
     task.delay(7, function()
-        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
-        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
     end)
 end)
 
@@ -127,12 +121,12 @@ task.spawn(function()
     noti.TextLabel.TextStrokeTransparency = 1
     noti.TextLabel.TextTransparency = 1
     noti.TextLabel.Text = "You can now join a game!"
-    game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
-    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
-    game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+    TweenService:Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
     task.delay(5, function()
-        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
-        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
     end)
 end)
 
@@ -141,6 +135,17 @@ if getgenv().MessiWatermarkName == nil or getgenv().MessiWatermarkName == '' the
     getgenv().MessiWatermarkName = string.gsub(tostring(math.random()), '0.', ''):sub(1, 1000) .. string.char(math.random(65, 90), math.random(97, 122), math.random(48, 57))
 end
 if not game.CoreGui.RobloxGui:FindFirstChild(getgenv().MessiWatermarkName) then
+    setclipboard('https://discord.gg/Zu4PnN9Wxw')
+
+    local discordText = getgenv().MessiNotifyGUI.Frame.base.TextLabel:Clone()
+    discordText.Text = ' discord.gg/Zu4PnN9Wxw '
+    discordText.Name = getgenv().MessiWatermarkName .. '2'
+    discordText.Position = UDim2.new(0.05, 0, 0.142, 0)
+    discordText.Size = discordText.Size - UDim2.new(0.1, 0, 0.1, 0)
+    discordText.TextStrokeTransparency = 1
+    discordText.TextColor3 = Color3.fromRGB(155, 0, 100)
+    discordText.TextTransparency = 0.59
+
     watermarkObj = getgenv().MessiNotifyGUI.Frame.base.TextLabel:Clone()
     watermarkObj.Text = ' Made By tze '
     watermarkObj.Name = getgenv().MessiWatermarkName
@@ -149,6 +154,8 @@ if not game.CoreGui.RobloxGui:FindFirstChild(getgenv().MessiWatermarkName) then
     watermarkObj.TextColor3 = Color3.fromRGB(0, 157, 255)
     watermarkObj.TextTransparency = 0.59
     watermarkObj.Parent = game.CoreGui.RobloxGui
+    
+    discordText.Parent = watermarkObj
 end
 
 local blockedSounds = {
@@ -509,7 +516,6 @@ end
 local function PlayOvertimeSound()
     if overtimeSoundPlayed then return end
     if overtimeSound and overtimeSound.IsPlaying then return end
-    
     overtimeSoundPlayed = true
     overtimeSound = Instance.new("Sound")
     overtimeSound.SoundId = "rbxassetid://83926637345099"
@@ -517,8 +523,6 @@ local function PlayOvertimeSound()
     overtimeSound.Parent = SoundService
     overtimeSound.Volume = 2
     overtimeSound:Play()
-    print("🎵 OVERTIME SONIDO ACTIVADO!")
-    
     task.delay(120, function()
         if overtimeSound then
             overtimeSound:Stop()
@@ -541,29 +545,18 @@ end
 local function SetupOvertimeDetector()
     local timer = rep.workspace.timer
     local lastValue = timer.Value
-    
     if timerConnection then
         timerConnection:Disconnect()
         timerConnection = nil
     end
-    
     timerConnection = timer:GetPropertyChangedSignal("Value"):Connect(function()
         local currentValue = timer.Value
-        
         if lastValue <= 0 and currentValue > 0 then
-            print("🔄 Timer reiniciado de 0 a " .. currentValue .. " - OVERTIME!")
             PlayOvertimeSound()
         end
-        
-        if currentValue <= 0 and lastValue > 0 then
-            print("⏱️ Timer llegó a 0")
-        end
-        
         lastValue = currentValue
     end)
-    
     if timer.Value <= 0 then
-        print("⏱️ Timer ya está en 0 - OVERTIME ACTIVO!")
         PlayOvertimeSound()
     end
 end
@@ -575,14 +568,12 @@ local function MessiFlow()
     if flowOnCD then return end
     flowOnCD = true
     task.wait(0.5)
-    
     local timer = rep.workspace.timer
     local isOvertime = (timer.Value <= 0)
     local songDuration = 60
-    
     if isOvertime then
         PlayOvertimeSound()
-        songDuration = 90
+        songDuration = 60
     else
         if sounds.Themes and sounds.Themes:FindFirstChild("Normal") then
             local song = sounds.Themes.Normal
@@ -590,19 +581,13 @@ local function MessiFlow()
             soundUtil:play(song, SoundService)
         end
     end
-    
     pcall(function() messiVFX.messiFlow(char) end)
-    
     if anims:FindFirstChild("Flow") then
         for _, track in pairs(char.Humanoid:GetPlayingAnimationTracks()) do track:Stop(0) end
         char.Humanoid:LoadAnimation(anims.Flow):Play()
     end
-    
     SetupOvertimeDetector()
-    
-    task.delay(songDuration + 10, function() 
-        flowOnCD = false 
-    end)
+    task.delay(songDuration + 10, function() flowOnCD = false end)
 end
 
 local function Setup(char)
@@ -665,9 +650,7 @@ end)
 
 local function StopMoveset()
     stopped = true
-    if watermarkObj and watermarkObj.Parent then
-        watermarkObj:Destroy()
-    end
+    if watermarkObj and watermarkObj.Parent then watermarkObj:Destroy() end
     StopOvertimeSound()
     if timerConnection then
         timerConnection:Disconnect()
@@ -683,12 +666,12 @@ local function StopMoveset()
         noti.TextLabel.TextStrokeTransparency = 1
         noti.TextLabel.TextTransparency = 1
         noti.TextLabel.Text = "Messi Moveset Stopped!"
-        game:GetService('TweenService'):Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
-        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
-        game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+        TweenService:Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
         task.delay(5, function()
-            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
-            game:GetService('TweenService'):Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+            TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+            TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
         end)
     end)
 end
@@ -703,9 +686,7 @@ UserInputService.InputBegan:Connect(function(input, bg)
     elseif input.KeyCode == Enum.KeyCode.G then MessiFlow()
     elseif input.KeyCode == Enum.KeyCode.F4 then StopMoveset()
     elseif input.KeyCode == Enum.KeyCode.F5 then
-        if watermarkObj and watermarkObj.Parent then
-            watermarkObj:Destroy()
-        end
+        if watermarkObj and watermarkObj.Parent then watermarkObj:Destroy() end
     end
 end)
 
