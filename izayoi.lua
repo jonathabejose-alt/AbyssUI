@@ -362,7 +362,7 @@ local function PowerfulStriker()
 
     TeleportShot(char, 1.1)
 
-    task.delay(1.9, function()
+    task.delay(1.7, function()
         animTrack:Stop()
         animBlock:Disconnect()
     end)
@@ -484,7 +484,7 @@ local function Afterimage()
         end)
     end
 
-    task.delay(4, function()
+    task.delay(3.9, function()
         pcall(function()
             animTrack:Stop()
             animBlock:Disconnect()
@@ -505,12 +505,6 @@ local function IzayoiFlow()
 
     Stun(10.65, true)
     TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 15}):Play()
-
-    pcall(function()
-        if izayoiVFX and izayoiVFX.izayoiAfterimageWalk then
-            izayoiVFX.izayoiAfterimageWalk(char)
-        end
-    end)
 
     pcall(function()
         require(rep.util.animationUtil):loadAnimation(char, anims.ultawk):Play()
