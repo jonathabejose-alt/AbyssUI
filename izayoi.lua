@@ -503,20 +503,8 @@ local function IzayoiFlow()
 
     local humanoid = char.Humanoid
 
-    Stun(10.65, true)
-    TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 15}):Play()
-
-    pcall(function()
-        require(rep.util.animationUtil):loadAnimation(char, anims.ultawk):Play()
-    end)
-
-    pcall(function()
-        require(rep.client.replication).izayoiAwk(char)
-    end)
-
-    task.delay(10.65, function()
-        TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 0}):Play()
-
+    -- Reproducir música en segundo plano (no bloquea)
+    task.spawn(function()
         if sounds:FindFirstChild("sakuya theme") then
             local sakuyaTheme = sounds["sakuya theme"]:Clone()
             sakuyaTheme.Parent = char.HumanoidRootPart
@@ -530,7 +518,21 @@ local function IzayoiFlow()
                 )
             end)
         end
+    end)
 
+    Stun(10.65, true)
+    TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 15}):Play()
+
+    pcall(function()
+        require(rep.util.animationUtil):loadAnimation(char, anims.ultawk):Play()
+    end)
+
+    pcall(function()
+        require(rep.client.replication).izayoiAwk(char)
+    end)
+
+    task.delay(10.65, function()
+        TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 0}):Play()
         task.delay(30, function()
             flowOnCD = false
         end)
