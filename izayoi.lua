@@ -503,7 +503,6 @@ local function IzayoiFlow()
 
     local humanoid = char.Humanoid
 
-    -- Reproducir música en segundo plano (no bloquea)
     task.spawn(function()
         if sounds:FindFirstChild("sakuya theme") then
             local sakuyaTheme = sounds["sakuya theme"]:Clone()
