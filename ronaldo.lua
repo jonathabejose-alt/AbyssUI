@@ -1,11 +1,3 @@
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Credits",
-    Text = "brought to you by celeron and tze!",
-    Duration = 5,
-    Button1 = "OK",
-})
-
 workspace.map.gkbarriar.Abarriar.CanCollide = false
 workspace.map.gkbarriar.Bbarriar.CanCollide = false
 workspace.map.Agoal.CanCollide = false
@@ -26,15 +18,17 @@ game:GetService("ReplicatedStorage").Resources.shidou.AwkOvertime.BGM.SoundId = 
 
 local plr = game.Players.LocalPlayer
 local rep = game:GetService("ReplicatedStorage")
+local remote = rep:WaitForChild("ByteNetReliable")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local Debris = game:GetService("Debris")
 local initialized = false
-local fahh = false
 local disabled = false
 local lastAccelerate = 0
 local accelerateCooldown = 7.5
 local ronaldoAwkOnCD = false
+local cooldowns = {}
 
 local skillNames = {
     [1] = "CR7 Dribble",
@@ -42,6 +36,110 @@ local skillNames = {
     [3] = "Flawless Pass",
     [4] = "Reaction Dash"
 }
+
+if not getgenv().MessiNotifyGUI then
+    getgenv().MessiNotifyGUI = plr.PlayerGui.Notification:Clone()
+    getgenv().MessiNotifyGUI.Name = string.gsub(tostring(math.random()), '0.', ''):sub(1, 1000) .. string.char(math.random(65, 90), math.random(97, 122), math.random(48, 57))
+    getgenv().MessiNotifyGUI.Parent = game.CoreGui
+end
+
+task.spawn(function()
+    local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+    noti.Parent = getgenv().MessiNotifyGUI.Frame
+    noti.Visible = true
+    noti.TextLabel.TextColor3 = Color3.fromRGB(0, 157, 255)
+    game.Debris:AddItem(noti, 7.282)
+    noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    noti.TextLabel.TextStrokeTransparency = 1
+    noti.TextLabel.TextTransparency = 1
+    noti.TextLabel.Text = "Ronaldo Moveset Loaded!"
+    TweenService:Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+    task.delay(7, function()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+    end)
+end)
+
+task.wait(0.5)
+task.spawn(function()
+    local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+    noti.Parent = getgenv().MessiNotifyGUI.Frame
+    noti.Visible = true
+    noti.TextLabel.TextColor3 = Color3.fromRGB(0, 155, 255)
+    game.Debris:AddItem(noti, 7.282)
+    noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    noti.TextLabel.TextStrokeTransparency = 1
+    noti.TextLabel.TextTransparency = 1
+    noti.TextLabel.Text = "Made By tze and celeron"
+    TweenService:Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+    task.delay(7, function()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+    end)
+end)
+
+task.wait(1)
+task.spawn(function()
+    local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+    noti.Parent = getgenv().MessiNotifyGUI.Frame
+    noti.Visible = true
+    noti.TextLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+    game.Debris:AddItem(noti, 5.282)
+    noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    noti.TextLabel.TextStrokeTransparency = 1
+    noti.TextLabel.TextTransparency = 1
+    noti.TextLabel.Text = "You can now join a game!"
+    TweenService:Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+    TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+    task.delay(5, function()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+        TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+    end)
+end)
+
+local watermarkObj = nil
+if getgenv().MessiWatermarkName == nil or getgenv().MessiWatermarkName == '' then
+    getgenv().MessiWatermarkName = string.gsub(tostring(math.random()), '0.', ''):sub(1, 1000) .. string.char(math.random(65, 90), math.random(97, 122), math.random(48, 57))
+end
+if not game.CoreGui.RobloxGui:FindFirstChild(getgenv().MessiWatermarkName) then
+    setclipboard('https://discord.gg/Zu4PnN9Wxw')
+
+    local discordText = getgenv().MessiNotifyGUI.Frame.base.TextLabel:Clone()
+    discordText.Text = ' discord.gg/Zu4PnN9Wxw '
+    discordText.Name = getgenv().MessiWatermarkName .. '2'
+    discordText.Position = UDim2.new(0.05, 0, 0.142, 0)
+    discordText.Size = discordText.Size - UDim2.new(0.1, 0, 0.1, 0)
+    discordText.TextStrokeTransparency = 1
+    discordText.TextColor3 = Color3.fromRGB(155, 0, 100)
+    discordText.TextTransparency = 0.59
+
+    watermarkObj = getgenv().MessiNotifyGUI.Frame.base.TextLabel:Clone()
+    watermarkObj.Text = ' Made By tze and celeron '
+    watermarkObj.Name = getgenv().MessiWatermarkName
+    watermarkObj.Position = UDim2.new(0, 0, -0.02, 0)
+    watermarkObj.TextStrokeTransparency = 1
+    watermarkObj.TextColor3 = Color3.fromRGB(0, 157, 255)
+    watermarkObj.TextTransparency = 0.59
+    watermarkObj.Parent = game.CoreGui.RobloxGui
+    
+    discordText.Parent = watermarkObj
+end
+
+local function IsOnCD(name)
+    return cooldowns[name] == true
+end
+
+local function DoCD(name, duration)
+    cooldowns[name] = true
+    task.delay(duration, function()
+        cooldowns[name] = false
+    end)
+end
 
 local function ToggleAttachment(attachment, enabled, duration)
     if not attachment then return end
@@ -90,6 +188,58 @@ local function hasball()
     return plr.Character and plr.Character:FindFirstChild("Ball") ~= nil
 end
 
+local function Stunned()
+    local char = plr.Character
+    if not char then return true end
+    local state = char:FindFirstChild("state")
+    if not state then return true end
+    local stun = state:FindFirstChild("stun")
+    if not stun then return true end
+    return stun.Value
+end
+
+local function Stun(time, disableRotate)
+    local char = plr.Character
+    if not char then return end
+    if char.state then
+        char.state.stun.Value = true
+    end
+    if disableRotate then char:SetAttribute("disableRotate", true) end
+    local cfg = Instance.new("Configuration")
+    cfg:SetAttribute("speed", 0)
+    cfg:SetAttribute("jump", 0)
+    local movements = char:FindFirstChild("movements")
+    if movements then
+        cfg.Parent = movements
+    end
+    task.delay(time, function()
+        pcall(function()
+            if char and char.state then
+                char.state.stun.Value = false
+            end
+            if disableRotate then 
+                pcall(function() char:SetAttribute("disableRotate", false) end)
+            end
+        end)
+    end)
+    Debris:AddItem(cfg, time)
+end
+
+local function CancelMove()
+    local char = plr.Character
+    if char then
+        local state = char:FindFirstChild("state")
+        if state then
+            local stun = state:FindFirstChild("stun")
+            if stun then
+                stun.Value = true
+                task.wait(0.04)
+                stun.Value = false
+            end
+        end
+    end
+end
+
 local function BodyVelocity(part, speed, duration, startAtZero, easingInfo, delayTween, delayStart, useCustomTween)
     for _, v in pairs(part:GetChildren()) do
         if v:IsA("BodyVelocity") then v:Destroy() end
@@ -99,7 +249,9 @@ local function BodyVelocity(part, speed, duration, startAtZero, easingInfo, dela
     local bv = Instance.new("BodyVelocity")
     bv.MaxForce = Vector3.new(350000, 0, 350000)
     bv.Parent = part
-    task.delay(duration, bv.Destroy, bv)
+    task.delay(duration, function()
+        if bv and bv.Parent then bv:Destroy() end
+    end)
 
     local valueHolder = Instance.new("NumberValue")
     valueHolder.Value = startAtZero and 0 or speed
@@ -162,6 +314,41 @@ local function StartCooldownUI(slotNumber, duration)
     end)
 end
 
+local function TeleportShot(char, shootDelay)
+    local root = char.HumanoidRootPart
+    task.delay(shootDelay, function()
+        if not char or not char:FindFirstChild("HumanoidRootPart") or not char:FindFirstChild("Ball") then return end
+        local originalCFrame = root.CFrame
+        local lookVector = root.CFrame.LookVector
+        local team = char.state.team.Value
+        local oppositeTeam = team == "A" and "B" or "A"
+        local goal = workspace.map and workspace.map:FindFirstChild(oppositeTeam .. "goal")
+        local filterList = {char, workspace.Effects}
+        if goal then table.insert(filterList, goal) end
+        local gkBarrier = workspace.map and workspace.map:FindFirstChild("gkbarriar")
+        if gkBarrier then
+            local barrierPart = gkBarrier:FindFirstChild(oppositeTeam == "A" and "Abarriar" or "Bbarriar")
+            if barrierPart then table.insert(filterList, barrierPart) end
+        end
+        local gkCheck = workspace.map and workspace.map:FindFirstChild(oppositeTeam .. "GoalkeeperCheck")
+        if gkCheck then table.insert(filterList, gkCheck) end
+        char:PivotTo(CFrame.new((function()
+            local rayParams = RaycastParams.new()
+            rayParams.FilterDescendantsInstances = filterList
+            rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+            local rayResult = workspace:Raycast(root.Position, lookVector * 1000, rayParams)
+            return rayResult and rayResult.Position - lookVector * 2 or root.Position
+        end)()))
+        root.CFrame = root.CFrame * CFrame.Angles(0, math.pi, 0) * CFrame.new(0, 0, -8.823999)
+        task.wait(0.2)
+        remote:FireServer(buffer.fromstring(buffers["base"]), {
+            {"kick", 100, false, root.CFrame.LookVector * 1e19}
+        })
+        task.wait(0.001)
+        root.CFrame = originalCFrame
+    end)
+end
+
 local function RonaldoAwk()
     local char = plr.Character
     if not char or ronaldoAwkOnCD then return end
@@ -172,11 +359,9 @@ local function RonaldoAwk()
     local humanoid = char.Humanoid
     local savedStyle = plr:GetAttribute("style")
 
-    char.state.stun.Value = true
+    Stun(5.333, true)
 
     plr:SetAttribute("style", "ronaldo")
-
-    TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 2}):Play()
 
     task.spawn(function()
         pcall(function()
@@ -201,8 +386,6 @@ local function RonaldoAwk()
     end)
 
     task.delay(5.333, function()
-        TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 0}):Play()
-        char.state.stun.Value = false
         plr:SetAttribute("style", savedStyle)
 
         task.delay(30, function()
@@ -218,8 +401,8 @@ task.spawn(function()
         if gui then
             local hotbar = gui:FindFirstChild("Hotbar")
             if hotbar then
-                -- Flow name
                 hotbar.MagicHealth.Awakening.Text = "The Awakening of The Goat"
+                hotbar.MagicHealth.TextLabel.Text = " Greatest Of All Time."
                 hotbar.MagicHealth.Health.Frame.UIGradient.Color = ColorSequence.new{
                     ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 225, 150)),
                     ColorSequenceKeypoint.new(1, Color3.fromRGB(168, 148, 0))
@@ -252,6 +435,25 @@ task.spawn(function()
     end
 end)
 
+local function BlockOriginalSkills()
+    task.wait(0.1)
+    local hotbar = plr.PlayerGui:FindFirstChild("Hotbar")
+    if hotbar then
+        local buttons = hotbar.Backpack.Hotbar
+        for i = 1, 4 do
+            local skill = buttons:FindFirstChild("skill" .. i)
+            if skill and skill:FindFirstChild("Base") then
+                local base = skill.Base
+                base.Active = false
+                base.AutoButtonColor = false
+                pcall(function()
+                    base.MouseButton1Click:DisconnectAll()
+                    base.MouseButton1Down:DisconnectAll()
+                end)
+            end
+        end
+    end
+end
 
 UserInputService.InputBegan:Connect(function(input, bg)
     if bg then return end
@@ -259,6 +461,30 @@ UserInputService.InputBegan:Connect(function(input, bg)
 
     if input.KeyCode == Enum.KeyCode.F4 then
         disabled = true
+        if watermarkObj and watermarkObj.Parent then watermarkObj:Destroy() end
+        task.spawn(function()
+            local noti = getgenv().MessiNotifyGUI.Frame.base:Clone()
+            noti.Parent = getgenv().MessiNotifyGUI.Frame
+            noti.Visible = true
+            noti.TextLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+            game.Debris:AddItem(noti, 5.282)
+            noti.TextLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+            noti.TextLabel.TextStrokeTransparency = 1
+            noti.TextLabel.TextTransparency = 1
+            noti.TextLabel.Text = "Ronaldo Moveset Stopped!"
+            TweenService:Create(noti, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {Size = UDim2.new(1.33, 0, 0.054, 0)}):Play()
+            TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 0}):Play()
+            TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 0}):Play()
+            task.delay(5, function()
+                TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextTransparency = 1}):Play()
+                TweenService:Create(noti.TextLabel, TweenInfo.new(0.28, Enum.EasingStyle.Linear), {TextStrokeTransparency = 1}):Play()
+            end)
+        end)
+        return
+    end
+
+    if input.KeyCode == Enum.KeyCode.F5 then
+        if watermarkObj and watermarkObj.Parent then watermarkObj:Destroy() end
         return
     end
 
@@ -273,39 +499,12 @@ UserInputService.InputBegan:Connect(function(input, bg)
         RonaldoAwk()
 
     elseif input.KeyCode == Enum.KeyCode.One then
-        task.spawn(function()
-            local stun = state and state:FindFirstChild("stun")
-            if stun then
-                stun.Value = true
-                task.wait(0.03)
-                stun.Value = fahh and true or false
-            end
-        end)
-
-        task.wait(0.03)
-
-        if char.state.stun.Value or not hasball() or fahh then return end
-
-        char.state.stun.Value = true
-        local loopws = game:GetService("RunService").RenderStepped:Connect(function()
-            char.Humanoid.WalkSpeed = 0
-        end)
-        fahh = true
-
-        task.delay(4.6, function()
-            if disabled then return end
-            loopws:Disconnect()
-            char.Humanoid.WalkSpeed = 40
-            char.state.stun.Value = false
-            local cooldown = plr.PlayerGui.Hotbar.Backpack.Hotbar.skill1.Cooldown
-            cooldown.Size = UDim2.new(1, 0, -1, 0)
-            cooldown.Visible = true
-            game.TweenService:Create(cooldown, TweenInfo.new(1, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 0, 0)}):Play()
-            task.wait(1)
-            cooldown.Visible = false
-            fahh = false
-        end)
-
+        if Stunned() or not hasball() or IsOnCD("skill1") then return end
+        
+        DoCD("skill1", 5)
+        StartCooldownUI(1, 5)
+        Stun(4.6, false)
+        
         local anim = char.Humanoid:LoadAnimation(rep.Resources.ronaldo.running)
         anim:Play()
 
@@ -337,17 +536,11 @@ UserInputService.InputBegan:Connect(function(input, bg)
         task.delay(3.933, function() if not disabled then EmitAttachment(dribbleClone.Rig.HumanoidRootPart["5"]) end end)
 
     elseif input.KeyCode == Enum.KeyCode.Two then
-        if not hasball() then
-            local stun = state and state:FindFirstChild("stun")
-            if stun then
-                stun.Value = true
-                task.wait(0.03)
-                stun.Value = false
-            end
-            return
-        end
-
-        if char.state.stun.Value or plr.PlayerGui.Hotbar.Backpack.Hotbar.skill2.Cooldown.Visible then return end
+        if Stunned() or not hasball() or IsOnCD("skill2") then return end
+        
+        DoCD("skill2", 8)
+        StartCooldownUI(2, 8)
+        Stun(1.5, false)
 
         local bicycle1 = Instance.new("Animation")
         bicycle1.AnimationId = "rbxassetid://126734456236034"
@@ -370,23 +563,10 @@ UserInputService.InputBegan:Connect(function(input, bg)
             game.Debris:AddItem(boom, 5)
         end)
 
+        TeleportShot(char, 0.9)
+
     elseif input.KeyCode == Enum.KeyCode.Three then
-        local cooldownUI = plr.PlayerGui:FindFirstChild("Hotbar")
-            and plr.PlayerGui.Hotbar:FindFirstChild("Backpack")
-            and plr.PlayerGui.Hotbar.Backpack:FindFirstChild("Hotbar")
-            and plr.PlayerGui.Hotbar.Backpack.Hotbar:FindFirstChild("skill3")
-            and plr.PlayerGui.Hotbar.Backpack.Hotbar.skill3.Cooldown
-
-        if cooldownUI and cooldownUI.Visible then return end
-
-        local stun = state and state:FindFirstChild("stun")
-        if stun then
-            stun.Value = true
-            task.wait(0.03)
-            stun.Value = false
-        end
-
-        if not hasball() then return end
+        if Stunned() or not hasball() or IsOnCD("skill3") then return end
 
         local closestTeammate = nil
         local shortestDistance = 180
@@ -410,7 +590,9 @@ UserInputService.InputBegan:Connect(function(input, bg)
         local targetRoot = closestTeammate.Character.HumanoidRootPart
         local distance = shortestDistance
 
-        char.state.stun.Value = true
+        DoCD("skill3", 6)
+        StartCooldownUI(3, 6)
+        Stun(0.7, false)
         char.Humanoid.WalkSpeed = 0
 
         local passAnim = Instance.new("Animation")
@@ -421,9 +603,6 @@ UserInputService.InputBegan:Connect(function(input, bg)
 
         sfx(rep.Resources.ronaldo.KICK, root)
 
-        local COOLDOWN = 6
-        StartCooldownUI(3, COOLDOWN)
-
         task.wait(0.35)
 
         if not char or not root.Parent then return end
@@ -432,7 +611,7 @@ UserInputService.InputBegan:Connect(function(input, bg)
         local kickDir = Vector3.new(direction.X, 0.18, direction.Z).Unit
         local power = math.clamp(distance / 1.4, 18, 95)
 
-        ReplicatedStorage.ByteNetReliable:FireServer(
+        remote:FireServer(
             buffer.fromstring(buffers["base"]),
             { {"kick", power, true, vector.create(kickDir.X, kickDir.Y, kickDir.Z)} }
         )
@@ -441,33 +620,14 @@ UserInputService.InputBegan:Connect(function(input, bg)
             if char and char:FindFirstChild("Humanoid") then
                 char.Humanoid.WalkSpeed = 40
             end
-            if char and char:FindFirstChild("state") then
-                char.state.stun.Value = false
-            end
         end)
 
     elseif input.KeyCode == Enum.KeyCode.Four then
-        if hasball() then
-            local stun = state and state:FindFirstChild("stun")
-            if stun then
-                stun.Value = true
-                task.wait(0.03)
-                stun.Value = false
-            end
-            return
-        end
-
-        if tick() - lastAccelerate < accelerateCooldown then return end
-        lastAccelerate = tick()
-
-        local stun = state and state:FindFirstChild("stun")
-        if stun then
-            stun.Value = true
-            task.wait(0.03)
-            stun.Value = false
-        end
-
+        if Stunned() or hasball() or IsOnCD("skill4") then return end
+        
+        DoCD("skill4", accelerateCooldown)
         StartCooldownUI(4, accelerateCooldown)
+        Stun(1, false)
 
         local accelAnim = Instance.new("Animation")
         accelAnim.AnimationId = "rbxassetid://73266865968554"
@@ -534,6 +694,7 @@ local function load(char)
     initialized = true
     repeat task.wait() until plr.Team ~= game.Teams.lobby
     task.wait(0.1)
+    BlockOriginalSkills()
     local root = char:FindFirstChild("HumanoidRootPart")
     if not root then return end
 end
