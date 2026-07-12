@@ -470,7 +470,7 @@ local function EXEStrike()
     track.Priority = Enum.AnimationPriority.Action
     track:Play()
 
-    TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 15}):Play()
+    TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 25}):Play()
 
     local sound1 = Instance.new("Sound")
     sound1.SoundId = "rbxassetid://71531490355205"
@@ -555,7 +555,7 @@ local function ExeAwk()
     Stun(10, true)
     plr:SetAttribute("style", "exe")
 
-    TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 15}):Play()
+    TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 25}):Play()
 
     task.spawn(function()
         pcall(function()
@@ -741,4 +741,4 @@ task.spawn(function()
     end
 end)
 
-print("EXE Moveset loaded!")
+print("Sonic.exe Moveset loaded!")
