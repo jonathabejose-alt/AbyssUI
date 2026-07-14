@@ -380,30 +380,38 @@ local function Exterminate()
     if dist > 1050 then return end
 
     CancelMove()
-    DoCD("skill2", 1)
+    DoCD("skill2", 0.8)
 
     local humanoid = char.Humanoid
     local originalCF = root.CFrame
 
-    local targetPos = ball.Position + Vector3.new(0, 2, 0)
-    root.CFrame = CFrame.new(targetPos, targetPos + Vector3.new(0, 0, -1))
-    root.AssemblyLinearVelocity = Vector3.zero
-
-    task.wait(0.1)
-
     local grabbed = false
-    for i = 1, 10 do
+    local timeout = 0
+    local maxTimeout = 300 
+
+    while not grabbed and timeout < maxTimeout do
+  
+        local currentBall = workspace.Terrain:FindFirstChild("Ball")
+        if not currentBall then
+            root.CFrame = originalCF
+            return
+        end
+
+        local targetPos = currentBall.Position + Vector3.new(0, 2, 0)
+        root.CFrame = CFrame.new(targetPos, targetPos + Vector3.new(0, 0, -1))
+        root.AssemblyLinearVelocity = Vector3.zero
+
+        task.wait(0.1)
+
         remote:FireServer(buffer.fromstring(buffers["grabball"]))
         task.wait(0.05)
+
         if HasBall() then
             grabbed = true
             break
         end
-        local currentBall = workspace.Terrain:FindFirstChild("Ball")
-        if currentBall then
-            local newPos = currentBall.Position + Vector3.new(0, 2, 0)
-            root.CFrame = CFrame.new(newPos, newPos + Vector3.new(0, 0, -1))
-        end
+
+        timeout = timeout + 1
     end
 
     if not grabbed then
@@ -447,6 +455,9 @@ local function Exterminate()
         root.Anchored = false
         pcall(function()
             track:Stop()
+            if char and char.state then
+                char.state.stun.Value = false
+            end
         end)
     end)
 end
@@ -493,9 +504,11 @@ local function EXEStrike()
         require(rep.client.replication).DASTStrike(char)
     end)
    
-    task.delay(3.4, function()
-    TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 0}):Play()
-     end)
+    task.delay(3.8, function()
+        root.Anchored = false
+    root.Velocity = Vector3.new(0, -200, 0)
+    humanoid.HipHeight = 0
+end)
 
     
     TeleportShot(char, 3.9)
@@ -537,7 +550,7 @@ local function OpenMetavision()
 
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://80157960628620"
-    sound.Volume = 3
+    sound.Volume = 10
     sound.Parent = root
     sound:Play()
     Debris:AddItem(sound, 4)
@@ -546,20 +559,27 @@ end
 local function ExeAwk()
     local char = plr.Character
     if not char or Stunned() or exeAwkOnCD then return end
+    if not HasBall() then return end
 
     exeAwkOnCD = true
 
     local humanoid = char.Humanoid
+    local root = char.HumanoidRootPart
     local savedStyle = plr:GetAttribute("style")
 
-    Stun(10, true)
+    Stun(21, true)
     plr:SetAttribute("style", "exe")
 
     TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 25}):Play()
 
     task.spawn(function()
         pcall(function()
-            require(rep.util.soundUtil):play(rep.Resources.exe.awkSong, SoundService)
+            local song = rep.Resources.exe.awkSong
+            song.Volume = 12
+            require(rep.util.soundUtil):play(song, SoundService)
+            task.delay(129, function()
+                song:Stop()
+            end)
         end)
     end)
 
@@ -576,14 +596,16 @@ local function ExeAwk()
     end)
 
     task.delay(21, function()
+        if not char or not char.Parent then return end
+        
         TweenService:Create(humanoid, TweenInfo.new(0.3, Enum.EasingStyle.Cubic), {HipHeight = 0}):Play()
         plr:SetAttribute("style", savedStyle)
+        
         task.delay(30, function()
             exeAwkOnCD = false
         end)
     end)
 end
-
 task.spawn(function()
     while true do
         if stopped then break end
@@ -611,9 +633,9 @@ task.spawn(function()
                             end
                             if skill and skill:FindFirstChild("Base") and skill.Base:FindFirstChild("Reuse") then
                                 local reuseTexts = {
-                                    [1] = "Off The Ball",
-                                    [2] = "Trap",
-                                    [3] = "Shot",
+                                    [1] = "Ball Only",
+                                    [2] = "Off Ball",
+                                    [3] = "Ball Only",
                                     [4] = "God Mode"
                                 }
                                 skill.Base.Reuse.Text = reuseTexts[i] or ""
